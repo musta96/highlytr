@@ -18,7 +18,7 @@ import {
   BookOpen
 } from 'lucide-react';
 
-// Define user type as a union type for better type safety
+// Define user type as a more explicit union type
 type UserType = 'athlete' | 'college' | 'agency';
 
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
@@ -36,8 +36,16 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     },
     {
       icon: <User className="h-5 w-5" />,
-      label: userType === 'athlete' ? 'My Profile' : 'Staff',
-      to: userType === 'athlete' ? '/dashboard/profile' : '/dashboard/staff',
+      label: userType === 'athlete' 
+        ? 'My Profile' 
+        : userType === 'college' 
+          ? 'Staff' 
+          : 'Agency Profile',
+      to: userType === 'athlete' 
+        ? '/dashboard/profile' 
+        : userType === 'college' 
+          ? '/dashboard/staff' 
+          : '/dashboard/agency-profile',
     },
     {
       icon: <MessageSquare className="h-5 w-5" />,
@@ -51,8 +59,16 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     },
     {
       icon: <Search className="h-5 w-5" />,
-      label: userType === 'athlete' ? 'Find Colleges' : 'Find Athletes',
-      to: userType === 'athlete' ? '/dashboard/colleges/search' : '/dashboard/athletes/search',
+      label: userType === 'athlete' 
+        ? 'Find Colleges' 
+        : userType === 'college' 
+          ? 'Find Athletes' 
+          : 'Find Athletes',
+      to: userType === 'athlete' 
+        ? '/dashboard/colleges/search' 
+        : userType === 'college' 
+          ? '/dashboard/athletes/search' 
+          : '/dashboard/athletes/search',
     },
     {
       icon: <Settings className="h-5 w-5" />,
