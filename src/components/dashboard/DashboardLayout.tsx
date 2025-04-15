@@ -18,7 +18,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   
   // This would come from authentication in a real app
-  const userType = 'athlete';
+  // Define userType as a generic string to avoid type comparison issues
+  const userType: string = 'athlete';
   
   const sidebarLinks = [
     {
@@ -48,7 +49,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     },
   ];
   
-  // Fix: TypeScript error by using string comparison instead of literal type comparison
+  // Add college profile or agency profile link if relevant
   if (userType === 'college' || userType === 'agency') {
     sidebarLinks.splice(2, 0, {
       icon: <Building className="h-5 w-5" />,

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Card,
@@ -23,7 +24,8 @@ const profileViewsData = [
 
 const DashboardOverview = () => {
   // This would come from user authentication in a real app
-  const userType = 'athlete';
+  // Define userType as a generic string to avoid type comparison issues
+  const userType: string = 'athlete';
   
   return (
     <div className="space-y-6">
