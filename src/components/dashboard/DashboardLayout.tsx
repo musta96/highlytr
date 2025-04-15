@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -59,16 +60,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     },
     {
       icon: <Search className="h-5 w-5" />,
-      label: userType === 'athlete' 
-        ? 'Find Colleges' 
-        : userType === 'college' 
-          ? 'Find Athletes' 
-          : 'Find Athletes',
-      to: userType === 'athlete' 
-        ? '/dashboard/colleges/search' 
-        : userType === 'college' 
-          ? '/dashboard/athletes/search' 
-          : '/dashboard/athletes/search',
+      label: (() => {
+        if (userType === 'athlete') return 'Find Colleges';
+        return 'Find Athletes';
+      })(),
+      to: (() => {
+        if (userType === 'athlete') return '/dashboard/colleges/search';
+        return '/dashboard/athletes/search';
+      })(),
     },
     {
       icon: <Settings className="h-5 w-5" />,
