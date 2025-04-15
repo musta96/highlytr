@@ -8,7 +8,7 @@ const testimonials = [
     name: 'Marco Rossi',
     role: 'Soccer Player',
     university: 'Stanford University',
-    quote: 'HighLytr helped me connect with coaches I would never have reached otherwise. I received a full scholarship to my dream school!',
+    quote: "HighLytr helped me connect with coaches I would never have reached otherwise. I received a full scholarship to my dream school!",
     image: 'https://images.unsplash.com/photo-1606131731446-5568d87113aa',
   },
   {
@@ -16,7 +16,7 @@ const testimonials = [
     name: 'Coach Sarah Williams',
     role: 'Head Soccer Coach',
     university: 'University of California',
-    quote: 'HighLytr has transformed our international recruiting process. We can now discover talented athletes without expensive scouting trips.',
+    quote: "HighLytr has transformed our international recruiting process. We can now discover talented athletes without expensive scouting trips.",
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
   },
   {
@@ -24,7 +24,7 @@ const testimonials = [
     name: 'Giulia Ricci',
     role: 'Soccer Player',
     university: 'University of Michigan',
-    quote: 'As an Italian athlete, I struggled to get noticed by U.S. colleges until I joined HighLytr. Now I'm playing Division I soccer!',
+    quote: "As an Italian athlete, I struggled to get noticed by U.S. colleges until I joined HighLytr. Now I'm playing Division I soccer!",
     image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
   }
 ];
