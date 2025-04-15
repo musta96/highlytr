@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Athletes from "./pages/Athletes";
 import Colleges from "./pages/Colleges";
+import Agencies from "./pages/Agencies";
 import About from "./pages/About";
 
 // Create an AthleteProfile component as a placeholder
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/dashboard/*" element={<Dashboard />} />
           <Route path="/athletes" element={<Athletes />} />
           <Route path="/colleges" element={<Colleges />} />
+          <Route path="/agencies" element={<Agencies />} />
           <Route path="/about" element={<About />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
