@@ -19,7 +19,7 @@ import {
   BookOpen
 } from 'lucide-react';
 
-// Define user type as a more explicit union type
+// Define user type as a proper union type
 type UserType = 'athlete' | 'college' | 'agency';
 
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
