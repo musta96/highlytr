@@ -14,7 +14,7 @@ import {
   X
 } from 'lucide-react';
 
-const DashboardLayout = () => {
+const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   
   // This would come from authentication in a real app
@@ -48,6 +48,7 @@ const DashboardLayout = () => {
     },
   ];
   
+  // Fix: TypeScript error by using string comparison instead of literal type comparison
   if (userType === 'college' || userType === 'agency') {
     sidebarLinks.splice(2, 0, {
       icon: <Building className="h-5 w-5" />,
