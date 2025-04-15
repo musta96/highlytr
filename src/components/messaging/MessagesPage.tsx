@@ -13,7 +13,8 @@ import {
   Video,
   Clock,
   Check,
-  CheckCheck 
+  CheckCheck,
+  MessageCircle
 } from 'lucide-react';
 
 // Mock data for conversations
@@ -123,7 +124,7 @@ const mockMessages = [
   {
     id: 5,
     sender: 'them',
-    text: 'We do offer partial scholarships for exceptional international athletes, and tryouts typically happen in the spring. However, since you're overseas, we can arrange a video assessment. Could you share more recent game footage?',
+    text: "We do offer partial scholarships for exceptional international athletes, and tryouts typically happen in the spring. However, since you're overseas, we can arrange a video assessment. Could you share more recent game footage?",
     time: 'Today, 9:00 AM',
     status: 'read',
   },
