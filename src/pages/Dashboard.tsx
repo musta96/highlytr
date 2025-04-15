@@ -1,13 +1,43 @@
 
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
+import AthleteProfile from '@/components/athlete/AthleteProfile';
+import SearchPage from '@/components/search/SearchPage';
+import ConnectionsPage from '@/components/connections/ConnectionsPage';
+import MessagesPage from '@/components/messaging/MessagesPage';
+
+// Import placeholder for pages we haven't built yet
+import NotFound from './NotFound';
 
 const Dashboard = () => {
   return (
-    <DashboardLayout>
-      <DashboardOverview />
-    </DashboardLayout>
+    <Routes>
+      <Route element={<DashboardLayout />}>
+        <Route index element={<DashboardOverview />} />
+        <Route path="profile" element={<AthleteProfile />} />
+        <Route path="messages" element={<MessagesPage />} />
+        <Route path="connections" element={<ConnectionsPage />} />
+        <Route path="athletes/search" element={<SearchPage type="athletes" />} />
+        <Route path="colleges/search" element={<SearchPage type="colleges" />} />
+        
+        {/* These would be implemented with actual components */}
+        <Route path="academics" element={<div className="p-4">Academic Info Page</div>} />
+        <Route path="highlights" element={<div className="p-4">Highlights Page</div>} />
+        <Route path="events" element={<div className="p-4">Events Page</div>} />
+        <Route path="college-profile" element={<div className="p-4">College Profile Page</div>} />
+        <Route path="agency-profile" element={<div className="p-4">Agency Profile Page</div>} />
+        <Route path="staff" element={<div className="p-4">Staff Management Page</div>} />
+        <Route path="coaches" element={<div className="p-4">Coaches Management Page</div>} />
+        <Route path="teams" element={<div className="p-4">Teams Management Page</div>} />
+        <Route path="represented" element={<div className="p-4">Represented Athletes Page</div>} />
+        <Route path="settings" element={<div className="p-4">Settings Page</div>} />
+        
+        {/* Catch-all route for unmatched dashboard paths */}
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
 };
 

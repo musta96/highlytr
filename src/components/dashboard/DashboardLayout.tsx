@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Home, 
@@ -11,15 +11,23 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Users,
+  FileText,
+  Calendar,
+  Bell,
+  BookOpen
 } from 'lucide-react';
+
+// Define user type as a union type for better type safety
+type UserType = 'athlete' | 'college' | 'agency';
 
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const location = useLocation();
   
   // This would come from authentication in a real app
-  // Define userType as a generic string to avoid type comparison issues
-  const userType: string = 'athlete';
+  const userType: UserType = 'athlete'; // This would be dynamically set based on logged in user
   
   const sidebarLinks = [
     {
@@ -30,33 +38,88 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     {
       icon: <User className="h-5 w-5" />,
       label: userType === 'athlete' ? 'My Profile' : 'Staff',
-      to: userType === 'athlete' ? '/profile' : '/staff',
+      to: userType === 'athlete' ? '/dashboard/profile' : '/dashboard/staff',
     },
     {
       icon: <MessageSquare className="h-5 w-5" />,
       label: 'Messages',
-      to: '/messages',
+      to: '/dashboard/messages',
+    },
+    {
+      icon: <Bell className="h-5 w-5" />,
+      label: 'Connections',
+      to: '/dashboard/connections',
     },
     {
       icon: <Search className="h-5 w-5" />,
       label: userType === 'athlete' ? 'Find Colleges' : 'Find Athletes',
-      to: userType === 'athlete' ? '/colleges/search' : '/athletes/search',
+      to: userType === 'athlete' ? '/dashboard/colleges/search' : '/dashboard/athletes/search',
     },
     {
       icon: <Settings className="h-5 w-5" />,
       label: 'Settings',
-      to: '/settings',
+      to: '/dashboard/settings',
     },
   ];
   
-  // Add college profile or agency profile link if relevant
-  if (userType === 'college' || userType === 'agency') {
+  // Add college profile or agency profile link based on user type
+  if (userType === 'college') {
     sidebarLinks.splice(2, 0, {
       icon: <Building className="h-5 w-5" />,
-      label: userType === 'college' ? 'College Profile' : 'Agency Profile',
-      to: userType === 'college' ? '/college-profile' : '/agency-profile',
+      label: 'College Profile',
+      to: '/dashboard/college-profile',
+    });
+    // Add coaches and teams links for colleges
+    sidebarLinks.splice(3, 0, {
+      icon: <Users className="h-5 w-5" />,
+      label: 'Coaches',
+      to: '/dashboard/coaches',
+    });
+    sidebarLinks.splice(4, 0, {
+      icon: <FileText className="h-5 w-5" />,
+      label: 'Teams',
+      to: '/dashboard/teams',
+    });
+  } else if (userType === 'agency') {
+    sidebarLinks.splice(2, 0, {
+      icon: <Building className="h-5 w-5" />,
+      label: 'Agency Profile',
+      to: '/dashboard/agency-profile',
+    });
+    // Add represented athletes link for agencies
+    sidebarLinks.splice(3, 0, {
+      icon: <Users className="h-5 w-5" />,
+      label: 'Represented Athletes',
+      to: '/dashboard/represented',
+    });
+  } else if (userType === 'athlete') {
+    // Add academic info and highlights for athletes
+    sidebarLinks.splice(2, 0, {
+      icon: <BookOpen className="h-5 w-5" />,
+      label: 'Academic Info',
+      to: '/dashboard/academics',
+    });
+    sidebarLinks.splice(3, 0, {
+      icon: <FileText className="h-5 w-5" />,
+      label: 'Highlights',
+      to: '/dashboard/highlights',
+    });
+    sidebarLinks.splice(4, 0, {
+      icon: <Calendar className="h-5 w-5" />,
+      label: 'Events',
+      to: '/dashboard/events',
     });
   }
+
+  // Helper function to determine if a link is active
+  const isActiveLink = (path: string) => {
+    // Handle exact match for dashboard root
+    if (path === '/dashboard' && location.pathname === '/dashboard') {
+      return true;
+    }
+    // Handle nested routes
+    return location.pathname.startsWith(path) && path !== '/dashboard';
+  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
@@ -104,7 +167,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 <Link
                   key={i}
                   to={link.to}
-                  className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 ${
+                    isActiveLink(link.to) ? 'bg-highlyt-blue/10 text-highlyt-blue font-medium' : ''
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.icon}
@@ -148,7 +213,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                   <Link
                     key={i}
                     to={link.to}
-                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 ${
+                      isActiveLink(link.to) ? 'bg-highlyt-blue/10 text-highlyt-blue font-medium' : ''
+                    }`}
                   >
                     {link.icon}
                     <span>{link.label}</span>

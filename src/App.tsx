@@ -15,6 +15,9 @@ import Athletes from "./pages/Athletes";
 import Colleges from "./pages/Colleges";
 import About from "./pages/About";
 
+// Create an AthleteProfile component as a placeholder
+import AthleteProfile from "./components/athlete/AthleteProfile";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,6 +34,7 @@ const App = () => (
           <Route path="/athletes" element={<Athletes />} />
           <Route path="/colleges" element={<Colleges />} />
           <Route path="/about" element={<About />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
