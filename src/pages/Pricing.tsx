@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -329,46 +330,47 @@ const Pricing = () => {
                   key={plan.id} 
                   className={`relative flex flex-col ${plan.highlighted ? 'border-gray-200' : 'border-gray-200'}`}
                 >
-                {plan.badge && (
-                  <div className="absolute top-0 right-0 bg-highlyt-blue text-white text-xs font-medium px-2 py-1 rounded-bl-lg rounded-tr-lg">
-                    {plan.badge}
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="flex flex-col">
-                    <span className="text-xl">{plan.name}</span>
-                    <div className="mt-4 flex items-end gap-1">
-                      <span className="text-3xl md:text-4xl font-bold">{plan.price}</span>
-                      <span className="text-gray-500 mb-1">{plan.period}</span>
+                  {plan.badge && (
+                    <div className="absolute top-0 right-0 bg-highlyt-blue text-white text-xs font-medium px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                      {plan.badge}
                     </div>
-                  </CardTitle>
-                  <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
-                        <Check className="h-5 w-5 text-highlyt-green mr-2 shrink-0 mt-0.5" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-                <CardFooter className="pt-4">
-                  <Button 
-                    className="w-full"
-                    variant={plan.highlighted ? 'default' : 'outline'}
-                  >
-                    {plan.buttonText}
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-8 text-center text-gray-500 max-w-xl mx-auto">
-            <p>Our success-fee model is negotiated individually with each agency based on placement volume and athlete profile. We believe in aligning incentives for all parties involved.</p>
-          </div>
-        </TabsContent>
+                  )}
+                  <CardHeader>
+                    <CardTitle className="flex flex-col">
+                      <span className="text-xl">{plan.name}</span>
+                      <div className="mt-4 flex items-end gap-1">
+                        <span className="text-3xl md:text-4xl font-bold">{plan.price}</span>
+                        <span className="text-gray-500 mb-1">{plan.period}</span>
+                      </div>
+                    </CardTitle>
+                    <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <Check className="h-5 w-5 text-highlyt-green mr-2 shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Button 
+                      className="w-full"
+                      variant={plan.highlighted ? 'default' : 'outline'}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+            <div className="mt-8 text-center text-gray-500 max-w-xl mx-auto">
+              <p>Our success-fee model is negotiated individually with each agency based on placement volume and athlete profile. We believe in aligning incentives for all parties involved.</p>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <Separator className="my-16" />
 
