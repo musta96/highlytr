@@ -261,8 +261,8 @@ const Pricing = () => {
                   </CardContent>
                   <CardFooter className="pt-4">
                     <Button 
-                      className={`w-full ${plan.highlighted ? 'bg-highlyt-blue hover:bg-highlyt-blue-dark' : ''}`}
-                      variant={plan.highlighted ? 'default' : 'outline'}
+                      className={`w-full ${plan.id === 'pro' ? '' : (plan.highlighted ? 'bg-highlyt-blue hover:bg-highlyt-blue-dark' : '')}`}
+                      variant={plan.highlighted && plan.id !== 'pro' ? 'default' : 'outline'}
                       disabled={plan.comingSoon}
                     >
                       {plan.buttonText}
