@@ -33,6 +33,7 @@ import Cookies from "./pages/Cookies";
 import Help from "./pages/Help";
 import FAQs from "./pages/FAQs";
 import Pricing from "./pages/Pricing";
+import Leaderboard from "./pages/Leaderboard";
 
 // New Section Pages
 import ForAthletes from "./pages/ForAthletes";
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/how-it-works" element={<Layout><HowItWorks /></Layout>} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             
             {/* User type sections */}
             <Route path="/for-athletes" element={<ForAthletes />} />
