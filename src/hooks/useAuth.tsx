@@ -3,15 +3,30 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 
+type SignInCredentials = {
+  email: string;
+  password: string;
+};
+
+type AuthError = {
+  message: string;
+};
+
+type SignInResponse = {
+  error: AuthError | null;
+};
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
+  signIn: (credentials: SignInCredentials) => Promise<SignInResponse>;
   signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
+  signIn: async () => ({ error: null }),
   signOut: async () => {},
 });
 
@@ -40,12 +55,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  const signIn = async ({ email, password }: SignInCredentials): Promise<SignInResponse> => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    return { error: error ? { message: error.message } : null };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, signOut }}>
+    <AuthContext.Provider value={{ user, session, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
