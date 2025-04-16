@@ -35,6 +35,8 @@ type AuthContextType = {
   signIn: (credentials: SignInCredentials) => Promise<SignInResponse>;
   signUp: (credentials: SignUpCredentials) => Promise<SignUpResponse>;
   signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<SignInResponse>;
+  signInWithApple: () => Promise<SignInResponse>;
   loading: boolean;
   profileCompleted: boolean;
 };
@@ -45,6 +47,8 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => ({ error: null }),
   signUp: async () => ({ error: null }),
   signOut: async () => {},
+  signInWithGoogle: async () => ({ error: null }),
+  signInWithApple: async () => ({ error: null }),
   loading: true,
   profileCompleted: false,
 });
@@ -139,6 +143,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithGoogle = async (): Promise<SignInResponse> => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      
+      if (error) throw error;
+      return { error: null };
+    } catch (error: any) {
+      return { error: { message: error.message } };
+    }
+  };
+
+  const signInWithApple = async (): Promise<SignInResponse> => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      
+      if (error) throw error;
+      return { error: null };
+    } catch (error: any) {
+      return { error: { message: error.message } };
+    }
+  };
+
   const signUp = async ({ email, password, firstName, lastName, accountType }: SignUpCredentials): Promise<SignUpResponse> => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -179,6 +215,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signIn, 
       signUp, 
       signOut, 
+      signInWithGoogle,
+      signInWithApple,
       loading,
       profileCompleted
     }}>
