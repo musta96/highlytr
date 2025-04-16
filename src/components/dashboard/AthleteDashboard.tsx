@@ -1,85 +1,192 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { 
+  Video, 
+  Search, 
+  Edit, 
+  MessageSquare,
+  Medal,
+  BarChart2,
+  ArrowUpRight
+} from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from '@/components/ui/badge';
 
 const AthleteDashboard = () => {
+  const { user } = useAuth();
+  const firstName = user?.user_metadata?.firstName || 'Athlete';
+  
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Athlete Dashboard</h1>
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Welcome, {firstName}</h1>
+          <p className="text-muted-foreground">Here's what's happening with your recruiting journey</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            <Video className="mr-2 h-4 w-4" />
+            Upload Video
+          </Button>
+          <Button size="sm">
+            <Search className="mr-2 h-4 w-4" />
+            Find Colleges
+          </Button>
+        </div>
+      </div>
       
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-lg border bg-card shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-4">Welcome to your Athlete Dashboard</h2>
-          <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-            <div className="bg-primary h-full w-1/3" />
-          </div>
-          <p className="text-muted-foreground mt-2">Complete your profile to increase visibility (33%)</p>
-          <button className="mt-4 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
-            Complete Your Profile
-          </button>
-        </div>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Profile Completion</CardTitle>
+            <CardDescription>Complete your profile to increase visibility</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-1 text-sm">
+                  <span>Overall Progress</span>
+                  <span className="font-medium">33%</span>
+                </div>
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="bg-primary h-full w-1/3" />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="border rounded-md p-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium">Highlight Videos</span>
+                    <Badge variant="outline">0/3</Badge>
+                  </div>
+                  <div className="h-1.5 w-full bg-muted rounded-full">
+                    <div className="bg-primary h-full w-0" />
+                  </div>
+                </div>
+                
+                <div className="border rounded-md p-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium">Academics</span>
+                    <Badge variant="outline">1/3</Badge>
+                  </div>
+                  <div className="h-1.5 w-full bg-muted rounded-full">
+                    <div className="bg-primary h-full w-1/3" />
+                  </div>
+                </div>
+              </div>
+              
+              <Button variant="outline" className="w-full" asChild>
+                <Link to="/dashboard/profile">
+                  <Edit className="mr-2 h-4 w-4" />
+                  Complete Your Profile
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
         
-        <div className="rounded-lg border bg-card shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-4">Quick Stats</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col items-center p-3 border rounded-md">
-              <span className="text-2xl font-bold">0</span>
-              <span className="text-muted-foreground text-sm">Profile Views</span>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Quick Stats</CardTitle>
+            <CardDescription>Your activity from the past 30 days</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="border rounded-lg p-4 text-center">
+                <p className="text-3xl font-bold">42</p>
+                <p className="text-sm text-muted-foreground">Profile Views</p>
+                <span className="text-xs inline-flex items-center text-green-600">
+                  <ArrowUpRight className="h-3 w-3 mr-1" />
+                  12% from last week
+                </span>
+              </div>
+              <div className="border rounded-lg p-4 text-center">
+                <p className="text-3xl font-bold">5</p>
+                <p className="text-sm text-muted-foreground">College Saves</p>
+                <span className="text-xs inline-flex items-center text-green-600">
+                  <ArrowUpRight className="h-3 w-3 mr-1" />
+                  3 new
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col items-center p-3 border rounded-md">
-              <span className="text-2xl font-bold">0</span>
-              <span className="text-muted-foreground text-sm">College Saves</span>
+            
+            <div className="mt-4 space-y-3">
+              <div className="flex justify-between items-center p-3 bg-muted/30 rounded-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <MessageSquare className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">New Messages</p>
+                    <p className="text-xs text-muted-foreground">3 coaches messaged you</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/dashboard/messages">View</Link>
+                </Button>
+              </div>
+              
+              <div className="flex justify-between items-center p-3 bg-muted/30 rounded-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <Medal className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Leaderboard Position</p>
+                    <p className="text-xs text-muted-foreground">You're in the top 20%</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/dashboard/leaderboard">View</Link>
+                </Button>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
       
-      <h2 className="text-xl font-bold mt-8">Colleges You May Like</h2>
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border p-4">
-          <div className="h-32 bg-muted rounded-md mb-3"></div>
-          <h3 className="font-semibold">University A</h3>
-          <p className="text-sm text-muted-foreground">Basketball, Division I</p>
-        </div>
-        <div className="rounded-lg border p-4">
-          <div className="h-32 bg-muted rounded-md mb-3"></div>
-          <h3 className="font-semibold">College B</h3>
-          <p className="text-sm text-muted-foreground">Basketball, Division II</p>
-        </div>
-        <div className="rounded-lg border p-4">
-          <div className="h-32 bg-muted rounded-md mb-3"></div>
-          <h3 className="font-semibold">University C</h3>
-          <p className="text-sm text-muted-foreground">Basketball, Division I</p>
-        </div>
+      <h2 className="text-xl font-bold mt-4">Colleges You May Like</h2>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="overflow-hidden">
+            <div className="h-32 bg-muted relative">
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                University Logo {i}
+              </div>
+            </div>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold">University {String.fromCharCode(64 + i)}</h3>
+                  <p className="text-sm text-muted-foreground">Basketball, Division I</p>
+                </div>
+                <Badge variant="secondary">98% Match</Badge>
+              </div>
+              <div className="flex gap-2 mt-3">
+                <Button size="sm" variant="outline" className="w-full">View</Button>
+                <Button size="sm" className="w-full">Connect</Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
       
-      <h2 className="text-xl font-bold mt-8">Quick Actions</h2>
-      <div className="grid gap-4 md:grid-cols-4">
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-          </svg>
-          <span className="text-sm">Upload Video</span>
-        </button>
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-          <span className="text-sm">Edit Profile</span>
-        </button>
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <span className="text-sm">Search Colleges</span>
-        </button>
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
-          <span className="text-sm">Messages</span>
-        </button>
+      <div className="flex justify-center mt-2">
+        <Button variant="ghost" asChild>
+          <Link to="/dashboard/colleges/search">
+            View More Colleges
+            <ArrowUpRight className="ml-1 h-4 w-4" />
+          </Link>
+        </Button>
       </div>
     </div>
   );

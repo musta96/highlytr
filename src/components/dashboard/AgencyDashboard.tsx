@@ -1,84 +1,163 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Search, PlusCircle, Users, BarChart2, MessageSquare, School, ArrowUpRight } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from '@/components/ui/badge';
 
 const AgencyDashboard = () => {
+  const { user } = useAuth();
+  const agencyName = user?.user_metadata?.orgName || 'Agency';
+  
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Agency Dashboard</h1>
-      
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-lg border bg-card shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-4">Agency Overview</h2>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span>Athletes Represented</span>
-              <span className="font-medium">0</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>College Conversations</span>
-              <span className="font-medium">0</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Pending Placements</span>
-              <span className="font-medium">0</span>
-            </div>
-          </div>
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">{agencyName} Dashboard</h1>
+          <p className="text-muted-foreground">Manage your athlete representation and placements</p>
         </div>
-        
-        <div className="rounded-lg border bg-card shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-4">Placement Funnel</h2>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span>Initial Contact</span>
-              <span className="font-medium">0</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>In Discussions</span>
-              <span className="font-medium">0</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Offers Made</span>
-              <span className="font-medium">0</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Placed</span>
-              <span className="font-medium">0</span>
-            </div>
-          </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Add Athlete
+          </Button>
+          <Button size="sm">
+            <Search className="mr-2 h-4 w-4" />
+            Find Colleges
+          </Button>
         </div>
       </div>
       
-      <h2 className="text-xl font-bold mt-8">Your Athletes</h2>
-      <p className="text-muted-foreground">You don't have any athletes yet. Add athletes to get started.</p>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Agency Overview</CardTitle>
+            <CardDescription>Your athlete representation and activity</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span>Athletes Represented</span>
+                <span className="font-medium">0</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>College Conversations</span>
+                <span className="font-medium">0</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Pending Placements</span>
+                <span className="font-medium">0</span>
+              </div>
+              
+              <div className="pt-3 mt-2 border-t">
+                <div className="p-4 bg-muted/30 rounded-lg text-center">
+                  <p className="text-sm mb-3">Get started by adding your first athlete</p>
+                  <Button asChild>
+                    <Link to="/dashboard/represented">Add Your First Athlete</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Placement Funnel</CardTitle>
+            <CardDescription>Track your athlete placement progress</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 mb-4">
+              <div className="flex justify-between items-center p-2 border rounded-md">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium">1</span>
+                  </div>
+                  <span>Initial Contact</span>
+                </div>
+                <Badge variant="outline">0</Badge>
+              </div>
+              
+              <div className="flex justify-between items-center p-2 border rounded-md">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium">2</span>
+                  </div>
+                  <span>In Discussions</span>
+                </div>
+                <Badge variant="outline">0</Badge>
+              </div>
+              
+              <div className="flex justify-between items-center p-2 border rounded-md">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium">3</span>
+                  </div>
+                  <span>Offers Made</span>
+                </div>
+                <Badge variant="outline">0</Badge>
+              </div>
+              
+              <div className="flex justify-between items-center p-2 border rounded-md bg-muted/10">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium">4</span>
+                  </div>
+                  <span>Successfully Placed</span>
+                </div>
+                <Badge variant="outline">0</Badge>
+              </div>
+            </div>
+            
+            <Button variant="outline" className="w-full" asChild>
+              <Link to="/dashboard/placements">
+                <BarChart2 className="mr-2 h-4 w-4" />
+                View Full Placement Analytics
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
       
-      <h2 className="text-xl font-bold mt-8">Quick Actions</h2>
-      <div className="grid gap-4 md:grid-cols-4">
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
-          <span className="text-sm">Add Athlete</span>
-        </button>
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-          <span className="text-sm">Edit Profiles</span>
-        </button>
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <span className="text-sm">Search Colleges</span>
-        </button>
-        <button className="flex flex-col items-center justify-center p-4 border rounded-md hover:bg-accent">
-          <svg className="h-8 w-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-          </svg>
-          <span className="text-sm">Messages</span>
-        </button>
+      <h2 className="text-xl font-bold mt-4">Recommended Colleges</h2>
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="overflow-hidden">
+            <div className="h-32 bg-muted relative">
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                College Logo {i}
+              </div>
+            </div>
+            <CardContent className="p-4">
+              <div>
+                <h3 className="font-semibold">University {String.fromCharCode(64 + i)}</h3>
+                <p className="text-sm text-muted-foreground">Division I • Looking for Guards</p>
+                <p className="text-xs mt-1 text-muted-foreground">Basketball, Soccer, Swimming</p>
+              </div>
+              <div className="flex gap-2 mt-3">
+                <Button size="sm" variant="outline" className="w-full">Details</Button>
+                <Button size="sm" className="w-full">Connect</Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      
+      <div className="flex justify-center mt-2">
+        <Button variant="ghost" asChild>
+          <Link to="/dashboard/colleges/search">
+            View More Colleges
+            <ArrowUpRight className="ml-1 h-4 w-4" />
+          </Link>
+        </Button>
       </div>
     </div>
   );

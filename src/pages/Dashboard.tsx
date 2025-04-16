@@ -5,7 +5,16 @@ import { useAuth } from '@/hooks/auth';
 import DashboardRoutes from '@/components/dashboard/DashboardRoutes';
 
 const Dashboard = () => {
-  const { user, accountType } = useAuth();
+  const { user, accountType, loading } = useAuth();
+  
+  // Show loading state if auth is still being checked
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   // If user doesn't have account type, redirect to profile setup
   if (!accountType && user) {
