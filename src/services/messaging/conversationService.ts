@@ -11,7 +11,9 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
     .from('conversations')
     .select(`
       id, user_id, participant_id, last_message, unread_count, created_at, updated_at,
-      profiles:participant_id(first_name, last_name, avatar_url, primary_position, organization)
+      participant:participant_id(
+        id, first_name, last_name, avatar_url, primary_position, organization
+      )
     `)
     .or(`user_id.eq.${userId},participant_id.eq.${userId}`)
     .order('updated_at', { ascending: false });
@@ -26,13 +28,13 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
     // Determine if the user is the initiator or the participant
     const isInitiator = conv.user_id === userId;
     const participantId = isInitiator ? conv.participant_id : conv.user_id;
-    const participant = conv.profiles;
+    const participant = conv.participant;
     
     return {
       id: conv.id,
       user_id: userId,
       participant_id: participantId,
-      participant_name: `${participant?.first_name || ''} ${participant?.last_name || ''}`.trim(),
+      participant_name: participant ? `${participant.first_name || ''} ${participant.last_name || ''}`.trim() : 'Unknown User',
       participant_avatar: participant?.avatar_url,
       participant_role: participant?.primary_position,
       participant_organization: participant?.organization,

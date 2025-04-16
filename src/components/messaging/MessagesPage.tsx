@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/auth';
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
-// Import new component files
+// Import components
 import ConversationList from './ConversationList';
 import MessageThread from './MessageThread';
 import EmptyMessageState from './EmptyMessageState';
@@ -110,12 +110,17 @@ const MessagesPage = () => {
               isMobile={isMobile}
             />
           ) : (
-            <EmptyMessageState 
-              onNewMessageClick={() => setNewMessageOpen(true)}
-            />
+            <EmptyMessageState onNewMessageClick={() => setNewMessageOpen(true)} />
           )}
         </div>
       </div>
+      
+      {newMessageOpen && (
+        <NewMessageDialog 
+          open={newMessageOpen} 
+          onOpenChange={setNewMessageOpen} 
+        />
+      )}
     </div>
   );
 };

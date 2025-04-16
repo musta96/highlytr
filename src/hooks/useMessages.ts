@@ -7,7 +7,7 @@ import {
   sendMessage as sendMessageService, 
   markMessagesAsRead,
   listenToMessages
-} from '@/services/messageService';
+} from '@/services/messaging';
 import { RealtimeChannel } from '@supabase/supabase-js';
 
 export const useMessages = (conversationId: string | null) => {

@@ -9,10 +9,20 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const NewMessageDialog = () => {
-  const [open, setOpen] = useState(false);
+interface NewMessageDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+const NewMessageDialog = ({ open, onOpenChange }: NewMessageDialogProps = {}) => {
+  const [isOpen, setIsOpen] = useState(open || false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  
+  const handleOpenChange = (newOpenState: boolean) => {
+    setIsOpen(newOpenState);
+    onOpenChange?.(newOpenState);
+  };
   
   const [searchResults] = useState([
     // This would be replaced with actual search results from a backend call
@@ -27,7 +37,7 @@ const NewMessageDialog = () => {
       title: "New conversation",
       description: "Starting a new conversation... (This is a placeholder)",
     });
-    setOpen(false);
+    handleOpenChange(false);
   };
 
   const DialogContentBody = () => (
@@ -65,7 +75,7 @@ const NewMessageDialog = () => {
   
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={setOpen}>
+      <Drawer open={open !== undefined ? open : isOpen} onOpenChange={handleOpenChange}>
         <DrawerTrigger asChild>
           <Button className="w-full gap-2">
             <PlusCircle className="h-4 w-4" />
@@ -107,7 +117,7 @@ const NewMessageDialog = () => {
   }
   
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open !== undefined ? open : isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-full gap-2">
           <PlusCircle className="h-4 w-4" />
