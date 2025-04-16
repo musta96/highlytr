@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
+import { Loader2 } from 'lucide-react';
 
 const RequireProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
@@ -24,7 +25,12 @@ const RequireProfileSetup = () => {
   // If we're still checking auth state, show loading
   if (loading) {
     console.log('[RequireProfileSetup] Still loading auth state...');
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p>Loading your account...</p>
+      </div>
+    );
   }
 
   // If user is not logged in, redirect to login
@@ -41,7 +47,7 @@ const RequireProfileSetup = () => {
   }
 
   // If user is logged in and has completed their profile, allow access to protected routes
-  console.log('[RequireProfileSetup] User logged in with completed profile, allowing access to protected routes');
+  console.log('[RequireProfileSetup] User logged in with completed profile, allowing access to protected routes:', location.pathname);
   return <Outlet />;
 };
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
@@ -291,7 +290,7 @@ const Dashboard = () => {
       <Route element={<DashboardLayout />}>
         {/* Default route - redirect to specific type dashboard based on account type */}
         <Route index element={
-          accountType ? <Navigate to={`/dashboard/${accountType}`} replace /> : <DashboardOverview />
+          accountType ? <Navigate to={`/dashboard/${accountType.toLowerCase()}`} replace /> : <DashboardOverview />
         } />
         
         {/* Type-specific dashboards */}
@@ -299,12 +298,15 @@ const Dashboard = () => {
         <Route path="college" element={<CollegeDashboard />} />
         <Route path="agency" element={<AgencyDashboard />} />
         
-        {/* Common routes */}
-        <Route path="profile" element={<EnhancedAthleteProfile />} />
+        {/* Common routes - fixing the profile and settings routes */}
+        <Route path="profile" element={<AthleteProfile />} />
+        <Route path="settings" element={<SettingsPage />} />
+        
+        {/* Other common routes */}
         <Route path="messages" element={<MessagesPage />} />
         <Route path="connections" element={<ConnectionsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="search" element={<SearchPage type="athletes" />} />
         <Route path="athletes/search" element={<SearchPage type="athletes" />} />
         <Route path="colleges/search" element={<SearchPage type="colleges" />} />
         
