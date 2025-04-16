@@ -1,4 +1,3 @@
-
 import { MessageSquare, Eye, Video, Calendar, Mail, Phone, School } from 'lucide-react';
 
 // Helper function to generate dates for the last X days
@@ -108,7 +107,7 @@ export const getTimelineData = (dateRange: '7d' | '30d' | '90d' | '1y'): any[] =
       title: 'Profile View',
       type: 'View',
       description: 'Coach Johnson from Stanford University viewed your profile',
-      icon: <Eye className="h-4 w-4" />,
+      iconType: 'Eye',
       details: 'Spent 4 minutes on your page and viewed all highlight videos'
     },
     {
@@ -116,7 +115,7 @@ export const getTimelineData = (dateRange: '7d' | '30d' | '90d' | '1y'): any[] =
       title: 'New Message',
       type: 'Message',
       description: 'You received a message from UCLA coach about your recent game performance',
-      icon: <MessageSquare className="h-4 w-4" />,
+      iconType: 'MessageSquare',
       details: null
     },
     {
@@ -124,7 +123,7 @@ export const getTimelineData = (dateRange: '7d' | '30d' | '90d' | '1y'): any[] =
       title: 'Video View',
       type: 'View',
       description: 'Your championship game highlight received 5 new views',
-      icon: <Video className="h-4 w-4" />,
+      iconType: 'Video',
       details: null
     },
     {
@@ -132,7 +131,7 @@ export const getTimelineData = (dateRange: '7d' | '30d' | '90d' | '1y'): any[] =
       title: 'Campus Visit Invitation',
       type: 'Event',
       description: 'University of Michigan invited you for a campus visit and team practice',
-      icon: <School className="h-4 w-4" />,
+      iconType: 'School',
       details: 'Scheduled for May 15, 2025'
     },
     {
@@ -140,7 +139,7 @@ export const getTimelineData = (dateRange: '7d' | '30d' | '90d' | '1y'): any[] =
       title: 'Phone Call',
       type: 'Call',
       description: 'Call with Coach Peterson from Oregon State University',
-      icon: <Phone className="h-4 w-4" />,
+      iconType: 'Phone',
       details: 'Discussed scholarship opportunities and team fit'
     }
   ];

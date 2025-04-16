@@ -2,11 +2,26 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { MessageSquare, Eye, Video, Calendar, Mail, Phone, School, LucideIcon } from 'lucide-react';
 import { getTimelineData } from '@/services/analyticsService';
 
 interface TimelineViewProps {
   dateRange: '7d' | '30d' | '90d' | '1y';
 }
+
+// Helper function to map icon type strings to Lucide icon components
+const getIconByType = (iconType: string) => {
+  switch (iconType) {
+    case 'Eye': return <Eye className="h-4 w-4" />;
+    case 'MessageSquare': return <MessageSquare className="h-4 w-4" />;
+    case 'Video': return <Video className="h-4 w-4" />;
+    case 'Calendar': return <Calendar className="h-4 w-4" />;
+    case 'Mail': return <Mail className="h-4 w-4" />;
+    case 'Phone': return <Phone className="h-4 w-4" />;
+    case 'School': return <School className="h-4 w-4" />;
+    default: return <Calendar className="h-4 w-4" />; // Default icon
+  }
+};
 
 const TimelineView = ({ dateRange }: TimelineViewProps) => {
   const timelineData = getTimelineData(dateRange);
@@ -25,7 +40,7 @@ const TimelineView = ({ dateRange }: TimelineViewProps) => {
             <div key={index} className="relative flex items-start justify-between md:justify-normal md:odd:flex-row-reverse group">
               {/* Icon */}
               <div className="flex items-center justify-center w-10 h-10 rounded-full border bg-white shadow-sm text-slate-500 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                {event.icon}
+                {getIconByType(event.iconType)}
               </div>
               
               {/* Card */}
