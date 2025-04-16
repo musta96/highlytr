@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Form, 
   FormControl, 
@@ -36,6 +37,7 @@ const formSchema = z.object({
 const RegisterForm = () => {
   const [accountType, setAccountType] = useState<'athlete' | 'college' | 'agency'>('athlete');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,18 +50,38 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form submitted:', data);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            accountType: data.accountType
+          }
+        }
+      });
+
+      if (error) {
+        toast.error(error.message);
+        setIsSubmitting(false);
+        return;
+      }
+
       toast.success('Registration successful! Check your email to verify your account.', {
         id: 'registration',
         duration: 5000,
       });
+      
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+    } finally {
       setIsSubmitting(false);
-      // Would normally redirect to login or dashboard here
-    }, 1500);
+    }
   };
 
   return (
