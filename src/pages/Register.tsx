@@ -11,9 +11,11 @@ const Register = () => {
         <div className="max-w-md mx-auto">
           <div className="mb-8 text-center">
             <Link to="/" className="inline-flex items-center gap-2 mb-8">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-highlyt-blue to-highlyt-green">
-                <span className="sr-only">HighLytr</span>
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="HighLytr Logo" 
+                className="h-10 w-10 rounded-full object-contain"
+              />
               <span className="font-bold text-2xl">HighLytr</span>
             </Link>
           </div>

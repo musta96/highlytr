@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -50,9 +49,11 @@ const Navbar = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-highlyt-blue to-highlyt-green">
-              <span className="sr-only">HighLytr</span>
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="HighLytr Logo" 
+              className="h-8 w-8 rounded-full object-contain"
+            />
             <span className="font-bold text-xl hidden sm:inline-block">HighLytr</span>
           </Link>
         </div>
