@@ -14,6 +14,7 @@ export interface HighlightVideo {
 export interface AthleteProfileData extends ProfileData {
   isPublic: boolean;
   bio: string;
+  avatar_url?: string | null; // Added this field that's in the Supabase profile
   achievements: string[];
   physicalAttributes: {
     height: string;
