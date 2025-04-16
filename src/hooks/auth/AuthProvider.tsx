@@ -118,6 +118,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: { message: error.message } };
     }
   };
+  
+  // Implementing the missing signOut function
+  const signOut = async (): Promise<void> => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      setProfileCompleted(false);
+      setAccountType(null);
+    } catch (error: any) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out');
+    }
+  };
 
   return (
     <AuthContext.Provider value={{ 

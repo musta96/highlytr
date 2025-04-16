@@ -11,4 +11,5 @@ export const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   loading: true,
   profileCompleted: false,
+  accountType: null,
 });
