@@ -13,6 +13,7 @@ interface AthleteCardProps {
     age: number;
     location: string;
     image: string;
+    video?: string; // Added video property as optional
     stats: {
       gpa: number;
       goals?: number;
