@@ -22,6 +22,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AthleteDetail from "./pages/AthleteDetail";
 import ProfileSetup from "./pages/ProfileSetup";
+import ProfileManagement from "./pages/ProfileManagement"; // Import the new page
 import HowItWorks from "./pages/HowItWorks";
 import Layout from "./components/layout/Layout";
 
@@ -94,6 +95,9 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               {/* Profile setup route */}
               <Route path="/profile-setup" element={<ProfileSetup />} />
+              
+              {/* Profile management route */}
+              <Route path="/profile" element={<ProfileManagement />} />
               
               {/* Routes that require both authentication and completed profile */}
               <Route element={<RequireProfileSetup />}>
