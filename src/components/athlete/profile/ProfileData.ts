@@ -1,42 +1,140 @@
 
-// Mock data for the athlete profile
-export const mockAthleteProfile = {
-  name: 'Marco Rossi',
-  sport: 'Soccer',
-  position: 'Forward',
-  height: '5\'11"',
-  weight: '175 lbs',
-  age: 17,
-  location: 'Rome, Italy',
-  school: 'International High School of Rome',
-  graduationYear: 2024,
-  gpa: 3.8,
-  bio: 'Passionate striker with excellent ball control and finishing skills. Captain of my high school team for the past two years.',
-  profileImage: 'https://images.unsplash.com/photo-1606131731446-5568d87113aa',
+import { ProfileData } from '@/types/profile';
+
+export interface HighlightVideo {
+  id: string;
+  title: string;
+  description?: string;
+  thumbnail: string;
+  videoUrl: string;
+  source: 'upload' | 'youtube';
+  uploadDate: string;
+}
+
+export interface AthleteProfileData extends ProfileData {
+  isPublic: boolean;
+  bio: string;
+  achievements: string[];
+  physicalAttributes: {
+    height: string;
+    weight: string;
+    wingspan?: string;
+    verticalJump?: string;
+    speed40yd?: string;
+    dominantFoot?: 'Left' | 'Right' | 'Both';
+  };
+  education: {
+    school: string;
+    graduationYear: number;
+    gpa: number;
+    testScores?: {
+      sat?: number;
+      act?: number;
+      toefl?: number;
+      ielts?: number;
+    };
+  };
+  stats: {
+    [key: string]: {
+      value: number;
+      label: string;
+    };
+  };
+  highlights: HighlightVideo[];
+}
+
+export const mockAthleteProfile: AthleteProfileData = {
+  id: '1',
+  first_name: 'Marco',
+  last_name: 'Rossi',
+  primary_sport: 'Soccer',
+  primary_position: 'Forward',
+  secondary_sport: null,
+  secondary_position: null,
+  date_of_birth: '2007-04-12',
+  place_of_birth: 'Milan, Italy',
+  citizenship: 'Italian',
+  profile_completed: true,
+  account_type: 'athlete',
+  isPublic: true,
+  bio: "I've been playing soccer since I was 5 years old. My passion for the game started when my father took me to see AC Milan play. Since then, I've been dedicated to improving my skills and reaching the highest level possible. I hope to play professionally one day and represent my country in international competitions.",
+  achievements: [
+    'Team MVP 2023',
+    'Regional Championship Winner 2022',
+    'All-State Team Selection 2023',
+    'Top Scorer in League (23 goals)',
+    'Team Captain 2022-2023'
+  ],
+  physicalAttributes: {
+    height: '6\'2"',
+    weight: '175 lbs',
+    wingspan: '6\'3"',
+    verticalJump: '28 inches',
+    speed40yd: '4.7s',
+    dominantFoot: 'Right'
+  },
+  education: {
+    school: 'Milan International High School',
+    graduationYear: 2025,
+    gpa: 3.8,
+    testScores: {
+      sat: 1350,
+      toefl: 105
+    }
+  },
+  stats: {
+    goals: {
+      value: 25,
+      label: 'Goals'
+    },
+    assists: {
+      value: 12,
+      label: 'Assists'
+    },
+    gamesPlayed: {
+      value: 34,
+      label: 'Games Played'
+    },
+    minutesPlayed: {
+      value: 2856,
+      label: 'Minutes Played'
+    },
+    yellowCards: {
+      value: 5,
+      label: 'Yellow Cards'
+    },
+    redCards: {
+      value: 1,
+      label: 'Red Cards'
+    }
+  },
   highlights: [
     {
-      id: 1,
-      title: 'Season Highlights 2023',
-      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      thumbnail: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6',
+      id: '1',
+      title: 'Game Winner vs. Rivals',
+      description: 'Scored the winning goal in the last minute of the championship game.',
+      thumbnail: 'https://images.unsplash.com/photo-1631194758628-71ec7c35137e?q=80&w=1374',
+      videoUrl: 'https://youtu.be/DGe2uaq8xYo',
+      source: 'youtube',
+      uploadDate: '2023-05-15T14:30:00Z'
     },
     {
-      id: 2,
-      title: 'Tournament MVP Performance',
-      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      thumbnail: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55',
+      id: '2',
+      title: 'Season Highlights',
+      description: 'A compilation of my best moments from the 2022-2023 season.',
+      thumbnail: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=1449',
+      videoUrl: 'https://youtu.be/DGe2uaq8xYo',
+      source: 'youtube',
+      uploadDate: '2023-04-02T10:15:00Z'
+    },
+    {
+      id: '3',
+      title: 'Skills Demo',
+      description: 'Technical skills showcase including dribbling, shooting, and free kicks.',
+      thumbnail: 'https://images.unsplash.com/photo-1526676037777-05a232554f77?q=80&w=1470',
+      videoUrl: 'https://youtu.be/DGe2uaq8xYo', 
+      source: 'youtube',
+      uploadDate: '2023-02-28T09:45:00Z'
     }
-  ],
-  stats: [
-    { label: 'Games', value: 28 },
-    { label: 'Goals', value: 17 },
-    { label: 'Assists', value: 12 },
-    { label: 'Minutes', value: 2240 },
-  ],
-  awards: [
-    'Regional Tournament MVP 2023',
-    'All-City First Team 2022',
-    'Team Captain 2022-2023',
-  ],
-  isPublic: true,
+  ]
 };
