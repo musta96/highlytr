@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   const location = useLocation();
   
   // This would come from authentication in a real app
-  const userType: UserType = 'athlete'; // This would be dynamically set based on logged in user
+  // We ensure userType is explicitly typed as UserType
+  const userType = 'athlete' as UserType;
   
   const sidebarLinks = [
     {
