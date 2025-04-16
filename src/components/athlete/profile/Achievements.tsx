@@ -12,6 +12,9 @@ interface AchievementsProps {
 }
 
 const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => {
+  // Check if profile and achievements exist before attempting to map
+  const achievements = profile?.achievements || [];
+
   return (
     <Card>
       <CardHeader>
@@ -23,28 +26,28 @@ const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => 
       <CardContent>
         {!isEditing ? (
           <ul className="list-disc pl-5 space-y-2">
-            {profile.awards.map((award: string, index: number) => (
-              <li key={index}>{award}</li>
+            {achievements.map((achievement: string, index: number) => (
+              <li key={index}>{achievement}</li>
             ))}
           </ul>
         ) : (
           <div className="space-y-3">
-            {profile.awards.map((award: string, index: number) => (
+            {achievements.map((achievement: string, index: number) => (
               <div key={index} className="flex items-center gap-2">
                 <Input 
-                  value={award}
+                  value={achievement}
                   onChange={(e) => {
-                    const newAwards = [...profile.awards];
-                    newAwards[index] = e.target.value;
-                    setProfile({...profile, awards: newAwards});
+                    const newAchievements = [...achievements];
+                    newAchievements[index] = e.target.value;
+                    setProfile({...profile, achievements: newAchievements});
                   }}
                 />
                 <Button 
                   variant="destructive" 
                   size="icon"
                   onClick={() => {
-                    const newAwards = profile.awards.filter((_, i) => i !== index);
-                    setProfile({...profile, awards: newAwards});
+                    const newAchievements = achievements.filter((_, i) => i !== index);
+                    setProfile({...profile, achievements: newAchievements});
                   }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -56,7 +59,7 @@ const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => 
             <Button 
               variant="outline" 
               onClick={() => {
-                setProfile({...profile, awards: [...profile.awards, '']});
+                setProfile({...profile, achievements: [...achievements, '']});
               }}
             >
               Add Achievement

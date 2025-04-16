@@ -10,7 +10,7 @@ const AthleteDetail = () => {
   return (
     <Layout>
       <div className="container py-8">
-        <AthleteProfile />
+        <AthleteProfile athleteId={id} />
       </div>
     </Layout>
   );
