@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React from 'react';
 import { BookOpen, CheckCircle, FileText, ShieldCheck, Zap } from 'lucide-react';
 
 interface HelpArticle {
@@ -11,17 +11,17 @@ interface HelpArticle {
 
 interface CategoryData {
   id: string;
-  label: string;
-  icon: ReactNode;
+  title: string;
+  icon: React.ReactNode;
 }
 
 // Categories of help articles
 export const categories: CategoryData[] = [
-  { id: 'account', label: 'Account & Profile', icon: <ShieldCheck className="h-5 w-5" /> },
-  { id: 'athletes', label: 'For Athletes', icon: <Zap className="h-5 w-5" /> },
-  { id: 'colleges', label: 'For Colleges', icon: <BookOpen className="h-5 w-5" /> },
-  { id: 'agencies', label: 'For Agencies', icon: <FileText className="h-5 w-5" /> },
-  { id: 'technical', label: 'Technical Support', icon: <CheckCircle className="h-5 w-5" /> }
+  { id: 'account', title: 'Account & Profile', icon: <ShieldCheck className="h-5 w-5" /> },
+  { id: 'athletes', title: 'For Athletes', icon: <Zap className="h-5 w-5" /> },
+  { id: 'colleges', title: 'For Colleges', icon: <BookOpen className="h-5 w-5" /> },
+  { id: 'agencies', title: 'For Agencies', icon: <FileText className="h-5 w-5" /> },
+  { id: 'technical', title: 'Technical Support', icon: <CheckCircle className="h-5 w-5" /> }
 ];
 
 // More detailed help articles
