@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AlignJustify, X, User } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 import { 
   DropdownMenu,
@@ -13,8 +15,27 @@ import {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  // In a real implementation, this would come from authentication state
-  const isLoggedIn = false;
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Success",
+        description: "You've been logged out successfully",
+      });
+      navigate('/');
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log out",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
@@ -46,7 +67,7 @@ const Navbar = () => {
 
         {/* Auth or Profile Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          {isLoggedIn ? (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
@@ -63,8 +84,8 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/settings">Settings</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/logout">Logout</Link>
+                <DropdownMenuItem onClick={handleLogout}>
+                  Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -124,20 +145,43 @@ const Navbar = () => {
               About
             </Link>
             <div className="pt-4 flex flex-col space-y-2">
-              <Link 
-                to="/login" 
-                className="w-full"
-                onClick={() => setIsOpen(false)}
-              >
-                <Button variant="outline" className="w-full">Log in</Button>
-              </Link>
-              <Link 
-                to="/register" 
-                className="w-full"
-                onClick={() => setIsOpen(false)}
-              >
-                <Button className="w-full">Sign up</Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link 
+                    to="/dashboard" 
+                    className="w-full"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Button variant="outline" className="w-full">Dashboard</Button>
+                  </Link>
+                  <Button 
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="w-full"
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    to="/login" 
+                    className="w-full"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Button variant="outline" className="w-full">Log in</Button>
+                  </Link>
+                  <Link 
+                    to="/register" 
+                    className="w-full"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Button className="w-full">Sign up</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>

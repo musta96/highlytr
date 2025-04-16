@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Home, 
@@ -17,6 +17,8 @@ import {
   Bell,
   BookOpen
 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 // Define user type as a proper union type
 type UserType = 'athlete' | 'college' | 'agency';
@@ -24,10 +26,31 @@ type UserType = 'athlete' | 'college' | 'agency';
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const location = useLocation();
+  const { signOut } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   // This would come from authentication in a real app
   // We ensure userType is explicitly typed as UserType
   const userType = 'athlete' as UserType;
+  
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Success",
+        description: "You've been logged out successfully",
+      });
+      navigate('/');
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to log out",
+        variant: "destructive",
+      });
+    }
+  };
   
   const sidebarLinks = [
     {
@@ -76,14 +99,12 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     },
   ];
   
-  // Add college profile or agency profile link based on user type
   if (userType === 'college') {
     sidebarLinks.splice(2, 0, {
       icon: <Building className="h-5 w-5" />,
       label: 'College Profile',
       to: '/dashboard/college-profile',
     });
-    // Add coaches and teams links for colleges
     sidebarLinks.splice(3, 0, {
       icon: <Users className="h-5 w-5" />,
       label: 'Coaches',
@@ -100,14 +121,12 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
       label: 'Agency Profile',
       to: '/dashboard/agency-profile',
     });
-    // Add represented athletes link for agencies
     sidebarLinks.splice(3, 0, {
       icon: <Users className="h-5 w-5" />,
       label: 'Represented Athletes',
       to: '/dashboard/represented',
     });
   } else if (userType === 'athlete') {
-    // Add academic info and highlights for athletes
     sidebarLinks.splice(2, 0, {
       icon: <BookOpen className="h-5 w-5" />,
       label: 'Academic Info',
@@ -125,19 +144,15 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     });
   }
 
-  // Helper function to determine if a link is active
   const isActiveLink = (path: string) => {
-    // Handle exact match for dashboard root
     if (path === '/dashboard' && location.pathname === '/dashboard') {
       return true;
     }
-    // Handle nested routes
     return location.pathname.startsWith(path) && path !== '/dashboard';
   };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
-      {/* Mobile Header */}
       <div className="md:hidden p-4 bg-white border-b flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-highlyt-blue to-highlyt-green">
@@ -155,7 +170,6 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </Button>
       </div>
       
-      {/* Mobile Sidebar */}
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-0 z-40 bg-black/50">
           <div className="fixed inset-y-0 left-0 w-64 bg-white p-4 overflow-y-auto z-50">
@@ -208,7 +222,6 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </div>
       )}
       
-      {/* Desktop Sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1 border-r border-gray-200 bg-white">
@@ -239,19 +252,19 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             </div>
             
             <div className="flex-shrink-0 border-t border-gray-200 p-4">
-              <Link
-                to="/logout"
-                className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+              <Button
+                onClick={handleLogout}
+                className="flex items-center space-x-3 w-full justify-start px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                variant="ghost"
               >
                 <LogOut className="h-5 w-5" />
                 <span>Logout</span>
-              </Link>
+              </Button>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
           <Outlet />
