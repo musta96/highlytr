@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -172,6 +171,25 @@ const Pricing = () => {
       buttonText: 'Coming Soon',
       highlighted: false,
       comingSoon: true
+    }
+  ];
+
+  const faqs = [
+    {
+      question: "Are there any hidden fees?",
+      answer: "No, we believe in transparent pricing. The features listed for each plan are included with no additional charges."
+    },
+    {
+      question: "How long is the launch special available?",
+      answer: "Our launch special is available for a limited time. We recommend signing up soon to take advantage of the free access."
+    },
+    {
+      question: "Can I upgrade or change my plan later?",
+      answer: "Absolutely. We'll provide flexible options to upgrade or modify your plan as your needs change."
+    },
+    {
+      question: "What payment methods do you accept?",
+      answer: "We'll support major credit cards and other payment methods. Details will be provided closer to the paid launch."
     }
   ];
 
