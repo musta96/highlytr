@@ -2,7 +2,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from './DashboardLayout';
-import DashboardOverview from './DashboardOverview';
 import AthleteDashboard from './AthleteDashboard';
 import CollegeDashboard from './CollegeDashboard';
 import AgencyDashboard from './AgencyDashboard';
@@ -20,7 +19,7 @@ const DashboardRoutes = () => {
   return (
     <Routes>
       <Route element={<DashboardLayout />}>
-        {/* Default route based on account type is handled in the Dashboard component */}
+        {/* Default routes redirect to appropriate type-specific dashboard */}
         <Route index element={<Navigate to="/dashboard" replace />} />
         
         {/* Type-specific dashboards */}
@@ -34,6 +33,8 @@ const DashboardRoutes = () => {
         <Route path="messages" element={<MessagesPage />} />
         <Route path="connections" element={<ConnectionsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
+        
+        {/* Discovery routes */}
         <Route path="search" element={<SearchPage type="athletes" />} />
         <Route path="athletes/search" element={<SearchPage type="athletes" />} />
         <Route path="colleges/search" element={<SearchPage type="colleges" />} />
@@ -42,15 +43,54 @@ const DashboardRoutes = () => {
         <Route path="college-profile" element={<CollegeProfile />} />
         <Route path="agency-profile" element={<AgencyProfile />} />
         
-        {/* Simple placeholder routes */}
-        <Route path="academics" element={<div className="p-4">Academic Info Page</div>} />
-        <Route path="highlights" element={<div className="p-4">Highlights Page</div>} />
-        <Route path="events" element={<div className="p-4">Events Page</div>} />
-        <Route path="staff" element={<div className="p-4">Staff Management Page</div>} />
-        <Route path="coaches" element={<div className="p-4">Coaches Management Page</div>} />
-        <Route path="teams" element={<div className="p-4">Teams Management Page</div>} />
-        <Route path="represented" element={<div className="p-4">Represented Athletes Page</div>} />
-        <Route path="saved" element={<div className="p-4">Saved Items Page</div>} />
+        {/* Role-specific feature routes */}
+        <Route path="academics" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Academic Information</h1>
+          <p>Track and showcase your academic achievements, GPA, and coursework.</p>
+        </div>} />
+        <Route path="highlights" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Highlights</h1>
+          <p>Upload and manage your highlight videos to showcase your skills.</p>
+        </div>} />
+        <Route path="events" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Events</h1>
+          <p>Keep track of upcoming games, tournaments, and recruiting events.</p>
+        </div>} />
+        <Route path="staff" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Staff Management</h1>
+          <p>Manage your coaching and support staff within your organization.</p>
+        </div>} />
+        <Route path="coaches" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Coaches Management</h1>
+          <p>Manage your coaching staff and their roles within your program.</p>
+        </div>} />
+        <Route path="teams" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Teams Management</h1>
+          <p>Manage your sports teams, roster spots, and positions.</p>
+        </div>} />
+        <Route path="represented" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Represented Athletes</h1>
+          <p>Manage the athletes you represent and track their recruitment progress.</p>
+        </div>} />
+        <Route path="saved" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Saved Items</h1>
+          <p>Access your saved colleges, athletes, and other content.</p>
+        </div>} />
+        <Route path="leaderboard" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Leaderboard</h1>
+          <p>See top athletes ranked by performance, engagement, and recruitment activity.</p>
+        </div>} />
+        <Route path="insights" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Insights & Analytics</h1>
+          <p>View detailed analytics on your recruiting efforts and athlete engagement.</p>
+          <div className="p-4 bg-muted/50 rounded-lg border border-muted">
+            <p className="text-muted-foreground">Premium Feature - Coming Soon</p>
+          </div>
+        </div>} />
+        <Route path="placements" element={<div className="p-4 space-y-4">
+          <h1 className="text-2xl font-bold">Placement Tracking</h1>
+          <p>Track your athlete placements and recruitment pipeline.</p>
+        </div>} />
         
         {/* Catch-all route for unmatched dashboard paths */}
         <Route path="*" element={<NotFound />} />

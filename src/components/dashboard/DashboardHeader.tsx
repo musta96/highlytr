@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, MessageSquare, Search, Menu } from 'lucide-react';
@@ -18,7 +19,7 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
-  const { signOut, user } = useAuth();
+  const { signOut, user, accountType } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -37,6 +38,20 @@ const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
         description: "Failed to log out",
         variant: "destructive",
       });
+    }
+  };
+
+  // Define search placeholder based on user type
+  const getSearchPlaceholder = () => {
+    switch(accountType?.toLowerCase()) {
+      case 'athlete':
+        return 'Search colleges...';
+      case 'college':
+        return 'Search athletes...';
+      case 'agency':
+        return 'Search athletes or colleges...';
+      default:
+        return 'Search...';
     }
   };
   
@@ -60,7 +75,7 @@ const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <input
-              placeholder="Search..."
+              placeholder={getSearchPlaceholder()}
               className="h-9 w-full rounded-md border border-input bg-background px-8 text-sm"
             />
           </div>

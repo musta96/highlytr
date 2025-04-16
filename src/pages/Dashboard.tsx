@@ -1,18 +1,23 @@
+
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
 import DashboardRoutes from '@/components/dashboard/DashboardRoutes';
-import DashboardOverview from '@/components/dashboard/DashboardOverview';
 
 const Dashboard = () => {
-  const { accountType } = useAuth();
+  const { user, accountType } = useAuth();
+
+  // If user doesn't have account type, redirect to profile setup
+  if (!accountType && user) {
+    return <Navigate to="/profile-setup" replace />;
+  }
 
   // If user has a specific account type, redirect to that dashboard type
   if (accountType) {
     return <Navigate to={`/dashboard/${accountType.toLowerCase()}`} replace />;
   }
 
-  // Otherwise, show the general dashboard overview
+  // Fallback - should not reach this if proper auth checks are in place
   return <DashboardRoutes />;
 };
 
