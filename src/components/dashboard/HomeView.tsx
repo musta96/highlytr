@@ -52,12 +52,12 @@ const HomeView = () => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Users className="h-4 w-4" />
-              {accountType === 'Athlete' ? 'College Matches' : 'Recommended Connections'}
+              {accountType === 'athlete' ? 'College Matches' : 'Recommended Connections'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {accountType === 'Athlete' ? (
+              {accountType === 'athlete' ? (
                 <>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center">UC</div>

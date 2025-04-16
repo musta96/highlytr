@@ -15,7 +15,6 @@ import { toast } from 'sonner';
 
 interface AuthButtonsProps {
   user: any;
-  handleLogout: () => void;
 }
 
 const AuthButtons = ({ user }: AuthButtonsProps) => {
