@@ -8,7 +8,8 @@ import {
   MessageSquare,
   Medal,
   BarChart2,
-  ArrowUpRight
+  ArrowUpRight,
+  LineChart
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,12 @@ const AthleteDashboard = () => {
           <Button variant="outline" size="sm">
             <Video className="mr-2 h-4 w-4" />
             Upload Video
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/analytics">
+              <LineChart className="mr-2 h-4 w-4" />
+              Analytics
+            </Link>
           </Button>
           <Button size="sm">
             <Search className="mr-2 h-4 w-4" />

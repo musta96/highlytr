@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -22,11 +21,12 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AthleteDetail from "./pages/AthleteDetail";
 import ProfileSetup from "./pages/ProfileSetup";
-import ProfileManagement from "./pages/ProfileManagement"; // Import the new page
+import ProfileManagement from "./pages/ProfileManagement"; 
 import HowItWorks from "./pages/HowItWorks";
 import Layout from "./components/layout/Layout";
+import Analytics from "./pages/Analytics"; // Import the new Analytics page
 
-// New Pages
+// Other Pages
 import Blog from "./pages/Blog";
 import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
@@ -98,6 +98,9 @@ const App = () => (
               
               {/* Profile management route */}
               <Route path="/profile" element={<ProfileManagement />} />
+              
+              {/* Analytics route */}
+              <Route path="/analytics" element={<Analytics />} />
               
               {/* Routes that require both authentication and completed profile */}
               <Route element={<RequireProfileSetup />}>
