@@ -17,7 +17,7 @@ const formSchema = z.object({
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, user, accountType } = useAuth();
+  const { signIn, user, accountType, loading } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -30,24 +30,24 @@ const LoginForm = () => {
 
   // Redirect if user is already logged in
   useEffect(() => {
-    if (user && accountType) {
-      console.log("User already logged in, redirecting to dashboard", { accountType });
+    if (!loading && user && accountType) {
+      console.log("[LoginForm] User already logged in, redirecting to dashboard", { accountType });
       const dashboardPath = `/dashboard/${accountType.toLowerCase()}`;
       navigate(dashboardPath);
     }
-  }, [user, accountType, navigate]);
+  }, [user, accountType, navigate, loading]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      console.log("Attempting login with:", data.email);
+      console.log("[LoginForm] Attempting login with:", data.email);
       const { error } = await signIn({
         email: data.email,
         password: data.password,
       });
 
       if (error) {
-        console.error("Login error:", error.message);
+        console.error("[LoginForm] Login error:", error.message);
         toast.error(`Error: ${error.message}`, {
           description: "Please check your credentials and try again.",
         });
@@ -62,7 +62,7 @@ const LoginForm = () => {
       // Note: We'll let the useEffect handle the redirect
       // when the user state is updated
     } catch (error: any) {
-      console.error("Unexpected login error:", error);
+      console.error("[LoginForm] Unexpected login error:", error);
       toast.error(`Sign in failed`, {
         description: "An unexpected error occurred. Please try again.",
       });

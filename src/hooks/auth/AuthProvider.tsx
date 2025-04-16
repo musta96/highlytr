@@ -16,10 +16,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [accountType, setAccountType] = useState<AccountType | null>(null);
 
   useEffect(() => {
+    console.log('[AuthProvider] Setting up auth state listener...');
+    
     // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
-        console.log('Auth state changed:', event, currentSession?.user?.id);
+        console.log('[AuthProvider] Auth state changed:', event, currentSession?.user?.id);
         
         // Update session and user state
         setSession(currentSession);
@@ -34,10 +36,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             // Get user's account type from metadata
             const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
-            console.log('Account type from metadata:', userType, currentUser.user_metadata);
+            console.log('[AuthProvider] Account type from metadata:', userType, currentUser.user_metadata);
             setAccountType(userType || null);
           } catch (error) {
-            console.error('Error checking profile status:', error);
+            console.error('[AuthProvider] Error checking profile status:', error);
           }
         } else {
           setProfileCompleted(false);
@@ -52,8 +54,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for existing session on app load
     const checkExistingSession = async () => {
       try {
+        console.log('[AuthProvider] Checking for existing session...');
         const { data: { session: currentSession } } = await supabase.auth.getSession();
-        console.log('Retrieved session on load:', currentSession?.user?.id);
+        console.log('[AuthProvider] Retrieved session on load:', currentSession?.user?.id);
         
         setSession(currentSession);
         const currentUser = currentSession?.user ?? null;
@@ -66,11 +69,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           // Get user's account type from metadata
           const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
-          console.log('Account type from metadata on load:', userType);
+          console.log('[AuthProvider] Account type from metadata on load:', userType, currentUser.user_metadata);
           setAccountType(userType || null);
         }
       } catch (error) {
-        console.error('Error getting session:', error);
+        console.error('[AuthProvider] Error getting session:', error);
       } finally {
         setLoading(false);
       }
@@ -86,30 +89,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async ({ email, password }: SignInCredentials): Promise<SignInResponse> => {
     try {
-      console.log('Signing in with:', email);
+      console.log('[AuthProvider] Signing in with:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
-        console.error('Sign in error:', error);
+        console.error('[AuthProvider] Sign in error:', error);
         return { error: error };
       }
       
-      console.log('Sign in successful:', data.user?.id);
+      console.log('[AuthProvider] Sign in successful:', data.user?.id, 'Session:', data.session?.access_token ? 'Valid' : 'Invalid');
       
       // We don't need to manually set the user/session here as the onAuthStateChange handler will do it
       return { error: null };
     } catch (error: any) {
-      console.error('Sign in exception:', error);
+      console.error('[AuthProvider] Sign in exception:', error);
       return { error: { message: error.message } };
     }
   };
 
   const signUp = async ({ email, password, firstName, lastName, accountType }: SignUpCredentials): Promise<SignUpResponse> => {
     try {
-      console.log('Signing up with:', email, 'account type:', accountType);
+      console.log('[AuthProvider] Signing up with:', email, 'account type:', accountType);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -124,7 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) throw error;
 
-      console.log('Sign up successful:', data);
+      console.log('[AuthProvider] Sign up successful:', data);
 
       // Show helpful information about email verification
       toast.info(
@@ -134,19 +137,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return { error: null };
     } catch (error: any) {
-      console.error('Sign up error:', error);
+      console.error('[AuthProvider] Sign up error:', error);
       return { error: { message: error.message } };
     }
   };
   
   const signOut = async (): Promise<void> => {
     try {
-      console.log('Signing out...');
+      console.log('[AuthProvider] Signing out...');
       await supabase.auth.signOut();
-      // The state will be updated by the onAuthStateChange handler
-      console.log('Sign out successful');
+      // Reset states
+      setUser(null);
+      setSession(null);
+      setProfileCompleted(false);
+      setAccountType(null);
+      console.log('[AuthProvider] Sign out successful');
     } catch (error: any) {
-      console.error('Error signing out:', error);
+      console.error('[AuthProvider] Error signing out:', error);
       toast.error('Failed to sign out');
     }
   };
