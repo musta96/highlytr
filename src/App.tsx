@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/auth";
 import ScrollToTop from "@/components/common/ScrollToTop";
 
@@ -90,18 +90,22 @@ const App = () => (
             <Route path="/help" element={<Help />} />
             <Route path="/faqs" element={<FAQs />} />
             
-            {/* Protected route that requires authentication */}
+            {/* Protected routes that require authentication */}
             <Route element={<ProtectedRoute />}>
               {/* Profile setup route */}
               <Route path="/profile-setup" element={<ProfileSetup />} />
               
               {/* Routes that require both authentication and completed profile */}
               <Route element={<RequireProfileSetup />}>
+                {/* General dashboard route */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                
+                {/* Type-specific dashboard routes */}
                 <Route path="/dashboard/*" element={<Dashboard />} />
               </Route>
             </Route>
             
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* Catch-all route for unmatched paths */}
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
