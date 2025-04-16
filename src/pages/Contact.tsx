@@ -25,36 +25,36 @@ const Contact = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          <Card className="flex flex-col items-center text-center p-6">
+          <Card className="flex flex-col items-center text-center p-6 hover:shadow-lg transition-shadow">
             <div className="rounded-full bg-highlyt-gray p-4 mb-4">
               <Phone className="h-6 w-6 text-highlyt-blue" />
             </div>
             <h3 className="font-semibold text-lg mb-2">Phone</h3>
             <p className="text-gray-600 mb-4">Mon-Fri from 8am to 5pm</p>
-            <a href="tel:+1234567890" className="text-highlyt-blue hover:underline">
-              +1 (234) 567-890
+            <a href="tel:+393318395345" className="text-highlyt-blue hover:underline">
+              +39 331 839 5345
             </a>
           </Card>
           
-          <Card className="flex flex-col items-center text-center p-6">
+          <Card className="flex flex-col items-center text-center p-6 hover:shadow-lg transition-shadow">
             <div className="rounded-full bg-highlyt-gray p-4 mb-4">
               <Mail className="h-6 w-6 text-highlyt-blue" />
             </div>
             <h3 className="font-semibold text-lg mb-2">Email</h3>
             <p className="text-gray-600 mb-4">We'll respond within 24 hours</p>
-            <a href="mailto:support@highlytr.com" className="text-highlyt-blue hover:underline">
-              support@highlytr.com
+            <a href="mailto:mustarelli.edoardo@gmail.com" className="text-highlyt-blue hover:underline">
+              mustarelli.edoardo@gmail.com
             </a>
           </Card>
           
-          <Card className="flex flex-col items-center text-center p-6">
+          <Card className="flex flex-col items-center text-center p-6 hover:shadow-lg transition-shadow">
             <div className="rounded-full bg-highlyt-gray p-4 mb-4">
               <MapPin className="h-6 w-6 text-highlyt-blue" />
             </div>
             <h3 className="font-semibold text-lg mb-2">Location</h3>
             <p className="text-gray-600 mb-4">Come visit our office</p>
             <span className="text-highlyt-blue">
-              123 Athletic Ave, San Francisco, CA
+              Milan, Italy
             </span>
           </Card>
         </div>

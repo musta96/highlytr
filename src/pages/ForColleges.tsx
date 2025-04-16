@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -143,92 +144,6 @@ const ForColleges = () => {
               <p className="text-gray-600 mb-4">
                 Initiate conversations with promising athletes and begin the recruitment process.
               </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Pricing overview */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Flexible Plans for Every Program</h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-              <h3 className="font-bold text-xl mb-2">Basic</h3>
-              <p className="text-3xl font-bold mb-4">$99<span className="text-sm font-normal text-gray-600">/month</span></p>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Up to 3 coach accounts</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Basic athlete search</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Message up to 20 athletes/month</span>
-                </li>
-              </ul>
-              <Button variant="outline" className="w-full" asChild>
-                <Link to="/register?type=college&plan=basic">Get Started</Link>
-              </Button>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md border-2 border-highlyt-blue relative">
-              <div className="absolute -top-3 right-4 bg-highlyt-blue text-white text-xs px-2 py-1 rounded">Most Popular</div>
-              <h3 className="font-bold text-xl mb-2">Premium</h3>
-              <p className="text-3xl font-bold mb-4">$199<span className="text-sm font-normal text-gray-600">/month</span></p>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Unlimited coach accounts</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Advanced search filters</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>AI athlete matching</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Unlimited messaging</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Team collaboration tools</span>
-                </li>
-              </ul>
-              <Button className="w-full" asChild>
-                <Link to="/register?type=college&plan=premium">Get Started</Link>
-              </Button>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-              <h3 className="font-bold text-xl mb-2">Enterprise</h3>
-              <p className="text-3xl font-bold mb-4">Custom</p>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>All Premium features</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Custom integrations</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Dedicated account manager</span>
-                </li>
-                <li className="flex items-center">
-                  <Check className="h-5 w-5 text-highlyt-green mr-2" />
-                  <span>Multi-department support</span>
-                </li>
-              </ul>
-              <Button variant="outline" className="w-full" asChild>
-                <Link to="/contact?inquiry=enterprise">Contact Sales</Link>
-              </Button>
             </div>
           </div>
         </div>

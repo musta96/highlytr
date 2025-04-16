@@ -17,6 +17,24 @@ const Footer = () => {
             <p className="mt-3 text-sm text-gray-600">
               Connecting international high school athletes with U.S. college coaches and sports programs.
             </p>
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center text-sm text-gray-600">
+                <span className="font-medium mr-2">Email:</span>
+                <a href="mailto:mustarelli.edoardo@gmail.com" className="hover:text-highlyt-blue transition-colors">
+                  mustarelli.edoardo@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <span className="font-medium mr-2">Phone:</span>
+                <a href="tel:+393318395345" className="hover:text-highlyt-blue transition-colors">
+                  +39 331 839 5345
+                </a>
+              </div>
+              <div className="flex items-start text-sm text-gray-600">
+                <span className="font-medium mr-2">Location:</span>
+                <span>Milan, Italy</span>
+              </div>
+            </div>
           </div>
           
           <div className="col-span-1 md:col-span-2">
@@ -106,8 +124,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@highlytr.com" className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors">
-                  support@highlytr.com
+                <a href="mailto:mustarelli.edoardo@gmail.com" className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors">
+                  mustarelli.edoardo@gmail.com
                 </a>
               </li>
             </ul>
