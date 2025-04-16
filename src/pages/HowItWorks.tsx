@@ -11,8 +11,11 @@ import {
   Filter, 
   Users, 
   Check, 
-  DollarSign 
+  DollarSign,
+  ArrowRight 
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const HowItWorks = () => {
   const athleteSteps = [
@@ -97,7 +100,7 @@ const HowItWorks = () => {
   return (
     <Layout>
       <div className="container py-16">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             How <span className="text-highlyt-blue">HighLytr</span> Works
           </h1>
@@ -108,52 +111,145 @@ const HowItWorks = () => {
 
         {/* Athletes Section */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">🧑‍🎓 For Athletes</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">
+            <span className="inline-flex items-center">
+              🧑‍🎓 <span className="ml-2">For Athletes</span>
+            </span>
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
             {athleteSteps.map((step, index) => (
               <div 
                 key={index} 
-                className="bg-white rounded-lg p-6 shadow-sm text-center hover:shadow-md transition-all"
+                className="bg-white rounded-lg p-6 shadow-sm text-center hover:shadow-md transition-all 
+                  hover:-translate-y-1 hover:shadow-lg hover-card"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="mb-4 flex justify-center">{step.icon}</div>
-                <h3 className="font-bold text-lg mb-2">{step.title}</h3>
+                <div className="mb-4 flex justify-center transform transition-transform hover:scale-110">{step.icon}</div>
+                <div className="relative">
+                  <div className="absolute -top-8 -left-3 text-4xl font-bold opacity-10 text-highlyt-blue">
+                    {index + 1}
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 hover-underline-animation">{step.title}</h3>
+                </div>
                 <p className="text-gray-600">{step.description}</p>
               </div>
             ))}
           </div>
+          <div className="text-center mt-8">
+            <Link to="/for-athletes">
+              <Button className="mt-4 group">
+                Learn More About Athlete Process
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+          </div>
         </section>
 
         {/* Colleges Section */}
-        <section className="mb-16 bg-gray-50 py-16">
-          <h2 className="text-3xl font-bold text-center mb-12">🎓 For Colleges</h2>
+        <section className="mb-16 bg-gray-50 py-16 rounded-lg">
+          <h2 className="text-3xl font-bold text-center mb-12">
+            <span className="inline-flex items-center">
+              🎓 <span className="ml-2">For Colleges</span>
+            </span>
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 container">
             {collegeSteps.map((step, index) => (
               <div 
                 key={index} 
-                className="bg-white rounded-lg p-6 shadow-sm text-center hover:shadow-md transition-all"
+                className="bg-white rounded-lg p-6 shadow-sm text-center hover-glow hover-card"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="mb-4 flex justify-center">{step.icon}</div>
-                <h3 className="font-bold text-lg mb-2">{step.title}</h3>
+                <div className="mb-4 flex justify-center bg-gray-50 p-3 rounded-full w-16 h-16 items-center mx-auto transition-transform hover:rotate-12">{step.icon}</div>
+                <div className="relative">
+                  <div className="absolute -top-8 -left-3 text-4xl font-bold opacity-10 text-highlyt-blue">
+                    {index + 1}
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 hover-underline-animation">{step.title}</h3>
+                </div>
                 <p className="text-gray-600">{step.description}</p>
               </div>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/for-colleges">
+              <Button variant="outline" className="mt-4 group">
+                Learn More About College Process
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
           </div>
         </section>
 
         {/* Agencies Section */}
         <section>
-          <h2 className="text-3xl font-bold text-center mb-12">🧑‍💼 For Agencies</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">
+            <span className="inline-flex items-center">
+              🧑‍💼 <span className="ml-2">For Agencies</span>
+            </span>
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
             {agencySteps.map((step, index) => (
               <div 
                 key={index} 
-                className="bg-white rounded-lg p-6 shadow-sm text-center hover:shadow-md transition-all"
+                className="bg-white rounded-lg p-6 shadow-sm text-center relative overflow-hidden hover-card"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="mb-4 flex justify-center">{step.icon}</div>
-                <h3 className="font-bold text-lg mb-2">{step.title}</h3>
+                <div className="absolute top-0 right-0 bg-highlyt-blue text-white px-2 py-1 text-xs font-bold rounded-bl">
+                  Step {index + 1}
+                </div>
+                <div className="mb-4 flex justify-center">
+                  <div className="p-3 rounded-full bg-highlyt-blue/10 transition-all hover:bg-highlyt-blue/20">
+                    {step.icon}
+                  </div>
+                </div>
+                <h3 className="font-bold text-lg mb-2 hover-underline-animation">{step.title}</h3>
                 <p className="text-gray-600">{step.description}</p>
               </div>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/for-agencies">
+              <Button variant="outline" className="mt-4 group">
+                Learn More About Agency Process
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        {/* Why It Works Section */}
+        <section className="mt-16 bg-gradient-blue-green text-white p-8 rounded-lg animate-fade-in">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold mb-6 text-center">🌍 Why It Works</h2>
+            <ul className="space-y-4">
+              <li className="flex items-start hover-card p-3 bg-white/10 rounded-lg">
+                <Check className="h-6 w-6 mr-3 flex-shrink-0" />
+                <span>No middlemen. No overpriced agencies.</span>
+              </li>
+              <li className="flex items-start hover-card p-3 bg-white/10 rounded-lg">
+                <Check className="h-6 w-6 mr-3 flex-shrink-0" />
+                <span>Built for international athletes, first.</span>
+              </li>
+              <li className="flex items-start hover-card p-3 bg-white/10 rounded-lg">
+                <Check className="h-6 w-6 mr-3 flex-shrink-0" />
+                <span>Smart tools that make recruiting easy, fair, and direct.</span>
+              </li>
+              <li className="flex items-start hover-card p-3 bg-white/10 rounded-lg">
+                <Check className="h-6 w-6 mr-3 flex-shrink-0" />
+                <span>All-in-one platform — profiles, videos, messages, discovery.</span>
+              </li>
+              <li className="flex items-start hover-card p-3 bg-white/10 rounded-lg">
+                <Check className="h-6 w-6 mr-3 flex-shrink-0" />
+                <span>Free for everyone during launch phase.</span>
+              </li>
+            </ul>
+            <div className="text-center mt-8">
+              <Link to="/register">
+                <Button variant="secondary" size="lg" className="animate-pulse-glow">
+                  Get Started Now
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
       </div>
