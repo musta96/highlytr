@@ -1,18 +1,16 @@
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { AlignJustify, X, User, ChevronDown } from 'lucide-react';
+import { AlignJustify, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuGroup,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+// Import our new components
+import NavLogo from './navbar/NavLogo';
+import DesktopNav from './navbar/DesktopNav';
+import AuthButtons from './navbar/AuthButtons';
+import MobileMenu from './navbar/MobileMenu';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,107 +45,14 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src="/logo.png" 
-              alt="HighLytr Logo" 
-              className="h-8 w-8 rounded-full object-contain"
-              onError={(e) => { 
-                console.error('Logo failed to load', e);
-                e.currentTarget.src = '/placeholder.svg'; 
-              }}
-            />
-            <span className="font-bold text-xl hidden sm:inline-block">HighLytr</span>
-          </Link>
-        </div>
+        {/* Logo */}
+        <NavLogo />
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          {/* Primary Navigation */}
-          {mainNavItems.map((item) => (
-            <Link 
-              key={item.href}
-              to={item.href} 
-              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-            >
-              {item.title}
-            </Link>
-          ))}
-
-          {/* Resources Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="text-sm font-medium hover:text-highlyt-blue transition-colors flex items-center gap-1">
-                Resources <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link to="/about" className="w-full">About Us</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/how-it-works" className="w-full">How It Works</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/success-stories" className="w-full">Success Stories</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/blog" className="w-full">Blog</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/faqs" className="w-full">FAQs</Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Link to="/pricing" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
-            Pricing
-          </Link>
-
-          <Link to="/contact" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
-            Contact
-          </Link>
-        </nav>
+        <DesktopNav mainNavItems={mainNavItems} />
 
         {/* Auth or Profile Buttons */}
-        <div className="hidden md:flex items-center gap-4">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard">Dashboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/settings">Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button variant="ghost">Log in</Button>
-              </Link>
-              <Link to="/register">
-                <Button>Sign up</Button>
-              </Link>
-            </>
-          )}
-        </div>
+        <AuthButtons user={user} handleLogout={handleLogout} />
 
         {/* Mobile Menu Button */}
         <Button 
@@ -161,121 +66,13 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden container py-4 animate-fade-in">
-          <nav className="flex flex-col space-y-4">
-            {/* Main Nav Items */}
-            {mainNavItems.map((item) => (
-              <Link 
-                key={item.href}
-                to={item.href} 
-                className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.title}
-              </Link>
-            ))}
-            
-            {/* Resources Section */}
-            <div className="border-t pt-2 mt-2">
-              <p className="text-sm text-muted-foreground mb-2">Resources</p>
-              <div className="flex flex-col space-y-3 pl-2">
-                <Link 
-                  to="/about" 
-                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  About Us
-                </Link>
-                <Link 
-                  to="/how-it-works" 
-                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  How It Works
-                </Link>
-                <Link 
-                  to="/success-stories" 
-                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Success Stories
-                </Link>
-                <Link 
-                  to="/blog" 
-                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Blog
-                </Link>
-                <Link 
-                  to="/faqs" 
-                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  FAQs
-                </Link>
-              </div>
-            </div>
-            
-            <Link 
-              to="/pricing" 
-              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Pricing
-            </Link>
-            
-            <Link 
-              to="/contact" 
-              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Contact
-            </Link>
-
-            <div className="pt-4 flex flex-col space-y-2">
-              {user ? (
-                <>
-                  <Link 
-                    to="/dashboard" 
-                    className="w-full"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Button variant="outline" className="w-full">Dashboard</Button>
-                  </Link>
-                  <Button 
-                    onClick={() => {
-                      handleLogout();
-                      setIsOpen(false);
-                    }}
-                    className="w-full"
-                  >
-                    Logout
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link 
-                    to="/login" 
-                    className="w-full"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Button variant="outline" className="w-full">Log in</Button>
-                  </Link>
-                  <Link 
-                    to="/register" 
-                    className="w-full"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Button className="w-full">Sign up</Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </nav>
-        </div>
-      )}
+      <MobileMenu 
+        isOpen={isOpen} 
+        setIsOpen={setIsOpen} 
+        mainNavItems={mainNavItems}
+        user={user}
+        handleLogout={handleLogout}
+      />
     </header>
   );
 };
