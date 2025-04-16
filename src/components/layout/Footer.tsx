@@ -2,8 +2,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Linkedin, Instagram, Youtube, Facebook } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 const Footer = () => {
+  const { user } = useAuth();
+  
+  // Helper function to determine correct link paths based on authentication status
+  const getAuthProtectedPath = (path: string): string => {
+    // If user is not logged in, redirect to login page with intended destination
+    if (!user && (path === '/athletes' || path === '/colleges' || path === '/agencies')) {
+      return '/login';
+    }
+    return path;
+  };
+
   return (
     <footer className="bg-highlyt-gray mt-auto">
       <div className="container py-12 md:py-16">
@@ -44,17 +56,26 @@ const Footer = () => {
             <h3 className="font-semibold text-sm uppercase tracking-wider">Platform</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link to="/athletes" className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors">
+                <Link 
+                  to={getAuthProtectedPath("/athletes")} 
+                  className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors"
+                >
                   Athletes
                 </Link>
               </li>
               <li>
-                <Link to="/colleges" className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors">
+                <Link 
+                  to={getAuthProtectedPath("/colleges")} 
+                  className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors"
+                >
                   Colleges
                 </Link>
               </li>
               <li>
-                <Link to="/agencies" className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors">
+                <Link 
+                  to={getAuthProtectedPath("/agencies")} 
+                  className="text-sm text-gray-600 hover:text-highlyt-blue transition-colors"
+                >
                   Agencies
                 </Link>
               </li>
