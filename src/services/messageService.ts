@@ -5,8 +5,8 @@ import { User } from '@supabase/supabase-js';
 export interface Message {
   id: string;
   sender_id: string;
-  recipient_id: string;
   content: string;
+  conversation_id: string;
   attachment_url?: string;
   attachment_type?: string;
   attachment_name?: string;
@@ -36,7 +36,10 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
   // Get all conversations where the user is a participant
   const { data: conversations, error } = await supabase
     .from('conversations')
-    .select('*, profiles!participant_id(*)')
+    .select(`
+      id, user_id, participant_id, last_message, unread_count, created_at, updated_at,
+      profiles:participant_id(first_name, last_name, avatar_url, primary_position, organization)
+    `)
     .or(`user_id.eq.${userId},participant_id.eq.${userId}`)
     .order('updated_at', { ascending: false });
 
@@ -46,7 +49,7 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
   }
 
   // Transform the raw data into our Conversation interface
-  return conversations.map((conv) => {
+  return conversations.map((conv: any) => {
     // Determine if the user is the initiator or the participant
     const isInitiator = conv.user_id === userId;
     const participantId = isInitiator ? conv.participant_id : conv.user_id;
@@ -56,10 +59,10 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
       id: conv.id,
       user_id: userId,
       participant_id: participantId,
-      participant_name: `${participant.first_name || ''} ${participant.last_name || ''}`.trim(),
-      participant_avatar: participant.avatar_url,
-      participant_role: participant.primary_position,
-      participant_organization: participant.organization,
+      participant_name: `${participant?.first_name || ''} ${participant?.last_name || ''}`.trim(),
+      participant_avatar: participant?.avatar_url,
+      participant_role: participant?.primary_position,
+      participant_organization: participant?.organization,
       participant_online: false, // This would need a separate presence system
       last_message: conv.last_message,
       unread_count: conv.unread_count || 0
@@ -68,7 +71,7 @@ export const getConversations = async (userId: string): Promise<Conversation[]> 
 };
 
 export const getMessages = async (conversationId: string): Promise<Message[]> => {
-  const { data: messages, error } = await supabase
+  const { data, error } = await supabase
     .from('messages')
     .select('*')
     .eq('conversation_id', conversationId)
@@ -79,7 +82,7 @@ export const getMessages = async (conversationId: string): Promise<Message[]> =>
     return [];
   }
 
-  return messages;
+  return data as Message[];
 };
 
 export const sendMessage = async (

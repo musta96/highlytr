@@ -139,7 +139,7 @@ const MessagesPage = () => {
       setNewMessageOpen(false);
     };
 
-    const DialogContent = () => (
+    const DialogContentBody = () => (
       <>
         <DialogHeader>
           <DialogTitle>New Message</DialogTitle>
@@ -224,7 +224,7 @@ const MessagesPage = () => {
           </Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogContent />
+          <DialogContentBody />
         </DialogContent>
       </Dialog>
     );

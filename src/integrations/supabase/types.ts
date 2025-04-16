@@ -9,15 +9,91 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message: Json | null
+          participant_id: string
+          unread_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message?: Json | null
+          participant_id: string
+          unread_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message?: Json | null
+          participant_id?: string
+          unread_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read: boolean | null
+          sender_id: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read?: boolean | null
+          sender_id: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read?: boolean | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_type: string
+          avatar_url: string | null
           citizenship: string | null
           created_at: string
           date_of_birth: string | null
           first_name: string | null
           id: string
           last_name: string | null
+          organization: string | null
           place_of_birth: string | null
           primary_position: string | null
           primary_sport: string | null
@@ -28,12 +104,14 @@ export type Database = {
         }
         Insert: {
           account_type: string
+          avatar_url?: string | null
           citizenship?: string | null
           created_at?: string
           date_of_birth?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          organization?: string | null
           place_of_birth?: string | null
           primary_position?: string | null
           primary_sport?: string | null
@@ -44,12 +122,14 @@ export type Database = {
         }
         Update: {
           account_type?: string
+          avatar_url?: string | null
           citizenship?: string | null
           created_at?: string
           date_of_birth?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          organization?: string | null
           place_of_birth?: string | null
           primary_position?: string | null
           primary_sport?: string | null
