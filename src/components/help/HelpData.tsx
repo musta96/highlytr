@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BookOpen, CheckCircle, FileText, ShieldCheck, Zap } from 'lucide-react';
 
@@ -821,3 +822,299 @@ export const helpArticles: Record<string, HelpArticle[]> = {
           <li><strong>Assessment Forms:</strong> Complete standardized evaluations after interactions</li>
           <li><strong>Task Assignment:</strong> Delegate follow-up responsibilities to team members</li>
           <li><strong>Notification Alerts:</strong> Get notified of important prospect activities</li>
+        </ul>
+      `
+    }
+  ],
+  agencies: [
+    { 
+      id: 16, 
+      title: 'Creating an agency profile', 
+      description: 'Set up a professional profile that attracts athletes and colleges',
+      views: 765,
+      content: `
+        <h1>Creating Your Agency Profile</h1>
+        
+        <p>A strong agency profile establishes your credibility and helps you connect with both athletes and colleges. Here's how to create an effective presence on HighLytr:</p>
+        
+        <h2>Getting Started</h2>
+        <ol>
+          <li>Register with your business email address</li>
+          <li>Verify your agency through our verification process</li>
+          <li>Upload your agency logo (recommended size: 400x400px)</li>
+          <li>Add your business address and contact information</li>
+        </ol>
+        
+        <h2>Key Profile Elements</h2>
+        <ul>
+          <li><strong>Agency Overview:</strong> Write a concise yet comprehensive description of your services</li>
+          <li><strong>Specializations:</strong> Indicate which sports, regions, and levels you specialize in</li>
+          <li><strong>Team Members:</strong> Add profiles for all representatives with their credentials</li>
+          <li><strong>Success Stories:</strong> Highlight notable athlete placements and success stories</li>
+          <li><strong>Credentials:</strong> List any relevant certifications, affiliations, or recognitions</li>
+        </ul>
+        
+        <h2>Showcasing Your Services</h2>
+        <p>Be clear about what you offer:</p>
+        <ul>
+          <li>Athletic development programs</li>
+          <li>College recruitment assistance</li>
+          <li>Academic guidance</li>
+          <li>Professional career management</li>
+          <li>Marketing and branding services</li>
+          <li>NIL management and opportunities</li>
+        </ul>
+        
+        <h2>Media Content</h2>
+        <ul>
+          <li>Add photos of your facilities (if applicable)</li>
+          <li>Include video testimonials from satisfied clients</li>
+          <li>Share success metrics and placement statistics</li>
+          <li>Create a virtual tour of your agency</li>
+        </ul>
+        
+        <h2>Compliance Information</h2>
+        <p>Establish trust through transparency:</p>
+        <ul>
+          <li>Clearly state your fee structure</li>
+          <li>List all relevant certifications and registrations</li>
+          <li>Explain your ethical standards and policies</li>
+          <li>Clarify your relationship with athletic governing bodies</li>
+        </ul>
+      `
+    },
+    { 
+      id: 17, 
+      title: 'Managing your athlete roster', 
+      description: 'Tools for effectively representing multiple athletes',
+      views: 621,
+      content: `
+        <h1>Managing Your Athlete Roster</h1>
+        
+        <p>Efficiently managing your athlete clients on HighLytr helps streamline your representation services. Here's how to make the most of our agency tools:</p>
+        
+        <h2>Adding Athletes to Your Roster</h2>
+        <ol>
+          <li>Navigate to "My Athletes" in your agency dashboard</li>
+          <li>Click "Add Athlete" to send an invitation</li>
+          <li>Enter the athlete's email or search for their existing profile</li>
+          <li>Specify your relationship (primary agent, recruiting specialist, etc.)</li>
+          <li>The athlete will receive a notification to accept your representation</li>
+        </ol>
+        
+        <h2>Customizing Athlete Visibility</h2>
+        <ul>
+          <li><strong>Public Roster:</strong> Athletes visible on your agency profile</li>
+          <li><strong>Private Roster:</strong> Athletes only visible to colleges you contact</li>
+          <li><strong>Featured Athletes:</strong> Highlight top prospects on your profile</li>
+          <li><strong>Categories:</strong> Group athletes by sport, graduation year, or priority</li>
+        </ul>
+        
+        <h2>Managing Athlete Profiles</h2>
+        <p>Help your athletes maximize their presence:</p>
+        <ul>
+          <li>Review and suggest improvements to their profiles</li>
+          <li>Upload highlight videos on their behalf (with permission)</li>
+          <li>Update statistics and achievements</li>
+          <li>Enhance their bios with professional writing</li>
+          <li>Tag profiles with relevant keywords for searchability</li>
+        </ul>
+        
+        <h2>Communication Tools</h2>
+        <ul>
+          <li><strong>Bulk Messaging:</strong> Send updates to groups of athletes</li>
+          <li><strong>Activity Tracking:</strong> Monitor athlete engagement on the platform</li>
+          <li><strong>Shared Calendar:</strong> Coordinate schedules and important dates</li>
+          <li><strong>Document Sharing:</strong> Securely exchange contracts and materials</li>
+        </ul>
+        
+        <h2>Reporting and Analytics</h2>
+        <p>Track performance and engagement:</p>
+        <ul>
+          <li>Profile view statistics for each athlete</li>
+          <li>College interest and interaction metrics</li>
+          <li>Comparison tools to evaluate against similar athletes</li>
+          <li>Market trend analysis for different sports and positions</li>
+          <li>Recruitment progress tracking</li>
+        </ul>
+      `
+    },
+    { 
+      id: 18, 
+      title: 'Building college relationships', 
+      description: 'Strategies for developing strong connections with college programs',
+      views: 543,
+      content: `
+        <h1>Building College Relationships</h1>
+        
+        <p>Strong relationships with college programs are essential for successful athlete placement. Here's how to develop and maintain these important connections:</p>
+        
+        <h2>Identifying Target Programs</h2>
+        <ul>
+          <li>Research colleges that align with your athletes' academic and athletic profiles</li>
+          <li>Consider factors like division level, location, and program history</li>
+          <li>Follow college programs on HighLytr to stay updated on their activities</li>
+          <li>Create lists of programs categorized by sport, region, and competitiveness</li>
+        </ul>
+        
+        <h2>Making Initial Contact</h2>
+        <p>Approach coaches professionally:</p>
+        <ul>
+          <li>Send personalized introduction messages through the HighLytr platform</li>
+          <li>Briefly explain your agency's approach and specialization</li>
+          <li>Mention any mutual connections or previous successful placements</li>
+          <li>Offer value by sharing insights about the recruiting landscape</li>
+          <li>Don't immediately push specific athletes in your first contact</li>
+        </ul>
+        
+        <h2>Regular Engagement Strategies</h2>
+        <ul>
+          <li><strong>Periodic Check-ins:</strong> Reach out 2-3 times per season with relevant updates</li>
+          <li><strong>Provide Value:</strong> Share useful information about upcoming tournaments or showcase events</li>
+          <li><strong>Campus Visits:</strong> Schedule in-person meetings when traveling to their area</li>
+          <li><strong>Athletic Events:</strong> Attend games and introduce yourself to coaching staff</li>
+          <li><strong>Industry Conferences:</strong> Connect at coaching and recruiting conferences</li>
+        </ul>
+        
+        <h2>Presenting Athletes Effectively</h2>
+        <p>When recommending athletes to programs:</p>
+        <ul>
+          <li>Be selective and only suggest athletes who truly fit their needs</li>
+          <li>Provide concise, relevant information focusing on their requirements</li>
+          <li>Be honest about strengths and areas for improvement</li>
+          <li>Include both athletic and academic information</li>
+          <li>Make it easy to access videos and additional materials</li>
+        </ul>
+        
+        <h2>Tracking Relationships</h2>
+        <ul>
+          <li>Document all interactions in the HighLytr CRM system</li>
+          <li>Set reminders for follow-ups based on recruiting cycles</li>
+          <li>Note coaching staff changes and adjust your contacts accordingly</li>
+          <li>Record program preferences and recruitment patterns</li>
+          <li>Analyze success rates with different programs to refine your approach</li>
+        </ul>
+      `
+    }
+  ],
+  technical: [
+    { 
+      id: 19, 
+      title: 'Troubleshooting login issues', 
+      description: 'Solutions for common account access problems',
+      views: 1876,
+      content: `
+        <h1>Troubleshooting Login Issues</h1>
+        
+        <p>Having trouble accessing your HighLytr account? Here are solutions for the most common login problems:</p>
+        
+        <h2>Forgotten Password</h2>
+        <ol>
+          <li>Visit the login page at <a href="/login">HighLytr.com/login</a></li>
+          <li>Click the "Forgot password?" link below the login form</li>
+          <li>Enter the email address associated with your account</li>
+          <li>Check your email for a password reset link (check spam folders too)</li>
+          <li>Follow the link to create a new password</li>
+          <li>Use your new password to log in</li>
+        </ol>
+        
+        <h2>Email Verification Issues</h2>
+        <ul>
+          <li><strong>Didn't receive verification email:</strong> Click "Resend verification email" on the login page</li>
+          <li><strong>Verification link expired:</strong> Request a new verification email from the login page</li>
+          <li><strong>Wrong email address:</strong> Contact support to update your email address</li>
+        </ul>
+        
+        <h2>Account Locked</h2>
+        <p>Your account may be temporarily locked after multiple failed login attempts:</p>
+        <ul>
+          <li>Wait 30 minutes before trying again</li>
+          <li>Use the password reset option if you're unsure of your password</li>
+          <li>Ensure you're using the correct email address</li>
+          <li>Contact support if your account remains locked after these steps</li>
+        </ul>
+        
+        <h2>Browser Issues</h2>
+        <p>Try these troubleshooting steps:</p>
+        <ul>
+          <li>Clear your browser cache and cookies</li>
+          <li>Try using a different browser (Chrome, Firefox, Safari)</li>
+          <li>Disable browser extensions that might interfere with login</li>
+          <li>Ensure your browser is updated to the latest version</li>
+          <li>Check that JavaScript is enabled in your browser settings</li>
+        </ul>
+        
+        <h2>Two-Factor Authentication Problems</h2>
+        <ul>
+          <li><strong>Lost access to authentication device:</strong> Use your backup codes provided during setup</li>
+          <li><strong>Backup codes unavailable:</strong> Contact support with proof of identity</li>
+          <li><strong>Incorrect time on authenticator app:</strong> Sync the time on your device</li>
+        </ul>
+        
+        <h2>Still Having Issues?</h2>
+        <p>If you've tried these solutions and still can't access your account, contact our support team:</p>
+        <ul>
+          <li>Email: support@highlytr.com</li>
+          <li>Live chat: Available Monday-Friday, 9am-5pm EST</li>
+          <li>Phone: 1-800-HIGHLYTR (available for premium accounts)</li>
+        </ul>
+      `
+    },
+    { 
+      id: 20, 
+      title: 'Using HighLytr on mobile devices', 
+      description: 'Tips for getting the most out of the mobile app and responsive website',
+      views: 1543,
+      content: `
+        <h1>Using HighLytr on Mobile Devices</h1>
+        
+        <p>Access HighLytr on the go with our mobile options. Here's how to get the best experience:</p>
+        
+        <h2>Mobile App Installation</h2>
+        <ol>
+          <li>Visit the App Store (iOS) or Google Play Store (Android)</li>
+          <li>Search for "HighLytr"</li>
+          <li>Tap "Install" or "Get"</li>
+          <li>Open the app and log in with your existing credentials</li>
+          <li>Enable notifications when prompted for important updates</li>
+        </ol>
+        
+        <h2>Mobile App Features</h2>
+        <ul>
+          <li><strong>Profile Management:</strong> Update your profile and uploads on the go</li>
+          <li><strong>Real-time Notifications:</strong> Receive alerts for messages and connections</li>
+          <li><strong>Video Upload:</strong> Upload highlight clips directly from your phone</li>
+          <li><strong>Quick Messaging:</strong> Chat with connections from anywhere</li>
+          <li><strong>Offline Access:</strong> View saved profiles even without internet connection</li>
+        </ul>
+        
+        <h2>Mobile Web Experience</h2>
+        <p>If you prefer not to download the app:</p>
+        <ul>
+          <li>Visit HighLytr.com in your mobile browser</li>
+          <li>Our responsive design adapts to your screen size</li>
+          <li>Add to your home screen for quick access (tap share/menu, then "Add to Home Screen")</li>
+          <li>Most features are available, though some advanced functions work best in the app</li>
+        </ul>
+        
+        <h2>Optimizing Mobile Performance</h2>
+        <ul>
+          <li>Keep your app updated to the latest version</li>
+          <li>Use Wi-Fi for uploading videos to avoid data charges</li>
+          <li>Limit notifications to essential items for better battery life</li>
+          <li>Clear the app cache periodically if performance slows</li>
+          <li>Log out completely when using shared devices</li>
+        </ul>
+        
+        <h2>Mobile-Specific Tips</h2>
+        <ul>
+          <li><strong>Quick Updates:</strong> Use the mobile app to post quick status updates from events</li>
+          <li><strong>Location Services:</strong> Enable location for nearby event recommendations</li>
+          <li><strong>Camera Integration:</strong> Take profile photos directly through the app</li>
+          <li><strong>Voice Dictation:</strong> Use your phone's dictation for messaging coaches</li>
+          <li><strong>Calendar Sync:</strong> Connect to your phone's calendar for recruitment events</li>
+        </ul>
+      `
+    }
+  ]
+};
