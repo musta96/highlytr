@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { 
   Form, 
   FormControl, 
@@ -15,14 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useAuth } from '@/hooks/useAuth';
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -38,6 +30,7 @@ const RegisterForm = () => {
   const [accountType, setAccountType] = useState<'athlete' | 'college' | 'agency'>('athlete');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,16 +46,12 @@ const RegisterForm = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error } = await signUp({
         email: data.email,
         password: data.password,
-        options: {
-          data: {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            accountType: data.accountType
-          }
-        }
+        firstName: data.firstName,
+        lastName: data.lastName,
+        accountType: data.accountType
       });
 
       if (error) {
@@ -71,13 +60,11 @@ const RegisterForm = () => {
         return;
       }
 
-      toast.success('Registration successful! Check your email to verify your account.', {
+      toast.success('Registration successful! Please check your email to verify your account.', {
         id: 'registration',
-        duration: 5000,
+        duration: 8000,
       });
-      
-      navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       toast.error('An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
