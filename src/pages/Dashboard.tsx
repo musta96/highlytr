@@ -10,6 +10,8 @@ import ConnectionsPage from '@/components/connections/ConnectionsPage';
 import MessagesPage from '@/components/messaging/MessagesPage';
 import NotificationsPage from '@/components/notifications/NotificationsPage';
 import SettingsPage from '@/components/settings/SettingsPage';
+import CollegeProfile from '@/components/college/CollegeProfile';
+import AgencyProfile from '@/components/agency/AgencyProfile';
 
 // Import placeholder for pages we haven't built yet
 import NotFound from './NotFound';
@@ -27,12 +29,16 @@ const Dashboard = () => {
         <Route path="athletes/search" element={<SearchPage type="athletes" />} />
         <Route path="colleges/search" element={<SearchPage type="colleges" />} />
         
+        {/* College profile */}
+        <Route path="college-profile" element={<CollegeProfile />} />
+        
+        {/* Agency profile */}
+        <Route path="agency-profile" element={<AgencyProfile />} />
+        
         {/* These would be implemented with actual components */}
         <Route path="academics" element={<div className="p-4">Academic Info Page</div>} />
         <Route path="highlights" element={<div className="p-4">Highlights Page</div>} />
         <Route path="events" element={<div className="p-4">Events Page</div>} />
-        <Route path="college-profile" element={<div className="p-4">College Profile Page</div>} />
-        <Route path="agency-profile" element={<div className="p-4">Agency Profile Page</div>} />
         <Route path="staff" element={<div className="p-4">Staff Management Page</div>} />
         <Route path="coaches" element={<div className="p-4">Coaches Management Page</div>} />
         <Route path="teams" element={<div className="p-4">Teams Management Page</div>} />

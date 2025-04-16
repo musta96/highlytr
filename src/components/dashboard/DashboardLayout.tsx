@@ -4,10 +4,10 @@ import { Outlet } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import DashboardSidebar from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
-import { useMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const DashboardLayout = () => {
-  const { isMobile } = useMobile();
+  const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   
   const toggleSidebar = () => {

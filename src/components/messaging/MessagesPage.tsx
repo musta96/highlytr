@@ -2,371 +2,414 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
+  MoreHorizontal, 
   Send, 
-  ChevronLeft,
-  Paperclip,
-  MoreVertical,
-  Search,
+  Search, 
+  PlusCircle, 
+  Paperclip, 
+  Image, 
+  Smile,
   Phone,
-  Video,
-  Clock,
-  Check,
-  CheckCheck,
-  MessageCircle
+  Info,
+  ArrowLeft
 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-// Mock data for conversations
 const mockConversations = [
   {
-    id: 1,
-    user: {
-      id: 101,
-      name: 'Coach Sarah Williams',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
-      role: 'Head Soccer Coach',
-      institution: 'University of California',
-      online: true,
+    id: '1',
+    recipient: {
+      id: '101',
+      name: 'John Smith',
+      role: 'Basketball Coach',
+      organization: 'Riverside University',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1470',
+      online: true
     },
     lastMessage: {
-      text: 'Looking forward to seeing more of your game footage!',
-      time: '10:23 AM',
-      isRead: true,
-      sender: 'them',
+      content: 'Thanks for sending your highlight video! I was impressed with your court vision.',
+      timestamp: '9:41 AM',
+      read: true,
+      sender: 'them'
     },
-    unread: 0,
+    unreadCount: 0
   },
   {
-    id: 2,
-    user: {
-      id: 102,
-      name: 'Stanford University',
-      avatar: 'https://images.unsplash.com/photo-1562774053-701939374585',
-      role: 'College',
-      online: false,
+    id: '2',
+    recipient: {
+      id: '102',
+      name: 'Coach Maria Rodriguez',
+      role: 'Soccer Coach',
+      organization: 'Elite Sports Academy',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374',
+      online: true
     },
     lastMessage: {
-      text: 'Thank you for your interest in our program.',
-      time: 'Yesterday',
-      isRead: false,
-      sender: 'them',
+      content: 'Would you be available for a call next Tuesday to discuss scholarship opportunities?',
+      timestamp: 'Yesterday',
+      read: false,
+      sender: 'them'
     },
-    unread: 1,
+    unreadCount: 2
   },
   {
-    id: 3,
-    user: {
-      id: 103,
-      name: 'Elite Sports Agency',
-      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7',
-      role: 'Agency',
-      online: false,
+    id: '3',
+    recipient: {
+      id: '103',
+      name: 'David Wilson',
+      role: 'Athletic Director',
+      organization: 'Central State University',
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1374',
+      online: false
     },
     lastMessage: {
-      text: 'We would like to represent you for college recruitment.',
-      time: '2 days ago',
-      isRead: true,
-      sender: 'them',
+      content: 'I sent you the information about our upcoming campus visit day.',
+      timestamp: 'Monday',
+      read: true,
+      sender: 'you'
     },
-    unread: 0,
+    unreadCount: 0
   },
   {
-    id: 4,
-    user: {
-      id: 104,
-      name: 'Coach Robert Chen',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d',
-      role: 'Assistant Coach',
-      institution: 'UCLA',
-      online: true,
+    id: '4',
+    recipient: {
+      id: '104',
+      name: 'Sarah Johnson',
+      role: 'Agent',
+      organization: 'Premier Sports Agency',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1376',
+      online: false
     },
     lastMessage: {
-      text: 'I sent you information about our summer camp program.',
-      time: '3 days ago',
-      isRead: true,
-      sender: 'them',
+      content: 'Looking forward to discussing your future plans after graduation!',
+      timestamp: '08/12/2024',
+      read: true,
+      sender: 'them'
     },
-    unread: 0,
-  },
+    unreadCount: 0
+  }
 ];
 
-// Mock data for messages in a conversation
 const mockMessages = [
   {
-    id: 1,
-    sender: 'them',
-    text: 'Hello Marco! I watched your highlight reel and was impressed with your skills. We might have a spot for you in our team next season.',
-    time: 'Yesterday, 10:30 AM',
-    status: 'read',
+    id: '1',
+    senderId: '101',
+    content: 'Hello! I saw your profile and was impressed by your highlight reel. Particularly that three-pointer in the championship game.',
+    timestamp: '9:30 AM',
+    read: true
   },
   {
-    id: 2,
-    sender: 'me',
-    text: 'Thank you so much, Coach Williams! I am very interested in your soccer program.',
-    time: 'Yesterday, 11:45 AM',
-    status: 'read',
+    id: '2',
+    senderId: 'me',
+    content: 'Thank you so much for reaching out! That game was definitely one of my best performances.',
+    timestamp: '9:32 AM',
+    read: true
   },
   {
-    id: 3,
-    sender: 'them',
-    text: 'Great to hear! Do you have any questions about our program or the application process?',
-    time: 'Yesterday, 2:15 PM',
-    status: 'read',
+    id: '3',
+    senderId: '101',
+    content: 'We\'re looking for players with your skill set for our upcoming season. Would you be interested in learning more about our program?',
+    timestamp: '9:35 AM',
+    read: true
   },
   {
-    id: 4,
-    sender: 'me',
-    text: 'Yes, I was wondering about scholarship opportunities for international students and what the tryout process looks like?',
-    time: 'Yesterday, 3:30 PM',
-    status: 'read',
+    id: '4',
+    senderId: 'me',
+    content: 'Absolutely! I\'ve actually been following your team for a while and I\'m very interested.',
+    timestamp: '9:36 AM',
+    read: true
   },
   {
-    id: 5,
-    sender: 'them',
-    text: "We do offer partial scholarships for exceptional international athletes, and tryouts typically happen in the spring. However, since you're overseas, we can arrange a video assessment. Could you share more recent game footage?",
-    time: 'Today, 9:00 AM',
-    status: 'read',
+    id: '5',
+    senderId: '101',
+    content: 'Great! I\'ve attached some information about our basketball program, scholarship opportunities, and campus life.',
+    timestamp: '9:38 AM',
+    read: true,
+    attachment: {
+      type: 'document',
+      name: 'Riverside_Basketball_Program_Info.pdf'
+    }
   },
   {
-    id: 6,
-    sender: 'me',
-    text: 'That sounds great! I have footage from my latest tournament last month. I will compile it and share it with you by tomorrow.',
-    time: 'Today, 10:15 AM',
-    status: 'delivered',
+    id: '6',
+    senderId: 'me',
+    content: 'Thanks for sending this over! I\'ll review it and get back to you with any questions. Is there anything specific I should focus on?',
+    timestamp: '9:40 AM',
+    read: true
   },
+  {
+    id: '7',
+    senderId: '101',
+    content: 'Thanks for sending your highlight video! I was impressed with your court vision.',
+    timestamp: '9:41 AM',
+    read: true
+  }
 ];
 
-const ConversationList = ({ conversations, activeConversation, setActiveConversation }: any) => {
-  return (
-    <ScrollArea className="h-[calc(100vh-12rem)]">
-      <div className="space-y-1 p-2">
-        {conversations.map((conversation: any) => (
-          <button
-            key={conversation.id}
-            className={`flex items-start gap-3 w-full p-3 rounded-lg text-left ${
-              activeConversation?.id === conversation.id 
-                ? 'bg-highlyt-blue/10' 
-                : 'hover:bg-gray-100'
-            }`}
-            onClick={() => setActiveConversation(conversation)}
-          >
-            <div className="relative">
-              <div className="h-12 w-12 rounded-full overflow-hidden">
-                <img 
-                  src={conversation.user.avatar} 
-                  alt={conversation.user.name} 
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              {conversation.user.online && (
-                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
-              )}
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex justify-between items-baseline">
-                <h3 className="font-medium truncate">{conversation.user.name}</h3>
-                <span className="text-xs text-gray-500">{conversation.lastMessage.time}</span>
-              </div>
-              <p className="text-sm text-gray-600 truncate">
-                {conversation.lastMessage.sender === 'me' ? 'You: ' : ''}
-                {conversation.lastMessage.text}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {conversation.user.role}
-                {conversation.user.institution && ` at ${conversation.user.institution}`}
-              </p>
-            </div>
-            
-            {conversation.unread > 0 && (
-              <div className="flex-shrink-0 h-5 w-5 bg-highlyt-blue text-white rounded-full flex items-center justify-center text-xs">
-                {conversation.unread}
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-    </ScrollArea>
-  );
-};
-
-const MessageBubble = ({ message }: { message: any }) => {
-  return (
-    <div 
-      className={`flex ${message.sender === 'me' ? 'justify-end' : 'justify-start'} mb-4`}
-    >
-      <div 
-        className={`max-w-[80%] p-3 rounded-lg ${
-          message.sender === 'me' 
-            ? 'bg-highlyt-blue text-white rounded-tr-none' 
-            : 'bg-gray-100 rounded-tl-none'
-        }`}
-      >
-        <p className="mb-1">{message.text}</p>
-        <div className="flex justify-end items-center gap-1 text-xs opacity-70">
-          <span>{message.time}</span>
-          {message.sender === 'me' && (
-            message.status === 'sent' ? (
-              <Clock className="h-3 w-3" />
-            ) : message.status === 'delivered' ? (
-              <Check className="h-3 w-3" />
-            ) : (
-              <CheckCheck className="h-3 w-3" />
-            )
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ConversationView = ({ conversation }: { conversation: any }) => {
+const MessagesPage = () => {
+  const isMobile = useIsMobile();
+  const [activeConversation, setActiveConversation] = useState(mockConversations[0]);
+  const [conversationVisible, setConversationVisible] = useState(!isMobile);
   const [messageInput, setMessageInput] = useState('');
-  
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (messageInput.trim()) {
-      // In a real app, this would send the message to the backend
-      console.log('Sending message:', messageInput);
-      setMessageInput('');
+
+  const handleSelectConversation = (conversation: any) => {
+    setActiveConversation(conversation);
+    if (isMobile) {
+      setConversationVisible(true);
     }
   };
-  
+
+  const handleBackToList = () => {
+    setConversationVisible(false);
+  };
+
+  const sendMessage = () => {
+    if (!messageInput.trim()) return;
+    
+    // In a real app, this would send the message to a backend
+    console.log('Sending message:', messageInput);
+    setMessageInput('');
+  };
+
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)]">
-      {/* Conversation Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-          
-          <div className="relative">
-            <div className="h-10 w-10 rounded-full overflow-hidden">
-              <img 
-                src={conversation.user.avatar} 
-                alt={conversation.user.name} 
-                className="h-full w-full object-cover"
+    <div className="flex flex-col h-[calc(100vh-theme(spacing.16))]">
+      <div className="flex-1 flex overflow-hidden bg-background rounded-lg border">
+        {/* Conversation List */}
+        <div className={`w-full md:w-80 lg:w-96 border-r flex flex-col ${conversationVisible && isMobile ? 'hidden' : 'flex'}`}>
+          <div className="p-4 border-b">
+            <h1 className="text-xl font-bold">Messages</h1>
+            <p className="text-sm text-muted-foreground">Communicate with coaches, colleges and agencies</p>
+            
+            <div className="relative mt-3">
+              <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search messages..." 
+                className="pl-8"
               />
             </div>
-            {conversation.user.online && (
-              <div className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-500 rounded-full border-2 border-white"></div>
-            )}
           </div>
           
-          <div>
-            <h3 className="font-medium">{conversation.user.name}</h3>
-            <p className="text-xs text-gray-600">
-              {conversation.user.online ? 'Online' : 'Offline'}
-            </p>
+          <Tabs defaultValue="all" className="flex-1 overflow-hidden flex flex-col">
+            <div className="px-4 pt-2">
+              <TabsList className="w-full">
+                <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
+                <TabsTrigger value="unread" className="flex-1">Unread</TabsTrigger>
+                <TabsTrigger value="archived" className="flex-1">Archived</TabsTrigger>
+              </TabsList>
+            </div>
+            
+            <TabsContent value="all" className="flex-1 overflow-y-auto">
+              <div className="divide-y">
+                {mockConversations.map((conversation) => (
+                  <div 
+                    key={conversation.id} 
+                    className={`p-3 hover:bg-muted cursor-pointer ${activeConversation.id === conversation.id ? 'bg-muted' : ''}`}
+                    onClick={() => handleSelectConversation(conversation)}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <Avatar>
+                          <AvatarImage src={conversation.recipient.avatar} alt={conversation.recipient.name} />
+                          <AvatarFallback>{conversation.recipient.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        {conversation.recipient.online && (
+                          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-semibold truncate">{conversation.recipient.name}</h3>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{conversation.lastMessage.timestamp}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">{conversation.recipient.role}, {conversation.recipient.organization}</p>
+                        <p className="text-sm truncate">
+                          {conversation.lastMessage.sender === 'you' && 'You: '}
+                          {conversation.lastMessage.content}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end mt-1">
+                      {conversation.unreadCount > 0 && (
+                        <Badge className="bg-highlyt-blue text-white font-medium">{conversation.unreadCount}</Badge>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="unread" className="flex-1 overflow-y-auto">
+              <div className="divide-y">
+                {mockConversations.filter(c => c.unreadCount > 0).map((conversation) => (
+                  <div 
+                    key={conversation.id} 
+                    className="p-3 hover:bg-muted cursor-pointer"
+                    onClick={() => handleSelectConversation(conversation)}
+                  >
+                    {/* Same content as above, filtered for unread messages */}
+                    <div className="flex items-center space-x-3">
+                      <Avatar>
+                        <AvatarImage src={conversation.recipient.avatar} alt={conversation.recipient.name} />
+                        <AvatarFallback>{conversation.recipient.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between">
+                          <h3 className="font-semibold truncate">{conversation.recipient.name}</h3>
+                          <span className="text-xs text-muted-foreground">{conversation.lastMessage.timestamp}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">{conversation.recipient.role}, {conversation.recipient.organization}</p>
+                        <p className="text-sm truncate">{conversation.lastMessage.content}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end mt-1">
+                      <Badge className="bg-highlyt-blue text-white font-medium">{conversation.unreadCount}</Badge>
+                    </div>
+                  </div>
+                ))}
+                
+                {mockConversations.filter(c => c.unreadCount > 0).length === 0 && (
+                  <div className="p-8 text-center text-muted-foreground">
+                    <p>No unread messages</p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="archived" className="flex-1 overflow-y-auto">
+              <div className="p-8 text-center text-muted-foreground">
+                <p>No archived messages</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+          
+          <div className="p-4 border-t">
+            <Button className="w-full gap-2">
+              <PlusCircle className="h-4 w-4" />
+              New Message
+            </Button>
           </div>
         </div>
         
-        <div className="flex items-center">
-          <Button variant="ghost" size="icon">
-            <Phone className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <Video className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <MoreVertical className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
-      
-      {/* Messages Area */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {mockMessages.map(message => (
-            <MessageBubble key={message.id} message={message} />
-          ))}
-        </div>
-      </ScrollArea>
-      
-      {/* Message Input */}
-      <div className="p-4 border-t">
-        <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-          <Button variant="ghost" type="button" size="icon">
-            <Paperclip className="h-5 w-5" />
-          </Button>
-          <Input 
-            placeholder="Type a message..." 
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            className="flex-1"
-          />
-          <Button type="submit" disabled={!messageInput.trim()}>
-            <Send className="h-5 w-5" />
-          </Button>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-const MessagesPage = () => {
-  const [activeConversation, setActiveConversation] = useState(mockConversations[0]);
-  const [query, setQuery] = useState('');
-  const [isMobileView, setIsMobileView] = useState(false);
-
-  // Filter conversations based on search query
-  const filteredConversations = query 
-    ? mockConversations.filter(c => 
-        c.user.name.toLowerCase().includes(query.toLowerCase()) || 
-        (c.lastMessage.text.toLowerCase().includes(query.toLowerCase()))
-      )
-    : mockConversations;
-  
-  return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Messages</h1>
-      
-      <div className="bg-white border rounded-lg overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          {/* Conversation List Column */}
-          <div className={`border-r ${isMobileView ? 'hidden md:block' : 'block'}`}>
-            <div className="p-4 border-b">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search messages..."
-                  className="pl-9"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-            </div>
-            
-            <ConversationList 
-              conversations={filteredConversations} 
-              activeConversation={activeConversation} 
-              setActiveConversation={(conversation: any) => {
-                setActiveConversation(conversation);
-                setIsMobileView(true);
-              }}
-            />
-          </div>
-          
-          {/* Conversation View Column */}
-          <div className={`md:col-span-2 ${isMobileView ? 'block' : 'hidden md:block'}`}>
-            {activeConversation ? (
-              <ConversationView conversation={activeConversation} />
-            ) : (
-              <div className="h-[calc(100vh-12rem)] flex items-center justify-center">
-                <div className="text-center">
-                  <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 mb-4">
-                    <MessageCircle className="h-7 w-7 text-gray-500" />
+        {/* Conversation View */}
+        <div className={`flex-1 flex flex-col ${!conversationVisible && isMobile ? 'hidden' : 'flex'}`}>
+          {activeConversation && (
+            <>
+              <div className="p-4 border-b flex items-center">
+                {isMobile && (
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="mr-2"
+                    onClick={handleBackToList}
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                )}
+                
+                <Avatar className="h-10 w-10 mr-3">
+                  <AvatarImage src={activeConversation.recipient.avatar} alt={activeConversation.recipient.name} />
+                  <AvatarFallback>{activeConversation.recipient.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                  <div className="flex items-center">
+                    <h2 className="font-semibold">{activeConversation.recipient.name}</h2>
+                    {activeConversation.recipient.online && (
+                      <span className="ml-2 text-xs text-green-600 font-medium">Online</span>
+                    )}
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">No conversation selected</h3>
-                  <p className="text-gray-600 max-w-xs mx-auto">
-                    Choose a conversation from the list or start a new one.
-                  </p>
+                  <p className="text-xs text-muted-foreground">{activeConversation.recipient.role}, {activeConversation.recipient.organization}</p>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon">
+                    <Phone className="h-5 w-5" />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <Info className="h-5 w-5" />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <MoreHorizontal className="h-5 w-5" />
+                  </Button>
                 </div>
               </div>
-            )}
-          </div>
+              
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {mockMessages.map((message) => {
+                  const isMe = message.senderId === 'me';
+                  
+                  return (
+                    <div key={message.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[75%] ${isMe ? 'bg-highlyt-blue text-white' : 'bg-muted'} rounded-lg p-3`}>
+                        {message.content}
+                        
+                        {message.attachment && (
+                          <div className="mt-2 bg-white/10 rounded p-2 flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            <span className="text-sm">{message.attachment.name}</span>
+                          </div>
+                        )}
+                        
+                        <div className={`text-xs ${isMe ? 'text-blue-100' : 'text-muted-foreground'} mt-1 text-right`}>
+                          {message.timestamp}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <div className="p-4 border-t">
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="icon" className="shrink-0">
+                    <Paperclip className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="shrink-0">
+                    <Image className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                  <Input 
+                    placeholder="Type a message..." 
+                    className="flex-1"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        sendMessage();
+                      }
+                    }}
+                  />
+                  <Button variant="ghost" size="icon" className="shrink-0">
+                    <Smile className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                  <Button className="shrink-0" size="icon" onClick={sendMessage} disabled={!messageInput.trim()}>
+                    <Send className="h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+          
+          {!activeConversation && (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+              <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                <MessageSquare className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold">Your Messages</h3>
+              <p className="text-muted-foreground mt-1 max-w-md">
+                Connect with coaches, athletes, and agencies through direct messaging.
+              </p>
+              <Button className="mt-6 gap-2">
+                <PlusCircle className="h-4 w-4" />
+                Start a Conversation
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

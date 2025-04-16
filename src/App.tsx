@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 
 // Pages
-import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -25,7 +25,7 @@ import ProfileSetup from "./pages/ProfileSetup";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RequireProfileSetup from "./components/auth/RequireProfileSetup";
 
-// Create an AthleteProfile component as a placeholder
+// Import athlete profile components
 import AthleteProfile from "./components/athlete/AthleteProfile";
 
 const queryClient = new QueryClient();
@@ -37,7 +37,7 @@ const App = () => (
         <TooltipProvider>
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

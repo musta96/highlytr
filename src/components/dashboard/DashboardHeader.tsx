@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Message, Search, Menu } from 'lucide-react';
+import { Bell, MessageSquare, Search, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -70,7 +69,7 @@ const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild className="relative">
             <Link to="/dashboard/messages">
-              <Message className="h-5 w-5" />
+              <MessageSquare className="h-5 w-5" />
               <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
             </Link>
           </Button>
