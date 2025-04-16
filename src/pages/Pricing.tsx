@@ -49,13 +49,14 @@ const Pricing = () => {
         'No direct coach messaging',
         'Limited analytics',
       ],
-      buttonText: 'Get Started',
-      highlighted: false
+      buttonText: 'Coming Soon',
+      highlighted: false,
+      comingSoon: true
     },
     {
       id: 'pro',
       name: 'Pro Athlete',
-      description: 'Currently free during launch phase',
+      description: 'Advanced features for serious athletes',
       price: '9.99',
       period: 'per month',
       features: [
@@ -69,7 +70,6 @@ const Pricing = () => {
       ],
       buttonText: 'Coming Soon',
       highlighted: true,
-      badge: 'Launch Special',
       comingSoon: true
     },
     {
