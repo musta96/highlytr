@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { 
   FormField, 
   FormItem, 
@@ -11,18 +11,19 @@ import {
 import { Input } from '@/components/ui/input';
 import AccountTypeSelector from './AccountTypeSelector';
 import { AccountType } from '../types';
+import { RegisterFormData } from './RegisterFormSchema';
 
 interface RegisterFormFieldsProps {
+  form: UseFormReturn<RegisterFormData>;
   accountType: AccountType;
   setAccountType: (type: AccountType) => void;
 }
 
 const RegisterFormFields: React.FC<RegisterFormFieldsProps> = ({ 
+  form,
   accountType, 
   setAccountType 
 }) => {
-  const form = useFormContext();
-
   const handleAccountTypeChange = (type: AccountType) => {
     setAccountType(type);
     form.setValue('accountType', type);

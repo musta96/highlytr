@@ -2,11 +2,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
 import { useAuth } from '@/hooks/auth';
 import { AccountType } from './types';
 import { registerFormSchema, RegisterFormData } from './forms/RegisterFormSchema';
@@ -65,32 +64,31 @@ const RegisterForm = () => {
         </p>
       </div>
 
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <RegisterFormFields 
-            accountType={accountType}
-            setAccountType={setAccountType}
-          />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <RegisterFormFields 
+          form={form}
+          accountType={accountType}
+          setAccountType={setAccountType}
+        />
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Account...
-              </>
-            ) : 'Create Account'}
-          </Button>
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating Account...
+            </>
+          ) : 'Create Account'}
+        </Button>
 
-          <div className="text-center text-sm">
-            <p className="text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="text-highlyt-blue hover:underline">
-                Log in
-              </Link>
-            </p>
-          </div>
-        </form>
-      </FormProvider>
+        <div className="text-center text-sm">
+          <p className="text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-highlyt-blue hover:underline">
+              Log in
+            </Link>
+          </p>
+        </div>
+      </form>
     </div>
   );
 };
