@@ -19,9 +19,11 @@ import About from "./pages/About";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AthleteDetail from "./pages/AthleteDetail";
+import ProfileSetup from "./pages/ProfileSetup";
 
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import RequireProfileSetup from "./components/auth/RequireProfileSetup";
 
 // Create an AthleteProfile component as a placeholder
 import AthleteProfile from "./components/athlete/AthleteProfile";
@@ -46,9 +48,15 @@ const App = () => (
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/about" element={<About />} />
             
-            {/* Protected routes */}
+            {/* Protected route that requires authentication */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard/*" element={<Dashboard />} />
+              {/* Profile setup route */}
+              <Route path="/profile-setup" element={<ProfileSetup />} />
+              
+              {/* Routes that require both authentication and completed profile */}
+              <Route element={<RequireProfileSetup />}>
+                <Route path="/dashboard/*" element={<Dashboard />} />
+              </Route>
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

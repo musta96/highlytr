@@ -36,6 +36,7 @@ type AuthContextType = {
   signUp: (credentials: SignUpCredentials) => Promise<SignUpResponse>;
   signOut: () => Promise<void>;
   loading: boolean;
+  profileCompleted: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -45,27 +46,68 @@ const AuthContext = createContext<AuthContextType>({
   signUp: async () => ({ error: null }),
   signOut: async () => {},
   loading: true,
+  profileCompleted: false,
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileCompleted, setProfileCompleted] = useState(false);
+
+  // Check if user has completed their profile
+  const checkProfileStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('profile_completed')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile status:', error);
+        return false;
+      }
+
+      return data?.profile_completed || false;
+    } catch (error) {
+      console.error('Error in profile status check:', error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
+      async (event, currentSession) => {
         setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+        const currentUser = currentSession?.user ?? null;
+        setUser(currentUser);
+        
+        // Check profile completion status when user authenticates
+        if (currentUser) {
+          const isCompleted = await checkProfileStatus(currentUser.id);
+          setProfileCompleted(isCompleted);
+        } else {
+          setProfileCompleted(false);
+        }
+        
         setLoading(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
       setSession(currentSession);
-      setUser(currentSession?.user ?? null);
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
+      
+      // Check profile completion status
+      if (currentUser) {
+        const isCompleted = await checkProfileStatus(currentUser.id);
+        setProfileCompleted(isCompleted);
+      }
+      
       setLoading(false);
     });
 
@@ -83,6 +125,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) throw error;
+      
+      // Check profile completion status after sign in
+      if (data.user) {
+        const isCompleted = await checkProfileStatus(data.user.id);
+        setProfileCompleted(isCompleted);
+      }
       
       return { error: null };
     } catch (error: any) {
@@ -120,10 +168,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setProfileCompleted(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      signIn, 
+      signUp, 
+      signOut, 
+      loading,
+      profileCompleted
+    }}>
       {children}
     </AuthContext.Provider>
   );
