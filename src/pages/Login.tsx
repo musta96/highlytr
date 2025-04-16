@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import LoginForm from '@/components/auth/LoginForm';
+import LogoDebug from '@/components/common/LogoDebug';
 
 const Login = () => {
   return (
@@ -24,6 +25,9 @@ const Login = () => {
             </Link>
           </div>
           <LoginForm />
+          <div className="mt-8">
+            <LogoDebug />
+          </div>
         </div>
       </div>
     </Layout>
@@ -31,3 +35,4 @@ const Login = () => {
 };
 
 export default Login;
+
