@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -58,18 +57,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         console.log('[AuthProvider] Retrieved session on load:', currentSession?.user?.id);
         
-        setSession(currentSession);
-        const currentUser = currentSession?.user ?? null;
-        setUser(currentUser);
-        
-        // Check profile completion status
-        if (currentUser) {
-          const isCompleted = await checkProfileStatus(currentUser.id);
+        if (currentSession?.user) {
+          setSession(currentSession);
+          setUser(currentSession.user);
+          
+          // Check profile completion status
+          const isCompleted = await checkProfileStatus(currentSession.user.id);
           setProfileCompleted(isCompleted);
           
           // Get user's account type from metadata
-          const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
-          console.log('[AuthProvider] Account type from metadata on load:', userType, currentUser.user_metadata);
+          const userType = currentSession.user.user_metadata?.accountType as AccountType | undefined;
+          console.log('[AuthProvider] Account type from metadata on load:', userType, currentSession.user.user_metadata);
           setAccountType(userType || null);
         }
       } catch (error) {

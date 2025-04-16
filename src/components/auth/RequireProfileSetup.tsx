@@ -1,25 +1,12 @@
 
-import React, { useEffect } from 'react';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
 import { Loader2 } from 'lucide-react';
 
 const RequireProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Handle redirection based on account type when profiles are completed
-    if (!loading && user && profileCompleted && accountType) {
-      const dashboardPath = `/dashboard/${accountType.toLowerCase()}`;
-      
-      // Only redirect if we're not already on the correct dashboard path
-      if (!location.pathname.startsWith(dashboardPath)) {
-        navigate(dashboardPath, { replace: true });
-      }
-    }
-  }, [user, loading, profileCompleted, accountType, location.pathname, navigate]);
 
   // If we're still checking auth state, show loading
   if (loading) {
@@ -38,7 +25,7 @@ const RequireProfileSetup = () => {
 
   // If user is logged in but hasn't completed their profile, redirect to profile setup
   // Unless they're already on the profile setup page
-  if (!profileCompleted && location.pathname !== '/profile-setup') {
+  if (!profileCompleted && !accountType && location.pathname !== '/profile-setup') {
     return <Navigate to="/profile-setup" replace />;
   }
 

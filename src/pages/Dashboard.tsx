@@ -10,6 +10,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    console.log('Dashboard useEffect', { user, accountType, loading });
+    
     // If user is logged in but doesn't have an account type, redirect to profile setup
     if (user && !loading && !accountType) {
       navigate('/profile-setup', { replace: true });
