@@ -20,6 +20,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AthleteDetail from "./pages/AthleteDetail";
 import ProfileSetup from "./pages/ProfileSetup";
+import HowItWorks from "./components/home/HowItWorks";
+import Layout from "./components/layout/Layout";
 
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -47,6 +49,7 @@ const App = () => (
             <Route path="/colleges" element={<Colleges />} />
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/about" element={<About />} />
+            <Route path="/how-it-works" element={<Layout><HowItWorks /></Layout>} />
             
             {/* Protected route that requires authentication */}
             <Route element={<ProtectedRoute />}>

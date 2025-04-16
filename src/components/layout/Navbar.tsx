@@ -60,6 +60,9 @@ const Navbar = () => {
           <Link to="/agencies" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
             Agencies
           </Link>
+          <Link to="/how-it-works" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
+            How It Works
+          </Link>
           <Link to="/about" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
             About
           </Link>
@@ -136,6 +139,13 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Agencies
+            </Link>
+            <Link 
+              to="/how-it-works" 
+              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              How It Works
             </Link>
             <Link 
               to="/about" 
