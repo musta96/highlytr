@@ -3,12 +3,9 @@ import { Link } from 'react-router-dom';
 import { 
   Trophy, 
   Medal, 
-  Share2, 
   ChevronRight, 
-  Filter,
   Star,
-  TrendingUp,
-  CalendarClock 
+  TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ComingSoonOverlay from '@/components/common/ComingSoonOverlay';
 
 // Types for our athlete and leaderboard data
 type Sport = 'Soccer' | 'Basketball' | 'Baseball' | 'Swimming' | 'Volleyball' | 'Tennis' | 'Track' | 'Football' | 'Hockey';
@@ -195,28 +193,12 @@ const TopRecruits: React.FC<TopRecruitsProps> = ({ className }) => {
   return (
     <div className={`relative bg-white rounded-xl shadow-md p-6 ${className}`}>
       {isComingSoon && (
-        <div className="absolute inset-0 z-10 bg-soft-purple/10 flex flex-col items-center justify-center text-center rounded-xl">
-          <div className="inline-flex items-center justify-center p-3 bg-highlyt-blue/20 text-highlyt-blue rounded-full mb-4">
-            <CalendarClock className="h-8 w-8" />
-          </div>
-          
-          <h3 className="text-2xl md:text-3xl font-bold mb-4 text-dark-charcoal">
-            Leaderboard Coming Soon!
-          </h3>
-          
-          <p className="text-lg text-gray-600 max-w-md mb-6 px-4">
-            We're working on bringing you the most comprehensive athlete rankings. 
-            Stay tuned for an exciting way to discover top talent!
-          </p>
-          
-          <Button 
-            variant="outline" 
-            onClick={() => setIsComingSoon(false)}
-            className="mb-4"
-          >
-            Preview Leaderboard
-          </Button>
-        </div>
+        <ComingSoonOverlay
+          title="Leaderboard Coming Soon!"
+          description="We're working on bringing you the most comprehensive athlete rankings. Stay tuned for an exciting way to discover top talent!"
+          onPreview={() => setIsComingSoon(false)}
+          showPreviewButton={true}
+        />
       )}
 
       <div className={`${isComingSoon ? 'opacity-30 pointer-events-none' : ''}`}>
