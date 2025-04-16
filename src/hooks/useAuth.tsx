@@ -68,8 +68,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Error fetching profile status:', error);
         return false;
       }
-
-      return data?.profile_completed || false;
+      
+      // Handle the case where profile_completed might be null
+      return data?.profile_completed === true;
     } catch (error) {
       console.error('Error in profile status check:', error);
       return false;

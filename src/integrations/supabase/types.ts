@@ -12,26 +12,50 @@ export type Database = {
       profiles: {
         Row: {
           account_type: string
+          citizenship: string | null
           created_at: string
+          date_of_birth: string | null
           first_name: string | null
           id: string
           last_name: string | null
+          place_of_birth: string | null
+          primary_position: string | null
+          primary_sport: string | null
+          profile_completed: boolean | null
+          secondary_position: string | null
+          secondary_sport: string | null
           updated_at: string
         }
         Insert: {
           account_type: string
+          citizenship?: string | null
           created_at?: string
+          date_of_birth?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
+          place_of_birth?: string | null
+          primary_position?: string | null
+          primary_sport?: string | null
+          profile_completed?: boolean | null
+          secondary_position?: string | null
+          secondary_sport?: string | null
           updated_at?: string
         }
         Update: {
           account_type?: string
+          citizenship?: string | null
           created_at?: string
+          date_of_birth?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
+          place_of_birth?: string | null
+          primary_position?: string | null
+          primary_sport?: string | null
+          profile_completed?: boolean | null
+          secondary_position?: string | null
+          secondary_sport?: string | null
           updated_at?: string
         }
         Relationships: []
