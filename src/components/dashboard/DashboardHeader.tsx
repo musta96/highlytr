@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { User, Settings, LogOut } from 'lucide-react';
+import { User, Settings, LogOut, Menu } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/auth';
 
-const DashboardHeader = () => {
+interface DashboardHeaderProps {
+  onMenuToggle?: () => void;
+}
+
+const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
   const { user, signOut } = useAuth();
   
   const handleLogout = async () => {
@@ -23,7 +27,14 @@ const DashboardHeader = () => {
   return (
     <header className="border-b bg-white shadow-sm">
       <div className="container flex items-center justify-between h-16 px-4">
-        <h1 className="text-xl font-bold">Dashboard</h1>
+        <div className="flex items-center gap-2">
+          {onMenuToggle && (
+            <Button variant="ghost" size="icon" onClick={onMenuToggle} className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
+          <h1 className="text-xl font-bold">Dashboard</h1>
+        </div>
         
         <div className="flex items-center gap-4">
           <DropdownMenu>
