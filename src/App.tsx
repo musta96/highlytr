@@ -32,6 +32,7 @@ import Privacy from "./pages/Privacy";
 import Cookies from "./pages/Cookies";
 import Help from "./pages/Help";
 import FAQs from "./pages/FAQs";
+import Pricing from "./pages/Pricing";
 
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/about" element={<About />} />
             <Route path="/how-it-works" element={<Layout><HowItWorks /></Layout>} />
+            <Route path="/pricing" element={<Pricing />} />
             
             {/* New routes for previously missing pages */}
             <Route path="/blog" element={<Blog />} />
