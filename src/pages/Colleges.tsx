@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import SearchFilters from '@/components/common/SearchFilters';
 import { Button } from '@/components/ui/button';
-import { MapPin, Trophy, UsersRound } from 'lucide-react';
+import { MapPin, Trophy, UsersRound, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const collegeData = [
@@ -137,21 +137,72 @@ const CollegeCard = ({ college }: { college: typeof collegeData[0] }) => {
 };
 
 const Colleges = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredColleges, setFilteredColleges] = useState(collegeData);
+  const [loading, setLoading] = useState(false);
+
+  // This function would be called by the SearchFilters component
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (!query) {
+      setFilteredColleges(collegeData);
+      return;
+    }
+    
+    const filtered = collegeData.filter(college => 
+      college.name.toLowerCase().includes(query.toLowerCase()) ||
+      college.location.toLowerCase().includes(query.toLowerCase()) ||
+      college.sports.some(sport => sport.toLowerCase().includes(query.toLowerCase()))
+    );
+    
+    setFilteredColleges(filtered);
+  };
+
+  // This function would handle filter changes from the SearchFilters component
+  const handleFilterChange = (filters: any) => {
+    console.log('Applying filters:', filters);
+    // Here you would apply the filters to the college data
+    // For now just logging them
+    
+    // Mock filtering operation
+    setLoading(true);
+    setTimeout(() => {
+      // Apply filters here. For now, just return all data
+      setFilteredColleges(collegeData);
+      setLoading(false);
+    }, 500);
+  };
+
   return (
     <Layout>
       <div className="container py-8">
-        <SearchFilters userType="athlete" />
+        <SearchFilters userType="athlete" onSearch={handleSearch} onFilterChange={handleFilterChange} />
         
         <div className="mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {collegeData.map(college => (
-              <CollegeCard key={college.id} college={college} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-highlyt-blue" />
+            </div>
+          ) : filteredColleges.length === 0 ? (
+            <div className="bg-white rounded-lg p-8 text-center border">
+              <h3 className="text-lg font-medium mb-2">No colleges found</h3>
+              <p className="text-gray-500">
+                Try adjusting your search or filters to find what you're looking for.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {filteredColleges.map(college => (
+                <CollegeCard key={college.id} college={college} />
+              ))}
+            </div>
+          )}
           
-          <div className="mt-8 text-center">
-            <Button variant="outline">Load More Colleges</Button>
-          </div>
+          {filteredColleges.length > 0 && (
+            <div className="mt-8 text-center">
+              <Button variant="outline">Load More Colleges</Button>
+            </div>
+          )}
         </div>
       </div>
     </Layout>

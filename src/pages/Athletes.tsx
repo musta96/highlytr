@@ -1,124 +1,164 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import SearchFilters from '@/components/common/SearchFilters';
 import AthleteCard from '@/components/athlete/AthleteCard';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-
-const athleteData = [
-  {
-    id: 1,
-    name: 'Marco Rossi',
-    sport: 'Soccer',
-    position: 'Forward',
-    age: 18,
-    location: 'Milan, Italy',
-    image: 'https://images.unsplash.com/photo-1606131731446-5568d87113aa',
-    video: 'https://example.com/video1',
-    stats: {
-      gpa: 3.8,
-      goals: 25,
-      assists: 12
-    }
-  },
-  {
-    id: 2,
-    name: 'Sofia Bianchi',
-    sport: 'Soccer',
-    position: 'Midfielder',
-    age: 17,
-    location: 'Rome, Italy',
-    image: 'https://images.unsplash.com/photo-1591117207239-788bf8de6c3b',
-    video: 'https://example.com/video2',
-    stats: {
-      gpa: 3.9,
-      goals: 15,
-      assists: 22
-    }
-  },
-  {
-    id: 3,
-    name: 'Luca Ferrari',
-    sport: 'Soccer',
-    position: 'Goalkeeper',
-    age: 19,
-    location: 'Naples, Italy',
-    image: 'https://images.unsplash.com/photo-1625631976793-a9f11bbb0738',
-    video: 'https://example.com/video3',
-    stats: {
-      gpa: 3.6,
-      cleanSheets: 12,
-      savePercentage: 87
-    }
-  },
-  {
-    id: 4,
-    name: 'Giuseppe Romano',
-    sport: 'Soccer',
-    position: 'Defender',
-    age: 18,
-    location: 'Florence, Italy',
-    image: 'https://images.unsplash.com/photo-1539701938214-0d9736e1c16b',
-    video: 'https://example.com/video4',
-    stats: {
-      gpa: 3.5,
-      goals: 5,
-      assists: 3
-    }
-  },
-  {
-    id: 5,
-    name: 'Elena Moretti',
-    sport: 'Soccer',
-    position: 'Forward',
-    age: 16,
-    location: 'Turin, Italy',
-    image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f',
-    video: 'https://example.com/video5',
-    stats: {
-      gpa: 4.0,
-      goals: 18,
-      assists: 7
-    }
-  },
-  {
-    id: 6,
-    name: 'Antonio Esposito',
-    sport: 'Soccer',
-    position: 'Midfielder',
-    age: 19,
-    location: 'Palermo, Italy',
-    image: 'https://images.unsplash.com/photo-1513090690262-31f025305e91',
-    video: 'https://example.com/video6',
-    stats: {
-      gpa: 3.7,
-      goals: 10,
-      assists: 15
-    }
-  }
-];
+import AthleteFilters from '@/components/athlete/AthleteFilters';
+import { Athlete, searchAthletes } from '@/services/athleteService';
+import { Loader2 } from 'lucide-react';
 
 const Athletes = () => {
+  const [athletes, setAthletes] = useState<Athlete[]>([]);
+  const [filteredAthletes, setFilteredAthletes] = useState<Athlete[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({
+    sport: '',
+    position: '',
+    ageRange: [14, 19],
+    gpaMin: 3.0,
+    location: '',
+    gender: '',
+    sortBy: 'name'
+  });
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  useEffect(() => {
+    const fetchAthletes = async () => {
+      try {
+        setLoading(true);
+        const data = await searchAthletes(searchQuery, filters);
+        setAthletes(data);
+        applyFiltersAndSort(data);
+      } catch (error) {
+        console.error('Error fetching athletes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAthletes();
+  }, [searchQuery, filters]);
+
+  const applyFiltersAndSort = (data: Athlete[]) => {
+    let result = [...data];
+    
+    // Apply sorting
+    switch(filters.sortBy) {
+      case 'name':
+        result.sort((a, b) => 
+          `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`)
+        );
+        break;
+      case 'age':
+        result.sort((a, b) => {
+          const dateA = a.date_of_birth ? new Date(a.date_of_birth) : new Date();
+          const dateB = b.date_of_birth ? new Date(b.date_of_birth) : new Date();
+          return dateA.getTime() - dateB.getTime(); // Younger first
+        });
+        break;
+      case 'gpa':
+        result.sort((a, b) => 
+          (b.stats?.gpa || 0) - (a.stats?.gpa || 0)
+        );
+        break;
+      case 'location':
+        result.sort((a, b) => 
+          (a.place_of_birth || '').localeCompare(b.place_of_birth || '')
+        );
+        break;
+      default:
+        break;
+    }
+    
+    setFilteredAthletes(result);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
+
+  const loadMore = () => {
+    setVisibleCount(prev => Math.min(prev + 6, filteredAthletes.length));
+  };
+
   return (
     <Layout>
       <div className="container py-8">
-        <SearchFilters userType="college" />
+        <AthleteFilters 
+          onSearch={handleSearch} 
+          onFilterChange={handleFilterChange} 
+        />
         
         <div className="mt-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {athleteData.map(athlete => (
-              <AthleteCard key={athlete.id} athlete={athlete} />
-            ))}
-          </div>
-          
-          <div className="mt-8 text-center">
-            <Button variant="outline">Load More Athletes</Button>
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-highlyt-blue" />
+            </div>
+          ) : filteredAthletes.length === 0 ? (
+            <div className="bg-white rounded-lg p-8 text-center border">
+              <h3 className="text-lg font-medium mb-2">No athletes found</h3>
+              <p className="text-gray-500">
+                Try adjusting your search or filters to find what you're looking for.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {filteredAthletes.slice(0, visibleCount).map(athlete => (
+                  <AthleteCard 
+                    key={athlete.id} 
+                    athlete={{
+                      id: Number(athlete.id),
+                      name: `${athlete.first_name} ${athlete.last_name}`,
+                      sport: athlete.primary_sport || 'Unknown Sport',
+                      position: athlete.primary_position || 'Unknown Position',
+                      age: calculateAge(athlete.date_of_birth),
+                      location: athlete.place_of_birth || 'Unknown',
+                      image: athlete.image || 'https://images.unsplash.com/photo-1606131731446-5568d87113aa',
+                      video: athlete.video || 'https://example.com/video',
+                      stats: athlete.stats || { gpa: 0 }
+                    }} 
+                  />
+                ))}
+              </div>
+              
+              {visibleCount < filteredAthletes.length && (
+                <div className="mt-8 text-center">
+                  <Button variant="outline" onClick={loadMore}>
+                    Load More Athletes
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </Layout>
   );
+};
+
+// Helper function to calculate age from date of birth
+const calculateAge = (dateOfBirth: string | null): number => {
+  if (!dateOfBirth) return 0;
+  
+  const dob = new Date(dateOfBirth);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  
+  if (
+    today.getMonth() < dob.getMonth() || 
+    (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())
+  ) {
+    age--;
+  }
+  
+  return age;
 };
 
 export default Athletes;

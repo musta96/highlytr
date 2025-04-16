@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -21,22 +20,43 @@ import { X, Search, Filter } from 'lucide-react';
 
 interface SearchFiltersProps {
   userType?: 'athlete' | 'college' | 'agency';
+  onSearch?: (query: string) => void;
+  onFilterChange?: (filters: any) => void;
 }
 
-const SearchFilters = ({ userType = 'college' }: SearchFiltersProps) => {
+const SearchFilters = ({ 
+  userType = 'college', 
+  onSearch = () => {}, 
+  onFilterChange = () => {} 
+}: SearchFiltersProps) => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
   const [selectedFilters, setSelectedFilters] = React.useState<string[]>([]);
   const [gpaRange, setGpaRange] = React.useState([3.0]);
   const [ageRange, setAgeRange] = React.useState([16]);
+  const [searchQuery, setSearchQuery] = React.useState('');
   
   const addFilter = (filter: string) => {
     if (!selectedFilters.includes(filter)) {
-      setSelectedFilters([...selectedFilters, filter]);
+      const newFilters = [...selectedFilters, filter];
+      setSelectedFilters(newFilters);
+      onFilterChange({ selectedFilters: newFilters, gpaRange, ageRange });
     }
   };
   
   const removeFilter = (filter: string) => {
-    setSelectedFilters(selectedFilters.filter(f => f !== filter));
+    const newFilters = selectedFilters.filter(f => f !== filter);
+    setSelectedFilters(newFilters);
+    onFilterChange({ selectedFilters: newFilters, gpaRange, ageRange });
+  };
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    onSearch(value);
+  };
+  
+  const handleApplyFilters = () => {
+    onFilterChange({ selectedFilters, gpaRange, ageRange });
   };
   
   return (
@@ -53,6 +73,8 @@ const SearchFilters = ({ userType = 'college' }: SearchFiltersProps) => {
               type="search" 
               placeholder={userType === 'college' ? "Search athletes..." : "Search colleges..."} 
               className="pl-9"
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
           </div>
           
@@ -81,7 +103,10 @@ const SearchFilters = ({ userType = 'college' }: SearchFiltersProps) => {
         ))}
         {selectedFilters.length > 0 && (
           <button
-            onClick={() => setSelectedFilters([])}
+            onClick={() => {
+              setSelectedFilters([]);
+              onFilterChange({ selectedFilters: [], gpaRange: [3.0], ageRange: [16] });
+            }}
             className="text-xs text-gray-500 hover:text-gray-700"
           >
             Clear all
@@ -90,7 +115,6 @@ const SearchFilters = ({ userType = 'college' }: SearchFiltersProps) => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Desktop Filters */}
         <div className={`md:block md:col-span-1 ${mobileFiltersOpen ? 'block' : 'hidden'}`}>
           <div className="bg-white p-4 rounded-lg border">
             <h3 className="font-semibold mb-4">Filters</h3>
@@ -291,12 +315,11 @@ const SearchFilters = ({ userType = 'college' }: SearchFiltersProps) => {
             </Accordion>
             
             <div className="mt-6">
-              <Button className="w-full">Apply Filters</Button>
+              <Button className="w-full" onClick={handleApplyFilters}>Apply Filters</Button>
             </div>
           </div>
         </div>
         
-        {/* Right side - will contain the search results */}
         <div className="col-span-1 md:col-span-3">
           <div className="bg-white p-4 rounded-lg border h-96 flex items-center justify-center">
             <p className="text-gray-500 text-center">
