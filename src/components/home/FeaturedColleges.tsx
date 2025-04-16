@@ -2,107 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { MapPin, Trophy, UsersRound } from 'lucide-react';
-
-const collegeData = [
-  {
-    id: 1,
-    name: 'University of California',
-    location: 'Los Angeles, CA',
-    division: 'NCAA Division I',
-    sports: ['Soccer', 'Basketball', 'Swimming'],
-    image: 'https://images.unsplash.com/photo-1598011523399-5baa6e41efdf',
-    logo: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8dW5pdmVyc2l0eSxsb2dvfHx8fHx8MTY4MDY3NjY1NQ&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1080&h=1080&crop=faces&fit=crop',
-    openPositions: 3
-  },
-  {
-    id: 2,
-    name: 'Stanford University',
-    location: 'Palo Alto, CA',
-    division: 'NCAA Division I',
-    sports: ['Soccer', 'Tennis', 'Golf'],
-    image: 'https://images.unsplash.com/photo-1564981797816-1043664bf78d',
-    logo: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8dW5pdmVyc2l0eXx8fHx8fDE2ODA2NzYzMjI&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1080&h=1080&crop=faces&fit=crop',
-    openPositions: 5
-  },
-  {
-    id: 3,
-    name: 'University of Michigan',
-    location: 'Ann Arbor, MI',
-    division: 'NCAA Division I',
-    sports: ['Soccer', 'Football', 'Track & Field'],
-    image: 'https://images.unsplash.com/photo-1574340155242-f0e969be31a1',
-    logo: 'https://images.unsplash.com/photo-1535982330050-f1c2fb79ff78?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8dW5pdmVyc2l0eSxzY2hvb2x8fHx8fHwxNjgwNjc2NzAw&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1080&h=1080&crop=faces&fit=crop',
-    openPositions: 2
-  }
-];
-
-const CollegeCard = ({ college }: { college: typeof collegeData[0] }) => {
-  return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md transition-shadow hover:shadow-lg">
-      <div className="relative">
-        <div className="aspect-video w-full">
-          <img 
-            src={college.image} 
-            alt={college.name} 
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
-        <div className="absolute top-4 left-4">
-          <div className="h-12 w-12 rounded-md bg-white p-1 shadow-md">
-            <img 
-              src={college.logo} 
-              alt={`${college.name} logo`}
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </div>
-        
-        <div className="absolute top-4 right-4 bg-highlyt-blue text-white text-xs py-1 px-2 rounded font-medium">
-          {college.division}
-        </div>
-      </div>
-      
-      <div className="p-4">
-        <h3 className="font-bold text-lg">{college.name}</h3>
-        
-        <div className="flex items-center text-sm text-gray-600 mt-1 mb-3">
-          <MapPin className="h-3.5 w-3.5 mr-1" />
-          <span>{college.location}</span>
-        </div>
-        
-        <div className="flex flex-wrap gap-2 mb-4">
-          {college.sports.map((sport, idx) => (
-            <div key={idx} className="bg-gray-100 text-xs py-1 px-2 rounded">
-              {sport}
-            </div>
-          ))}
-        </div>
-        
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center text-sm">
-            <Trophy className="h-4 w-4 mr-1 text-highlyt-blue" />
-            <span>NCAA Champion 2022</span>
-          </div>
-          <div className="flex items-center text-sm text-highlyt-green">
-            <UsersRound className="h-4 w-4 mr-1" />
-            <span>{college.openPositions} Open Positions</span>
-          </div>
-        </div>
-        
-        <div className="flex gap-3">
-          <Link to={`/colleges/${college.id}`} className="flex-1">
-            <Button variant="outline" size="sm" className="w-full">View College</Button>
-          </Link>
-          <Link to={`/colleges/${college.id}/coaches`} className="flex-1">
-            <Button size="sm" className="w-full">Meet Coaches</Button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { School, Trophy, Clock, Sparkles } from 'lucide-react';
 
 const FeaturedColleges = () => {
   return (
@@ -115,17 +15,53 @@ const FeaturedColleges = () => {
               Top U.S. college athletic programs looking for international soccer talent.
             </p>
           </div>
-          <div className="mt-4 sm:mt-0">
-            <Link to="/colleges">
-              <Button variant="outline">View All Colleges</Button>
-            </Link>
-          </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {collegeData.map(college => (
-            <CollegeCard key={college.id} college={college} />
-          ))}
+        <div className="bg-white rounded-xl p-12 text-center shadow-md">
+          <div className="max-w-2xl mx-auto">
+            <div className="inline-flex items-center justify-center p-3 bg-highlyt-green/20 text-highlyt-green rounded-full mb-6">
+              <Sparkles className="h-8 w-8" />
+            </div>
+            
+            <h3 className="text-2xl md:text-3xl font-bold mb-4">
+              College Partnerships Coming Soon!
+            </h3>
+            
+            <p className="text-lg text-gray-600 mb-8">
+              We're currently establishing partnerships with top U.S. colleges and universities. 
+              Be the first to connect with international athletic talent when we launch!
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/contact">
+                <Button size="lg" className="w-full sm:w-auto">
+                  <School className="mr-2 h-5 w-5" />
+                  Partner with Us
+                </Button>
+              </Link>
+              <Link to="/for-colleges">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                  Learn More
+                </Button>
+              </Link>
+            </div>
+            
+            <div className="mt-12 flex items-center justify-center space-x-8">
+              <div className="flex flex-col items-center">
+                <Clock className="h-6 w-6 text-highlyt-blue mb-2" />
+                <span className="text-gray-600 text-sm">Launching</span>
+                <span className="font-bold text-xl">Fall 2025</span>
+              </div>
+              
+              <div className="h-12 border-l border-gray-300"></div>
+              
+              <div className="flex flex-col items-center">
+                <Trophy className="h-6 w-6 text-amber-500 mb-2" />
+                <span className="text-gray-600 text-sm">Target</span>
+                <span className="font-bold text-xl">50+ NCAA Colleges</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
