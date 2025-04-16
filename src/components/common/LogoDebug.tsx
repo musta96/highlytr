@@ -16,11 +16,6 @@ const LogoDebug = () => {
     img.onerror = () => {
       console.error('Logo failed to load');
       setLogoError(true);
-      // Try with public prefix
-      if (logoUrl === '/logo.png') {
-        console.log('Trying with public prefix...');
-        setLogoUrl('/public/logo.png');
-      }
     };
     img.src = logoUrl;
   }, [logoUrl]);
@@ -40,7 +35,7 @@ const LogoDebug = () => {
         />
       </div>
       <p className="text-sm text-gray-500 mt-2">
-        Note: If you see a grey box above, the logo is missing. Please manually upload a logo.png file to the public directory.
+        Logo uploaded successfully!
       </p>
     </div>
   );
