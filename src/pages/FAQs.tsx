@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import {
   Accordion,
@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 
 const FAQs = () => {
+  const [searchTerm, useState] = useState('');
+  
   // FAQ categories
   const categories = [
     {
@@ -20,19 +22,23 @@ const FAQs = () => {
       faqs: [
         {
           question: 'What is HighLytr?',
-          answer: 'HighLytr is a platform that connects international high school athletes with U.S. college coaches and sports programs. We help talented athletes showcase their skills and get discovered by colleges that match their athletic and academic goals.'
+          answer: 'HighLytr is a digital recruitment platform that connects international high school athletes with U.S. college coaches and sports agencies. It simplifies the recruitment process, makes discovery easier, and reduces costs for all parties.'
         },
         {
-          question: 'Is HighLytr free to use?',
-          answer: 'We offer both free and premium tiers. The free tier allows athletes to create basic profiles, while our premium plans provide enhanced visibility, advanced features, and priority support.'
+          question: 'Is HighLytr free?',
+          answer: 'Yes! Currently, HighLytr is free for athletes, colleges, and agencies during the launch phase. Premium features and pricing plans are planned for future release, but for now, all core functionality is accessible at no cost.'
         },
         {
-          question: 'How do I create an account?',
-          answer: 'You can create an account by clicking the "Sign Up" button at the top right of the page. Follow the registration process, verify your email, and set up your profile.'
+          question: 'Who can use HighLytr?',
+          answer: 'We support three types of users: International high school athletes (ages 14–19), College coaches and staff from U.S. institutions, and Verified sports agencies representing young athletes.'
         },
         {
-          question: 'Which sports are supported on HighLytr?',
-          answer: 'We currently support a wide range of sports including basketball, soccer, volleyball, tennis, swimming, track and field, baseball, softball, and many more. We regularly add new sports based on demand.'
+          question: 'What sports does HighLytr support?',
+          answer: 'We are starting with Soccer and Basketball — the two most globally popular recruitment sports — and will gradually expand to include Tennis, Track & Field, Volleyball, Swimming, and others.'
+        },
+        {
+          question: 'How is HighLytr different from Hudl or NCSA?',
+          answer: 'Unlike Hudl (highlight-focused) and NCSA (agency-based and expensive), HighLytr is designed specifically for international athletes. It offers direct access to colleges, tools to manage recruitment, and an affordable freemium model.'
         }
       ]
     },
@@ -41,20 +47,32 @@ const FAQs = () => {
       title: 'For Athletes',
       faqs: [
         {
-          question: 'How do I make my profile stand out to colleges?',
-          answer: 'Complete all sections of your profile, including athletic achievements, academic information, and personal statement. Upload high-quality highlight videos and keep your statistics updated. Regularly engage with the platform by responding to messages promptly.'
+          question: 'Who can register as an athlete?',
+          answer: 'Any international student-athlete aged 14–19 who is not already enrolled in a U.S. college program and wants to pursue athletic scholarships and higher education.'
         },
         {
-          question: 'What information should I include in my athletic profile?',
-          answer: 'Include your sport, position, key statistics, competition history, notable achievements, training history, and physical attributes. Also add academic information like GPA, test scores, and intended major.'
+          question: 'How do I get started?',
+          answer: 'Simply sign up for free, choose the "Athlete" role, and begin completing your profile by adding basic information, videos, stats, and preferences.'
         },
         {
-          question: 'How can I contact college coaches?',
-          answer: 'Once you\'ve created your profile, you can search for colleges and coaches that match your interests. Our messaging system allows you to send introduction messages and respond to inquiries from interested coaches.'
+          question: 'What can I do on the platform?',
+          answer: 'Build a public profile with academic and athletic details, upload highlight videos, search and save U.S. colleges, view coaches, connect with staff, and message them (if connected), and track profile completeness and visibility.'
         },
         {
-          question: 'What types of videos should I upload?',
-          answer: 'Upload highlight reels that showcase your best plays, as well as game footage that demonstrates your overall skill level. Include videos that highlight your specific position skills and athletic abilities.'
+          question: 'Do I need to be represented by an agency?',
+          answer: 'Not at all! You can use HighLytr independently. If you are already represented by an agency, they can manage your profile and link it to their account.'
+        },
+        {
+          question: 'What does "Agency Recruit" mean?',
+          answer: 'If you\'re managed by a verified agency, your profile will be marked as "Agency Recruit," signaling credibility and representation to coaches.'
+        },
+        {
+          question: 'Will it always be free?',
+          answer: 'At the moment, yes! In the near future, we\'ll introduce Premium plans (Pro: $9.99/month or $99/year), but you\'ll always have access to a solid free version.'
+        },
+        {
+          question: 'Can I share my profile?',
+          answer: 'Yes. Each athlete has a unique public profile link you can share with friends, coaches, or on social media.'
         }
       ]
     },
@@ -63,20 +81,54 @@ const FAQs = () => {
       title: 'For Colleges',
       faqs: [
         {
-          question: 'How can our college find athletes on HighLytr?',
-          answer: 'Our advanced search filters allow you to search for athletes based on specific criteria like sport, position, physical attributes, academic performance, and geographic location.'
+          question: 'Who can sign up as a college?',
+          answer: 'Only U.S.-based college staff, coaches, or admissions officers with a valid .edu email address can create a verified college account.'
         },
         {
-          question: 'Can multiple coaches from the same college have access?',
-          answer: 'Yes, our college plans allow multiple coaches and staff members to access the platform under the same institutional account. Each user can have their own login credentials and preferences.'
+          question: 'What can I do on HighLytr?',
+          answer: 'Search a global talent pool of international athletes, filter by sport, nationality, GPA, age, gender, and more, view profiles and highlight videos, save athletes to scouting lists, message athletes or their agencies after connecting, and collaborate with your staff on recruiting tasks.'
         },
         {
-          question: 'How do we verify our college account?',
-          answer: 'We verify all college accounts through an institutional email address and additional documentation. This process ensures that only legitimate college representatives can access athlete information.'
+          question: 'What does a college profile include?',
+          answer: 'Your page will show basic school info, sports programs offered, current roster openings, scholarship info, and coach/staff directories.'
         },
         {
-          question: 'What tools do colleges have for tracking prospects?',
-          answer: 'Our platform provides tools for saving prospects, creating recruitment lists, tracking communication history, making notes, and setting reminders for follow-ups.'
+          question: 'Is there a cost?',
+          answer: 'Currently, HighLytr is free for colleges. In the future, we will offer quote-based annual subscription plans per sport (e.g. $10k/year/sport) — but for now, you get full access at no cost.'
+        },
+        {
+          question: 'How do I verify my account?',
+          answer: 'You must register using your college-issued .edu email address. Once verified, you\'ll have full access to athlete search and messaging features.'
+        }
+      ]
+    },
+    {
+      id: 'agencies',
+      title: 'For Agencies',
+      faqs: [
+        {
+          question: 'Who can join as an agency?',
+          answer: 'Any verified and legitimate sports recruitment agency that works with international athletes. Verification is required before full access is granted.'
+        },
+        {
+          question: 'What can I do as an agency?',
+          answer: 'Create and manage profiles for athletes under your representation, track athlete profile views and activity, contact college staff directly, monitor athlete placement progress, and organize athletes by sport, region, or status.'
+        },
+        {
+          question: 'Is there a cost to join?',
+          answer: 'Access is currently free. We operate a success-based model — meaning you only pay a fee if your athlete is successfully recruited via HighLytr. This fee will be agreed upon in a transparent contract.'
+        },
+        {
+          question: 'Can I manage multiple athletes?',
+          answer: 'Yes. You can create, edit, and track multiple athlete profiles from a single dashboard. Each of your athletes will be labeled with an "Agency Recruit" badge.'
+        },
+        {
+          question: 'Can I contact colleges directly?',
+          answer: 'Yes. Once your agency is verified, you can search for colleges by sport and region and initiate connections or messages.'
+        },
+        {
+          question: 'How is success tracked?',
+          answer: 'Your dashboard includes a placement funnel that tracks athletes from first contact to scholarship/offer. This will be expanded with more analytics soon.'
         }
       ]
     }
