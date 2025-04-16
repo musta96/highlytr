@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +20,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AthleteDetail from "./pages/AthleteDetail";
 import ProfileSetup from "./pages/ProfileSetup";
-import HowItWorks from "./components/home/HowItWorks";
+import HowItWorks from "./pages/HowItWorks";
 import Layout from "./components/layout/Layout";
 
 // New Pages
@@ -67,7 +67,7 @@ const App = () => (
             <Route path="/colleges" element={<Colleges />} />
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/about" element={<About />} />
-            <Route path="/how-it-works" element={<Layout><HowItWorks /></Layout>} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             
