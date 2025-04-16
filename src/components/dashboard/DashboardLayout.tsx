@@ -30,13 +30,13 @@ const DashboardLayout = () => {
       <div className="flex-1 flex overflow-hidden">
         <aside 
           className={cn(
-            "border-r bg-background transition-all duration-300 ease-in-out",
+            "border-r bg-background transition-all duration-300 ease-in-out z-50",
             sidebarOpen ? "w-64" : "w-16",
-            isMobile ? "fixed inset-y-0 z-50 mt-16" : "relative",
+            isMobile ? "fixed inset-y-0 mt-16" : "relative",
             !sidebarOpen && isMobile && "-translate-x-full"
           )}
         >
-          <DashboardSidebar />
+          <DashboardSidebar collapsed={!sidebarOpen} />
         </aside>
         <main 
           className={cn(
@@ -44,7 +44,7 @@ const DashboardLayout = () => {
             isMobile ? "w-full" : sidebarOpen ? "ml-64" : "ml-16"
           )}
         >
-          <div className="container py-6">
+          <div className="container py-4 px-4 sm:px-6 max-w-7xl">
             <Outlet />
           </div>
         </main>
@@ -55,6 +55,7 @@ const DashboardLayout = () => {
         <div 
           className="fixed inset-0 bg-black/50 z-40"
           onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
     </div>

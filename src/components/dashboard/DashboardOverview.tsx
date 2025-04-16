@@ -10,7 +10,22 @@ import {
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Eye, MessageCircle, Bell, Users, ArrowRight } from 'lucide-react';
+import { 
+  Eye, 
+  MessageCircle, 
+  Bell, 
+  Users, 
+  ArrowRight, 
+  Video, 
+  Edit, 
+  Search, 
+  BookOpen,
+  Trophy,
+  Medal
+} from 'lucide-react';
+import XPBar from './XPBar';
+import LeaderboardPreview from './LeaderboardPreview';
+import { useAuth } from '@/hooks/useAuth';
 
 const profileViewsData = [
   { name: 'Mon', views: 4 },
@@ -22,21 +37,161 @@ const profileViewsData = [
   { name: 'Sun', views: 9 },
 ];
 
+// Sample leaderboard data
+const sampleLeaderboardData = [
+  { id: '1', name: 'Maria S.', rank: 1, score: 345, change: 0 },
+  { id: '2', name: 'James T.', rank: 2, score: 312, change: 2 },
+  { id: 'current-user', name: 'Alex D.', rank: 3, score: 298, change: 5 },
+  { id: '4', name: 'Sarah M.', rank: 4, score: 276, change: -2 },
+  { id: '5', name: 'Kevin P.', rank: 5, score: 254, change: -1 },
+];
+
+// Sample badges
+const sampleBadges = [
+  { name: 'Rising Star', icon: 'Star', description: 'Improved profile views by 50% in one week' },
+  { name: 'Recruiter Favorite', icon: 'Award', description: 'Added to 5+ college lists' },
+];
+
 const DashboardOverview = () => {
-  // This would come from user authentication in a real app
-  // Define userType as a generic string to avoid type comparison issues
-  const userType: string = 'athlete';
+  const { user, accountType } = useAuth();
+  
+  // Define quick links based on account type
+  const getQuickLinks = () => {
+    if (accountType === 'athlete') {
+      return (
+        <>
+          <Link to="/profile/edit">
+            <Button variant="outline" className="w-full justify-start">
+              <Edit className="mr-2 h-4 w-4" />
+              Update Profile
+            </Button>
+          </Link>
+          <Link to="/videos/upload">
+            <Button variant="outline" className="w-full justify-start">
+              <Video className="mr-2 h-4 w-4" />
+              Upload Video
+            </Button>
+          </Link>
+          <Link to="/dashboard/colleges/search">
+            <Button variant="outline" className="w-full justify-start">
+              <Search className="mr-2 h-4 w-4" />
+              Find Colleges
+            </Button>
+          </Link>
+          <Link to="/dashboard/analytics">
+            <Button variant="outline" className="w-full justify-start">
+              <BarChart className="mr-2 h-4 w-4" />
+              View Analytics
+            </Button>
+          </Link>
+        </>
+      );
+    } else if (accountType === 'college') {
+      return (
+        <>
+          <Link to="/dashboard/athletes/search">
+            <Button variant="outline" className="w-full justify-start">
+              <Search className="mr-2 h-4 w-4" />
+              Find Athletes
+            </Button>
+          </Link>
+          <Link to="/college/edit">
+            <Button variant="outline" className="w-full justify-start">
+              <Edit className="mr-2 h-4 w-4" />
+              Update College Profile
+            </Button>
+          </Link>
+          <Link to="/staff/manage">
+            <Button variant="outline" className="w-full justify-start">
+              <Users className="mr-2 h-4 w-4" />
+              Manage Staff Accounts
+            </Button>
+          </Link>
+          <Link to="/dashboard/analytics">
+            <Button variant="outline" className="w-full justify-start">
+              <BarChart className="mr-2 h-4 w-4" />
+              Recruiting Analytics
+            </Button>
+          </Link>
+        </>
+      );
+    } else if (accountType === 'agency') {
+      return (
+        <>
+          <Link to="/dashboard/represented">
+            <Button variant="outline" className="w-full justify-start">
+              <Users className="mr-2 h-4 w-4" />
+              Manage Athletes
+            </Button>
+          </Link>
+          <Link to="/dashboard/colleges/search">
+            <Button variant="outline" className="w-full justify-start">
+              <Search className="mr-2 h-4 w-4" />
+              Find Colleges
+            </Button>
+          </Link>
+          <Link to="/agency/edit">
+            <Button variant="outline" className="w-full justify-start">
+              <Edit className="mr-2 h-4 w-4" />
+              Update Agency Profile
+            </Button>
+          </Link>
+          <Link to="/dashboard/placements">
+            <Button variant="outline" className="w-full justify-start">
+              <Medal className="mr-2 h-4 w-4" />
+              View Placements
+            </Button>
+          </Link>
+        </>
+      );
+    }
+    
+    return null;
+  };
   
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="h3 mb-2">Dashboard Overview</h2>
+        <h2 className="text-3xl font-bold mb-2">Dashboard Overview</h2>
         <p className="text-muted-foreground">
           Welcome back! Here's what's happening with your profile.
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Main dashboard cards - now more responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {accountType === 'athlete' && (
+          <Card className="col-span-full sm:col-span-2 lg:col-span-1 order-first lg:order-none">
+            <CardHeader className="pb-2">
+              <CardTitle>My Progress</CardTitle>
+              <CardDescription>Level up your recruiting journey</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <XPBar 
+                currentXP={650} 
+                maxXP={1000} 
+                level={3} 
+                badges={sampleBadges}
+              />
+              
+              <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                <div className="p-2 rounded bg-muted/30">
+                  <p className="text-lg font-bold">42</p>
+                  <p className="text-xs text-muted-foreground">Profile Views</p>
+                </div>
+                <div className="p-2 rounded bg-muted/30">
+                  <p className="text-lg font-bold">5</p>
+                  <p className="text-xs text-muted-foreground">Videos</p>
+                </div>
+                <div className="p-2 rounded bg-muted/30">
+                  <p className="text-lg font-bold">8</p>
+                  <p className="text-xs text-muted-foreground">College Saves</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
@@ -108,7 +263,7 @@ const DashboardOverview = () => {
               </div>
             </div>
             
-            <Link to="/messages">
+            <Link to="/dashboard/messages">
               <Button variant="ghost" size="sm" className="w-full mt-4">
                 View All Messages
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -117,65 +272,30 @@ const DashboardOverview = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="sm:col-span-2 lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
             <CardDescription>What you can do now</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {userType === 'athlete' && (
-              <>
-                <Link to="/profile/edit">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Update Profile
-                  </Button>
-                </Link>
-                <Link to="/videos/upload">
-                  <Button variant="outline" className="w-full justify-start">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 h-4 w-4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                    </svg>
-                    Upload Video
-                  </Button>
-                </Link>
-                <Link to="/colleges/search">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="mr-2 h-4 w-4" />
-                    Find Colleges
-                  </Button>
-                </Link>
-              </>
-            )}
-            
-            {userType === 'college' && (
-              <>
-                <Link to="/athletes/search">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="mr-2 h-4 w-4" />
-                    Find Athletes
-                  </Button>
-                </Link>
-                <Link to="/college/edit">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Update College Profile
-                  </Button>
-                </Link>
-                <Link to="/staff/manage">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="mr-2 h-4 w-4" />
-                    Manage Staff Accounts
-                  </Button>
-                </Link>
-              </>
-            )}
+            {getQuickLinks()}
           </CardContent>
         </Card>
       </div>
       
-      {userType === 'athlete' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Secondary content - better organized for mobile */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Leaderboard preview - only shown for athletes */}
+        {accountType === 'athlete' && (
+          <div>
+            <LeaderboardPreview 
+              users={sampleLeaderboardData}
+              currentUserId="current-user"
+            />
+          </div>
+        )}
+        
+        {accountType === 'athlete' && (
           <Card>
             <CardHeader>
               <CardTitle>Upcoming Events</CardTitle>
@@ -210,8 +330,11 @@ const DashboardOverview = () => {
               </div>
             </CardContent>
           </Card>
-          
-          <Card>
+        )}
+        
+        {/* Show profile completion card for athletes */}
+        {accountType === 'athlete' && (
+          <Card className={accountType === 'athlete' ? "md:col-span-2" : ""}>
             <CardHeader>
               <CardTitle>Profile Completion</CardTitle>
               <CardDescription>Complete your profile to get noticed</CardDescription>
@@ -228,28 +351,26 @@ const DashboardOverview = () => {
                   </div>
                 </div>
                 
-                <Link to="/profile/edit">
-                  <Button variant="outline" size="sm" className="w-full text-left justify-start">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 h-4 w-4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Add Academic Records
-                  </Button>
-                </Link>
-                
-                <Link to="/videos/upload">
-                  <Button variant="outline" size="sm" className="w-full text-left justify-start">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 h-4 w-4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Upload Game Footage
-                  </Button>
-                </Link>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link to="/profile/academic">
+                    <Button variant="outline" size="sm" className="w-full text-left justify-start">
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      Add Academic Records
+                    </Button>
+                  </Link>
+                  
+                  <Link to="/videos/upload">
+                    <Button variant="outline" size="sm" className="w-full text-left justify-start">
+                      <Video className="mr-2 h-4 w-4" />
+                      Upload Game Footage
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
