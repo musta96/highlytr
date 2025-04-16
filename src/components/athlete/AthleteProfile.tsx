@@ -10,10 +10,17 @@ import PhysicalAttributes from './profile/PhysicalAttributes';
 import HighlightReels from './profile/HighlightReels';
 import PerformanceStats from './profile/PerformanceStats';
 
-const AthleteProfile = () => {
+interface AthleteProfileProps {
+  athleteId?: string;
+}
+
+const AthleteProfile = ({ athleteId }: AthleteProfileProps) => {
   const [profile, setProfile] = useState(mockAthleteProfile);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // In a real app, we would fetch the athlete data based on the athleteId
+  // For now, we're using the mock data
   
   const handleProfileVisibilityChange = () => {
     setProfile(prev => ({ ...prev, isPublic: !prev.isPublic }));
