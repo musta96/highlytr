@@ -26,6 +26,10 @@ const Footer = () => {
                 src="/logo.png" 
                 alt="HighLytr Logo" 
                 className="h-8 w-8 rounded-full object-contain"
+                onError={(e) => { 
+                  console.error('Logo failed to load', e);
+                  e.currentTarget.src = '/placeholder.svg'; 
+                }}
               />
               <span className="font-bold text-xl">HighLytr</span>
             </Link>
