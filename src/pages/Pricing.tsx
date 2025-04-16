@@ -414,7 +414,13 @@ const Pricing = () => {
             We offer tailored plans for high schools, colleges, and large recruitment agencies. 
             Contact our sales team to discuss your specific needs.
           </p>
-          <Button size="lg" className="bg-highlyt-blue hover:bg-highlyt-blue-dark">Contact Sales</Button>
+          <Button 
+            size="lg" 
+            className="bg-highlyt-blue hover:bg-highlyt-blue-dark" 
+            asChild
+          >
+            <Link to="/contact">Contact Sales</Link>
+          </Button>
         </div>
       </div>
     </Layout>
