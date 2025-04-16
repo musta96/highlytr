@@ -16,6 +16,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const Pricing = () => {
   const athletePlans = [
     {
+      id: 'launch-special',
+      name: 'Launch Special',
+      description: 'Unlimited features for all athletes - Limited Time Offer!',
+      price: '0',
+      period: 'limited time',
+      features: [
+        'Enhanced athlete profile',
+        'Unlimited video uploads',
+        'Direct coach messaging',
+        'Performance analytics',
+        'Eligibility assessment',
+        'Priority support',
+        'College matching algorithm'
+      ],
+      buttonText: 'Get Started Now',
+      highlighted: true,
+      badge: 'Limited Time'
+    },
+    {
       id: 'free',
       name: 'Free',
       description: 'Basic access for athletes getting started',
@@ -76,10 +95,10 @@ const Pricing = () => {
   
   const collegePlans = [
     {
-      id: 'free',
+      id: 'launch-special',
       name: 'Launch Special',
-      description: 'Full access during platform launch',
-      price: '0',
+      description: 'Complete platform access - Everything is FREE!',
+      price: 'FREE',
       period: 'limited time',
       features: [
         'Full athlete database access',
@@ -87,18 +106,19 @@ const Pricing = () => {
         'Direct athlete messaging',
         'Recruitment tracking',
         'Team collaboration tools',
-        'Basic analytics',
+        'Advanced analytics',
+        'No limitations'
       ],
-      buttonText: 'Get Started',
+      buttonText: 'Get Started Now',
       highlighted: true,
-      badge: 'Current Offer'
+      badge: 'Limited Time'
     },
     {
       id: 'enterprise',
       name: 'Enterprise',
       description: 'Custom solution for athletic departments',
-      price: '~10k',
-      period: 'per year/sport',
+      price: 'Contact Sales',
+      period: 'custom pricing',
       features: [
         'Full platform access',
         'Advanced AI athlete matching',
@@ -108,7 +128,7 @@ const Pricing = () => {
         'API integration options',
         'Dedicated account manager'
       ],
-      buttonText: 'Contact Sales',
+      buttonText: 'Coming Soon',
       highlighted: false,
       comingSoon: true
     }
@@ -116,11 +136,11 @@ const Pricing = () => {
   
   const agencyPlans = [
     {
-      id: 'verified',
-      name: 'Verified Agency',
-      description: 'For established recruitment agencies',
-      price: 'Free',
-      period: 'upon verification',
+      id: 'launch-special',
+      name: 'Launch Special',
+      description: 'Complete platform access - Everything is FREE!',
+      price: 'FREE',
+      period: 'limited time',
       features: [
         'Agency profile & verification badge',
         'Athlete portfolio management',
@@ -128,16 +148,18 @@ const Pricing = () => {
         'Placement tracking dashboard',
         'Direct messaging with colleges',
         'Analytics and reporting',
+        'No limitations'
       ],
-      buttonText: 'Apply for Verification',
+      buttonText: 'Get Started Now',
       highlighted: true,
+      badge: 'Limited Time'
     },
     {
       id: 'premium',
       name: 'Success-Fee Model',
-      description: 'Pay only for successful placements',
-      price: 'Success-based',
-      period: 'contractual terms',
+      description: 'Custom solutions for established agencies',
+      price: 'Contact Sales',
+      period: 'custom terms',
       features: [
         'All verified features',
         'Performance-based pricing',
@@ -147,31 +169,9 @@ const Pricing = () => {
         'Enhanced analytics',
         'API access'
       ],
-      buttonText: 'Contact Sales',
+      buttonText: 'Coming Soon',
       highlighted: false,
-    }
-  ];
-  
-  const faqs = [
-    {
-      question: 'Can I switch plans later?',
-      answer: 'Yes, you can upgrade, downgrade or cancel your plan at any time. Changes will take effect on your next billing cycle.'
-    },
-    {
-      question: 'Is there a contract or commitment?',
-      answer: 'No, all our plans are month-to-month. You can cancel anytime without penalty.'
-    },
-    {
-      question: 'What payment methods do you accept?',
-      answer: 'We accept all major credit cards, including Visa, Mastercard, and American Express. We also offer PayPal as a payment option.'
-    },
-    {
-      question: 'Are premium features worth it?',
-      answer: 'Premium features are designed to significantly increase your visibility to college recruiters and improve your chances of getting noticed. For serious athletes, the investment often pays off quickly.'
-    },
-    {
-      question: 'Is my data secure?',
-      answer: 'Yes, we take security seriously. All data is encrypted and we never share your personal information with third parties without your consent.'
+      comingSoon: true
     }
   ];
 
