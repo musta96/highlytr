@@ -19,49 +19,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
-        console.log('Auth state changed:', event, currentSession);
+        console.log('Auth state changed:', event, currentSession?.user?.id);
+        
+        // Update session and user state
         setSession(currentSession);
         const currentUser = currentSession?.user ?? null;
         setUser(currentUser);
         
         // Check profile completion status when user authenticates
         if (currentUser) {
-          const isCompleted = await checkProfileStatus(currentUser.id);
-          setProfileCompleted(isCompleted);
-          
-          // Get user's account type from metadata
-          const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
-          console.log('Account type from metadata:', userType, currentUser.user_metadata);
-          setAccountType(userType || null);
+          try {
+            const isCompleted = await checkProfileStatus(currentUser.id);
+            setProfileCompleted(isCompleted);
+            
+            // Get user's account type from metadata
+            const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
+            console.log('Account type from metadata:', userType, currentUser.user_metadata);
+            setAccountType(userType || null);
+          } catch (error) {
+            console.error('Error checking profile status:', error);
+          }
         } else {
           setProfileCompleted(false);
           setAccountType(null);
         }
         
+        // Always finish by setting loading to false
         setLoading(false);
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
-      console.log('Retrieved session:', currentSession);
-      setSession(currentSession);
-      const currentUser = currentSession?.user ?? null;
-      setUser(currentUser);
-      
-      // Check profile completion status
-      if (currentUser) {
-        const isCompleted = await checkProfileStatus(currentUser.id);
-        setProfileCompleted(isCompleted);
+    // Check for existing session on app load
+    const checkExistingSession = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        console.log('Retrieved session on load:', currentSession?.user?.id);
         
-        // Get user's account type from metadata
-        const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
-        console.log('Account type from metadata:', userType, currentUser.user_metadata);
-        setAccountType(userType || null);
+        setSession(currentSession);
+        const currentUser = currentSession?.user ?? null;
+        setUser(currentUser);
+        
+        // Check profile completion status
+        if (currentUser) {
+          const isCompleted = await checkProfileStatus(currentUser.id);
+          setProfileCompleted(isCompleted);
+          
+          // Get user's account type from metadata
+          const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
+          console.log('Account type from metadata on load:', userType);
+          setAccountType(userType || null);
+        }
+      } catch (error) {
+        console.error('Error getting session:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
-    });
+    };
+    
+    checkExistingSession();
 
     // Cleanup subscription
     return () => {
@@ -79,25 +94,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         console.error('Sign in error:', error);
-        throw error;
+        return { error: error };
       }
       
-      console.log('Sign in successful:', data);
+      console.log('Sign in successful:', data.user?.id);
       
-      // Check profile completion status after sign in
-      if (data.user) {
-        const isCompleted = await checkProfileStatus(data.user.id);
-        setProfileCompleted(isCompleted);
-        
-        // Get account type from user metadata
-        const userType = data.user.user_metadata?.accountType as AccountType | undefined;
-        console.log('Retrieved account type after login:', userType);
-        setAccountType(userType || null);
-      }
-      
+      // We don't need to manually set the user/session here as the onAuthStateChange handler will do it
       return { error: null };
     } catch (error: any) {
-      console.error('Sign in error:', error);
+      console.error('Sign in exception:', error);
       return { error: { message: error.message } };
     }
   };
@@ -138,10 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Signing out...');
       await supabase.auth.signOut();
-      setUser(null);
-      setSession(null);
-      setProfileCompleted(false);
-      setAccountType(null);
+      // The state will be updated by the onAuthStateChange handler
       console.log('Sign out successful');
     } catch (error: any) {
       console.error('Error signing out:', error);

@@ -16,7 +16,7 @@ const RequireProfileSetup = () => {
       // Only redirect if we're not already on the correct dashboard path
       if (!location.pathname.startsWith(dashboardPath)) {
         console.log(`Redirecting to ${dashboardPath} - User:`, user.id, 'Account type:', accountType);
-        navigate(dashboardPath);
+        navigate(dashboardPath, { replace: true });
       }
     }
   }, [user, loading, profileCompleted, accountType, location.pathname, navigate]);

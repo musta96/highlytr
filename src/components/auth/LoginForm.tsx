@@ -31,6 +31,7 @@ const LoginForm = () => {
   // Redirect if user is already logged in
   useEffect(() => {
     if (user && accountType) {
+      console.log("User already logged in, redirecting to dashboard", { accountType });
       const dashboardPath = `/dashboard/${accountType.toLowerCase()}`;
       navigate(dashboardPath);
     }
@@ -47,22 +48,22 @@ const LoginForm = () => {
 
       if (error) {
         console.error("Login error:", error.message);
-        toast(`Error: ${error.message}`, {
+        toast.error(`Error: ${error.message}`, {
           description: "Please check your credentials and try again.",
         });
         setIsLoading(false);
         return;
       }
 
-      toast(`Login successful!`, {
+      toast.success(`Login successful!`, {
         description: "Redirecting to dashboard...",
       });
       
-      // Note: No need to navigate here, the useEffect will handle redirect
+      // Note: We'll let the useEffect handle the redirect
       // when the user state is updated
     } catch (error: any) {
       console.error("Unexpected login error:", error);
-      toast(`Sign in failed`, {
+      toast.error(`Sign in failed`, {
         description: "An unexpected error occurred. Please try again.",
       });
     } finally {
