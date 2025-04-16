@@ -34,6 +34,12 @@ import Help from "./pages/Help";
 import FAQs from "./pages/FAQs";
 import Pricing from "./pages/Pricing";
 
+// New Section Pages
+import ForAthletes from "./pages/ForAthletes";
+import ForColleges from "./pages/ForColleges";
+import ForAgencies from "./pages/ForAgencies";
+import SuccessStories from "./pages/SuccessStories";
+
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RequireProfileSetup from "./components/auth/RequireProfileSetup";
@@ -62,6 +68,12 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/how-it-works" element={<Layout><HowItWorks /></Layout>} />
             <Route path="/pricing" element={<Pricing />} />
+            
+            {/* User type sections */}
+            <Route path="/for-athletes" element={<ForAthletes />} />
+            <Route path="/for-colleges" element={<ForColleges />} />
+            <Route path="/for-agencies" element={<ForAgencies />} />
+            <Route path="/success-stories" element={<SuccessStories />} />
             
             {/* New routes for previously missing pages */}
             <Route path="/blog" element={<Blog />} />

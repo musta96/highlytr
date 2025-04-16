@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { AlignJustify, X, User } from 'lucide-react';
+import { AlignJustify, X, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -11,6 +11,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
@@ -37,6 +39,12 @@ const Navbar = () => {
     }
   };
 
+  const mainNavItems = [
+    { title: 'For Athletes', href: '/for-athletes' },
+    { title: 'For Colleges', href: '/for-colleges' },
+    { title: 'For Agencies', href: '/for-agencies' },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
@@ -51,23 +59,51 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link to="/athletes" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
-            Athletes
-          </Link>
-          <Link to="/colleges" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
-            Colleges
-          </Link>
-          <Link to="/agencies" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
-            Agencies
-          </Link>
+          {/* Primary Navigation */}
+          {mainNavItems.map((item) => (
+            <Link 
+              key={item.href}
+              to={item.href} 
+              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+            >
+              {item.title}
+            </Link>
+          ))}
+
+          {/* Resources Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="text-sm font-medium hover:text-highlyt-blue transition-colors flex items-center gap-1">
+                Resources <ChevronDown className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <Link to="/about" className="w-full">About Us</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/how-it-works" className="w-full">How It Works</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/success-stories" className="w-full">Success Stories</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/blog" className="w-full">Blog</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/faqs" className="w-full">FAQs</Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link to="/pricing" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
             Pricing
           </Link>
-          <Link to="/how-it-works" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
-            How It Works
-          </Link>
-          <Link to="/about" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
-            About
+
+          <Link to="/contact" className="text-sm font-medium hover:text-highlyt-blue transition-colors">
+            Contact
           </Link>
         </nav>
 
@@ -90,6 +126,7 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/settings">Settings</Link>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   Logout
                 </DropdownMenuItem>
@@ -122,27 +159,60 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden container py-4 animate-fade-in">
           <nav className="flex flex-col space-y-4">
-            <Link 
-              to="/athletes" 
-              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Athletes
-            </Link>
-            <Link 
-              to="/colleges" 
-              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Colleges
-            </Link>
-            <Link 
-              to="/agencies" 
-              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Agencies
-            </Link>
+            {/* Main Nav Items */}
+            {mainNavItems.map((item) => (
+              <Link 
+                key={item.href}
+                to={item.href} 
+                className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.title}
+              </Link>
+            ))}
+            
+            {/* Resources Section */}
+            <div className="border-t pt-2 mt-2">
+              <p className="text-sm text-muted-foreground mb-2">Resources</p>
+              <div className="flex flex-col space-y-3 pl-2">
+                <Link 
+                  to="/about" 
+                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  About Us
+                </Link>
+                <Link 
+                  to="/how-it-works" 
+                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  How It Works
+                </Link>
+                <Link 
+                  to="/success-stories" 
+                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Success Stories
+                </Link>
+                <Link 
+                  to="/blog" 
+                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Blog
+                </Link>
+                <Link 
+                  to="/faqs" 
+                  className="text-sm font-medium hover:text-highlyt-blue transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  FAQs
+                </Link>
+              </div>
+            </div>
+            
             <Link 
               to="/pricing" 
               className="text-sm font-medium hover:text-highlyt-blue transition-colors"
@@ -150,20 +220,15 @@ const Navbar = () => {
             >
               Pricing
             </Link>
+            
             <Link 
-              to="/how-it-works" 
+              to="/contact" 
               className="text-sm font-medium hover:text-highlyt-blue transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              How It Works
+              Contact
             </Link>
-            <Link 
-              to="/about" 
-              className="text-sm font-medium hover:text-highlyt-blue transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              About
-            </Link>
+
             <div className="pt-4 flex flex-col space-y-2">
               {user ? (
                 <>
