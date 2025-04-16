@@ -66,32 +66,30 @@ const RegisterForm = () => {
       </div>
 
       <FormProvider {...form}>
-        <Form>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <RegisterFormFields 
-              accountType={accountType}
-              setAccountType={setAccountType}
-            />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <RegisterFormFields 
+            accountType={accountType}
+            setAccountType={setAccountType}
+          />
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Account...
-                </>
-              ) : 'Create Account'}
-            </Button>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating Account...
+              </>
+            ) : 'Create Account'}
+          </Button>
 
-            <div className="text-center text-sm">
-              <p className="text-gray-600">
-                Already have an account?{' '}
-                <Link to="/login" className="text-highlyt-blue hover:underline">
-                  Log in
-                </Link>
-              </p>
-            </div>
-          </form>
-        </Form>
+          <div className="text-center text-sm">
+            <p className="text-gray-600">
+              Already have an account?{' '}
+              <Link to="/login" className="text-highlyt-blue hover:underline">
+                Log in
+              </Link>
+            </p>
+          </div>
+        </form>
       </FormProvider>
     </div>
   );
