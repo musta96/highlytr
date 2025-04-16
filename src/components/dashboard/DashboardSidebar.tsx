@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -24,12 +23,16 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
-type SidebarItemProps = {
+// Update the type to make badge optional
+type SidebarNavItem = {
   icon: React.ElementType;
   label: string;
   href: string;
-  active?: boolean;
   badge?: number | string;
+};
+
+type SidebarItemProps = SidebarNavItem & {
+  active?: boolean;
 };
 
 const SidebarItem = ({ icon: Icon, label, href, active, badge }: SidebarItemProps) => {
@@ -75,7 +78,7 @@ const DashboardSidebar = () => {
   };
   
   // Core navigation items for all account types
-  const coreNavItems = [
+  const coreNavItems: SidebarNavItem[] = [
     { icon: Home, label: 'Dashboard', href: `/dashboard/${accountType?.toLowerCase() || ''}` },
     { icon: User, label: 'My Profile', href: '/dashboard/profile' },
     { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages', badge: 3 },
@@ -84,7 +87,7 @@ const DashboardSidebar = () => {
   ];
 
   // Role-specific navigation items
-  const roleSpecificItems = {
+  const roleSpecificItems: Record<string, SidebarNavItem[]> = {
     'athlete': [
       { icon: School, label: 'Discover Colleges', href: '/dashboard/colleges/search' },
       { icon: Video, label: 'Highlights', href: '/dashboard/highlights' },
