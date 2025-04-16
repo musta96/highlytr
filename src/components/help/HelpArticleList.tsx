@@ -12,11 +12,11 @@ interface HelpArticle {
   content: string;
 }
 
+// Update this interface to match the one in HelpData.tsx
 interface CategoryData {
   id: string;
   title: string;
   icon: React.ReactNode;
-  faqs: HelpArticle[];
 }
 
 interface HelpArticleListProps {
@@ -40,7 +40,7 @@ const HelpArticleList = ({ categories, helpArticles, onArticleSelect }: HelpArti
       {categories.map(category => (
         <TabsContent key={category.id} value={category.id}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {helpArticles[category.id].map(article => (
+            {helpArticles[category.id]?.map(article => (
               <Card key={article.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <button 
