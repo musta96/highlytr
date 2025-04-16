@@ -10,19 +10,16 @@ const PublicRoute = () => {
   const { user, accountType, loading } = useAuth();
   const location = useLocation();
 
-  // Skip redirection on auth-related URLs even if user is logged in
-  const isAuthRelated = ['/login', '/register', '/forgot-password', '/reset-password'].includes(location.pathname);
-
   // Don't redirect while still checking auth status
   if (loading) {
     return <Outlet />;
   }
 
-  // If user is authenticated and not on an auth page, redirect to dashboard
-  if (user && !isAuthRelated) {
-    // If they have an account type, go to the dashboard
+  // If user is authenticated, redirect to dashboard based on account type
+  if (user) {
+    // If they have an account type, go to the type-specific dashboard
     if (accountType) {
-      return <Navigate to="/dashboard" replace />;
+      return <Navigate to={`/dashboard/${accountType.toLowerCase()}`} replace />;
     }
     // If no account type yet, they need to complete profile setup
     return <Navigate to="/profile-setup" replace />;

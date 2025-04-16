@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/auth';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = () => {
-  const { user, loading } = useAuth();
+  const { user, accountType, loading } = useAuth();
   const location = useLocation();
 
   // If we're still checking auth state, show loading

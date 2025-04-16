@@ -14,6 +14,12 @@ const Dashboard = () => {
     if (user && !loading && !accountType) {
       navigate('/profile-setup', { replace: true });
     }
+    
+    // If user is logged in and has account type, but is on the generic /dashboard route,
+    // redirect to the type-specific dashboard
+    if (user && !loading && accountType && window.location.pathname === '/dashboard') {
+      navigate(`/dashboard/${accountType.toLowerCase()}`, { replace: true });
+    }
   }, [user, loading, accountType, navigate]);
 
   // Show loading state if auth is still being checked

@@ -80,19 +80,17 @@ const App = () => (
               <Route path="/for-agencies" element={<ForAgencies />} />
               <Route path="/success-stories" element={<SuccessStories />} />
               
-              {/* Legal and info pages - these remain accessible to all users */}
+              {/* Legal and info pages that should remain accessible to logged in users */}
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/faqs" element={<FAQs />} />
             </Route>
 
-            {/* Legal and info pages - accessible to everyone */}
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/cookies" element={<Cookies />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/faqs" element={<FAQs />} />
-            
             {/* Protected routes that require authentication */}
             <Route element={<ProtectedRoute />}>
               {/* Profile setup route */}
