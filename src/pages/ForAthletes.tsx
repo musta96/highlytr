@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { 
   Rocket, 
   VideoIcon, 
-  ChartIcon, 
+  TrendingUp,  // Replaced ChartIcon with TrendingUp
   MessageCircle, 
   Star, 
   CheckCircle 
@@ -40,7 +40,7 @@ const ForAthletes = () => {
       description: "Upload your best performances and let your skills speak volumes."
     },
     {
-      icon: ChartIcon,
+      icon: TrendingUp,  // Updated icon
       title: "Track Your Progress",
       description: "Monitor your visibility and climb the Top Recruits leaderboard."
     },
