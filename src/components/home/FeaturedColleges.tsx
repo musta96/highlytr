@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -6,7 +5,7 @@ import { School, Trophy, Clock, Sparkles } from 'lucide-react';
 
 const FeaturedColleges = () => {
   return (
-    <section className="py-16 bg-highlyt-gray">
+    <section id="featured-colleges" className="py-16 bg-highlyt-gray">
       <div className="container">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
           <div>

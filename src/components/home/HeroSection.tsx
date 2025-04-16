@@ -42,7 +42,7 @@ const HeroSection = () => {
                 ))}
               </div>
               <p className="text-sm text-gray-600">
-                Trusted by <span className="font-semibold">200+</span> athletes and <span className="font-semibold">50+</span> colleges
+                Join our growing community of athletes and colleges
               </p>
             </div>
           </div>
@@ -80,7 +80,7 @@ const HeroSection = () => {
                     </div>
                     <div>
                       <p className="font-semibold">Success Stories</p>
-                      <p className="text-sm text-gray-500">100+ scholarships secured</p>
+                      <p className="text-sm text-gray-500">Read our success stories</p>
                     </div>
                   </div>
                 </div>
@@ -89,7 +89,7 @@ const HeroSection = () => {
                 <div className="space-y-2">
                   <h4 className="font-medium">Success Stories</h4>
                   <p className="text-sm text-muted-foreground">
-                    Over 100 athletes have secured scholarships to top U.S. colleges through HighLytr.
+                    Athletes who have connected with U.S. colleges through HighLytr.
                   </p>
                   <Link to="/success-stories" className="text-sm text-highlyt-blue hover:underline">
                     Read their stories →
@@ -100,27 +100,27 @@ const HeroSection = () => {
             
             <HoverCard>
               <HoverCardTrigger asChild>
-                <div className="hidden md:block absolute -top-6 -right-6 bg-white p-4 rounded-lg shadow-lg hover-card cursor-pointer animate-float">
+                <a href="#featured-colleges" className="hidden md:block absolute -top-6 -right-6 bg-white p-4 rounded-lg shadow-lg hover-card cursor-pointer">
                   <div className="flex items-center gap-4">
                     <div className="bg-highlyt-green/10 p-2 rounded-full">
                       <School className="h-6 w-6 text-highlyt-green" />
                     </div>
                     <div>
                       <p className="font-semibold">College Network</p>
-                      <p className="text-sm text-gray-500">50+ U.S. colleges</p>
+                      <p className="text-sm text-gray-500">Browse partner colleges</p>
                     </div>
                   </div>
-                </div>
+                </a>
               </HoverCardTrigger>
               <HoverCardContent className="w-80">
                 <div className="space-y-2">
                   <h4 className="font-medium">Our College Network</h4>
                   <p className="text-sm text-muted-foreground">
-                    Connect with over 50 verified U.S. colleges actively recruiting international talent.
+                    Connect with U.S. colleges actively recruiting international talent.
                   </p>
-                  <Link to="/colleges" className="text-sm text-highlyt-blue hover:underline">
-                    Browse colleges →
-                  </Link>
+                  <a href="#featured-colleges" className="text-sm text-highlyt-blue hover:underline">
+                    See partner colleges →
+                  </a>
                 </div>
               </HoverCardContent>
             </HoverCard>
