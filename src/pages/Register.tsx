@@ -17,7 +17,7 @@ const Register = () => {
                 className="h-10 w-10 rounded-full object-contain"
                 onError={(e) => { 
                   console.error('Logo failed to load', e);
-                  e.currentTarget.src = '/placeholder.svg'; 
+                  e.currentTarget.src = './logo.png'; 
                 }}
               />
               <span className="font-bold text-2xl">HighLytr</span>

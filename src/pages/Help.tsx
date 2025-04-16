@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
-import LogoDebug from '@/components/common/LogoDebug';
 import HelpHeader from '@/components/help/HelpHeader';
 import HelpArticleList from '@/components/help/HelpArticleList';
 import HelpArticleDetail from '@/components/help/HelpArticleDetail';
@@ -44,10 +43,6 @@ const Help = () => {
         )}
         
         <HelpContactSection />
-        
-        <div className="mt-8">
-          <LogoDebug />
-        </div>
       </div>
     </Layout>
   );
