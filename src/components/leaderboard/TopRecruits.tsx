@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -8,7 +7,8 @@ import {
   ChevronRight, 
   Filter,
   Star,
-  TrendingUp 
+  TrendingUp,
+  CalendarClock 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -159,14 +159,13 @@ const regionOptions: Region[] = ['Global', 'North America', 'Europe', 'South Ame
 const TopRecruits: React.FC<TopRecruitsProps> = ({ className }) => {
   const [activeSport, setActiveSport] = useState<Sport | 'All'>('All');
   const [activeRegion, setActiveRegion] = useState<Region>('Global');
-  
-  // Filter the athletes based on the selected sport and region
+  const [isComingSoon, setIsComingSoon] = useState(true);
+
   const filteredAthletes = mockAthletes.filter(athlete => 
     (activeSport === 'All' || athlete.sport === activeSport) &&
     (activeRegion === 'Global' || athlete.region === activeRegion)
   );
 
-  // Function to render the appropriate badge icon
   const renderBadgeIcon = (badge: 'rising-star' | 'top-scouted' | 'all-star') => {
     switch (badge) {
       case 'rising-star':
@@ -180,7 +179,6 @@ const TopRecruits: React.FC<TopRecruitsProps> = ({ className }) => {
     }
   };
 
-  // Function to render the badge tooltip text
   const getBadgeTooltip = (badge: 'rising-star' | 'top-scouted' | 'all-star') => {
     switch (badge) {
       case 'rising-star':
@@ -195,130 +193,157 @@ const TopRecruits: React.FC<TopRecruitsProps> = ({ className }) => {
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-md p-6 ${className}`}>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div className="flex items-center mb-4 md:mb-0">
-          <Trophy className="h-6 w-6 text-highlyt-blue mr-2" />
-          <h2 className="text-2xl font-bold">Top Recruits of the Month</h2>
+    <div className={`relative bg-white rounded-xl shadow-md p-6 ${className}`}>
+      {isComingSoon && (
+        <div className="absolute inset-0 z-10 bg-soft-purple/10 flex flex-col items-center justify-center text-center rounded-xl">
+          <div className="inline-flex items-center justify-center p-3 bg-highlyt-blue/20 text-highlyt-blue rounded-full mb-4">
+            <CalendarClock className="h-8 w-8" />
+          </div>
+          
+          <h3 className="text-2xl md:text-3xl font-bold mb-4 text-dark-charcoal">
+            Leaderboard Coming Soon!
+          </h3>
+          
+          <p className="text-lg text-gray-600 max-w-md mb-6 px-4">
+            We're working on bringing you the most comprehensive athlete rankings. 
+            Stay tuned for an exciting way to discover top talent!
+          </p>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => setIsComingSoon(false)}
+            className="mb-4"
+          >
+            Preview Leaderboard
+          </Button>
+        </div>
+      )}
+
+      <div className={`${isComingSoon ? 'opacity-30 pointer-events-none' : ''}`}>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+          <div className="flex items-center mb-4 md:mb-0">
+            <Trophy className="h-6 w-6 text-highlyt-blue mr-2" />
+            <h2 className="text-2xl font-bold">Top Recruits of the Month</h2>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <Select value={activeSport} onValueChange={(value) => setActiveSport(value as Sport | 'All')}>
+              <SelectTrigger className="w-full sm:w-[150px]">
+                <SelectValue placeholder="Sport" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All Sports</SelectItem>
+                {sportOptions.map(sport => (
+                  <SelectItem key={sport} value={sport}>{sport}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select value={activeRegion} onValueChange={(value) => setActiveRegion(value as Region)}>
+              <SelectTrigger className="w-full sm:w-[150px]">
+                <SelectValue placeholder="Region" />
+              </SelectTrigger>
+              <SelectContent>
+                {regionOptions.map(region => (
+                  <SelectItem key={region} value={region}>{region}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <Select value={activeSport} onValueChange={(value) => setActiveSport(value as Sport | 'All')}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <SelectValue placeholder="Sport" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All Sports</SelectItem>
-              {sportOptions.map(sport => (
-                <SelectItem key={sport} value={sport}>{sport}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select value={activeRegion} onValueChange={(value) => setActiveRegion(value as Region)}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <SelectValue placeholder="Region" />
-            </SelectTrigger>
-            <SelectContent>
-              {regionOptions.map(region => (
-                <SelectItem key={region} value={region}>{region}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b text-left">
-              <th className="pb-2 w-12 text-gray-500">Rank</th>
-              <th className="pb-2 text-gray-500">Athlete</th>
-              <th className="pb-2 text-gray-500 hidden md:table-cell">Sport</th>
-              <th className="pb-2 text-gray-500 hidden md:table-cell">Region</th>
-              <th className="pb-2 text-gray-500 text-right">Score</th>
-              <th className="pb-2 w-16"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAthletes.length > 0 ? (
-              filteredAthletes.map(athlete => (
-                <tr key={athlete.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 relative">
-                    <span className={`font-bold ${
-                      athlete.rank === 1 ? 'text-yellow-500' : 
-                      athlete.rank === 2 ? 'text-gray-400' : 
-                      athlete.rank === 3 ? 'text-amber-700' : 'text-gray-700'
-                    }`}>
-                      {athlete.rank}
-                    </span>
-                    {athlete.change !== undefined && athlete.change !== 0 && (
-                      <span className={`text-xs ml-1 ${
-                        athlete.change > 0 ? 'text-green-500' : 'text-red-500'
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b text-left">
+                <th className="pb-2 w-12 text-gray-500">Rank</th>
+                <th className="pb-2 text-gray-500">Athlete</th>
+                <th className="pb-2 text-gray-500 hidden md:table-cell">Sport</th>
+                <th className="pb-2 text-gray-500 hidden md:table-cell">Region</th>
+                <th className="pb-2 text-gray-500 text-right">Score</th>
+                <th className="pb-2 w-16"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAthletes.length > 0 ? (
+                filteredAthletes.map(athlete => (
+                  <tr key={athlete.id} className="border-b hover:bg-gray-50">
+                    <td className="py-3 relative">
+                      <span className={`font-bold ${
+                        athlete.rank === 1 ? 'text-yellow-500' : 
+                        athlete.rank === 2 ? 'text-gray-400' : 
+                        athlete.rank === 3 ? 'text-amber-700' : 'text-gray-700'
                       }`}>
-                        {athlete.change > 0 ? '+' : ''}{athlete.change}
+                        {athlete.rank}
                       </span>
-                    )}
-                  </td>
-                  <td className="py-3">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 mr-3 rounded-full overflow-hidden bg-gray-200">
-                        {athlete.profilePic ? (
-                          <img src={athlete.profilePic} alt={athlete.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-500">
-                            {athlete.name.charAt(0)}
+                      {athlete.change !== undefined && athlete.change !== 0 && (
+                        <span className={`text-xs ml-1 ${
+                          athlete.change > 0 ? 'text-green-500' : 'text-red-500'
+                        }`}>
+                          {athlete.change > 0 ? '+' : ''}{athlete.change}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 mr-3 rounded-full overflow-hidden bg-gray-200">
+                          {athlete.profilePic ? (
+                            <img src={athlete.profilePic} alt={athlete.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-500">
+                              {athlete.name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">{athlete.name}</div>
+                          <div className="flex gap-1 mt-1">
+                            {athlete.badges.map((badge, index) => (
+                              <span 
+                                key={index}
+                                className="inline-flex items-center" 
+                                title={getBadgeTooltip(badge)}
+                              >
+                                {renderBadgeIcon(badge)}
+                              </span>
+                            ))}
                           </div>
-                        )}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">{athlete.name}</div>
-                        <div className="flex gap-1 mt-1">
-                          {athlete.badges.map((badge, index) => (
-                            <span 
-                              key={index}
-                              className="inline-flex items-center" 
-                              title={getBadgeTooltip(badge)}
-                            >
-                              {renderBadgeIcon(badge)}
-                            </span>
-                          ))}
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-3 hidden md:table-cell">{athlete.sport}</td>
-                  <td className="py-3 hidden md:table-cell">{athlete.region}</td>
-                  <td className="py-3 text-right font-medium">{athlete.score}</td>
-                  <td className="py-3 text-right">
-                    <Link to={`/athletes/${athlete.id}`} className="text-highlyt-blue hover:underline flex items-center justify-end">
-                      <span className="text-sm">View</span>
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Link>
+                    </td>
+                    <td className="py-3 hidden md:table-cell">{athlete.sport}</td>
+                    <td className="py-3 hidden md:table-cell">{athlete.region}</td>
+                    <td className="py-3 text-right font-medium">{athlete.score}</td>
+                    <td className="py-3 text-right">
+                      <Link to={`/athletes/${athlete.id}`} className="text-highlyt-blue hover:underline flex items-center justify-end">
+                        <span className="text-sm">View</span>
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-6 text-center text-gray-500">
+                    No athletes match the current filters.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="py-6 text-center text-gray-500">
-                  No athletes match the current filters.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      
-      <div className="mt-4 flex flex-col sm:flex-row justify-between items-center">
-        <div className="text-sm text-gray-500 mb-3 sm:mb-0">
-          Rankings updated: April 15, 2025
+              )}
+            </tbody>
+          </table>
         </div>
-        <Link to="/leaderboard">
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
-            <span>View Full Leaderboard</span>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        
+        <div className="mt-4 flex flex-col sm:flex-row justify-between items-center">
+          <div className="text-sm text-gray-500 mb-3 sm:mb-0">
+            Rankings updated: April 15, 2025
+          </div>
+          <Link to="/leaderboard">
+            <Button variant="outline" size="sm" className="flex items-center gap-1">
+              <span>View Full Leaderboard</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
