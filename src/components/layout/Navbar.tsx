@@ -4,7 +4,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AlignJustify, X, ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 
 // Import our components
 import NavLogo from './navbar/NavLogo';
@@ -15,37 +14,12 @@ import AuthenticatedNav from './navbar/AuthenticatedNav';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, accountType, signOut } = useAuth();
-  const { toast } = useToast();
+  const { user, accountType } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   // Check if we're in the dashboard area
   const isDashboard = location.pathname.includes('/dashboard');
-  
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Success",
-        description: "You've been logged out successfully",
-      });
-      navigate('/');
-    } catch (error) {
-      console.error("Error logging out:", error);
-      toast({
-        title: "Error",
-        description: "Failed to log out",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const mainNavItems = [
-    { title: 'For Athletes', href: '/for-athletes' },
-    { title: 'For Colleges', href: '/for-colleges' },
-    { title: 'For Agencies', href: '/for-agencies' },
-  ];
 
   // If user is logged in but not in dashboard, show a simplified nav
   if (user && !isDashboard) {
@@ -58,7 +32,7 @@ const Navbar = () => {
             <Link to="/dashboard">
               <Button variant="default">Go to Dashboard</Button>
             </Link>
-            <AuthButtons user={user} handleLogout={handleLogout} />
+            <AuthButtons user={user} />
           </div>
         </div>
       </header>
@@ -99,7 +73,7 @@ const Navbar = () => {
         )}
 
         {/* Auth or Profile Buttons */}
-        <AuthButtons user={user} handleLogout={handleLogout} />
+        <AuthButtons user={user} />
 
         {/* Mobile Menu Button - only for public nav */}
         {!user && (
@@ -121,11 +95,16 @@ const Navbar = () => {
           setIsOpen={setIsOpen} 
           mainNavItems={mainNavItems}
           user={user}
-          handleLogout={handleLogout}
         />
       )}
     </header>
   );
 };
+
+const mainNavItems = [
+  { title: 'For Athletes', href: '/for-athletes' },
+  { title: 'For Colleges', href: '/for-colleges' },
+  { title: 'For Agencies', href: '/for-agencies' },
+];
 
 export default Navbar;

@@ -5,6 +5,7 @@ import DashboardLayout from './DashboardLayout';
 import AthleteDashboard from './AthleteDashboard';
 import CollegeDashboard from './CollegeDashboard';
 import AgencyDashboard from './AgencyDashboard';
+import HomeView from './HomeView';
 import AthleteProfile from '@/components/athlete/AthleteProfile';
 import SearchPage from '@/components/search/SearchPage';
 import ConnectionsPage from '@/components/connections/ConnectionsPage';
@@ -19,8 +20,8 @@ const DashboardRoutes = () => {
   return (
     <Routes>
       <Route element={<DashboardLayout />}>
-        {/* Default routes redirect to appropriate type-specific dashboard */}
-        <Route index element={<Navigate to="/dashboard" replace />} />
+        {/* Default route shows the social feed HomeView */}
+        <Route index element={<HomeView />} />
         
         {/* Type-specific dashboards */}
         <Route path="athlete" element={<AthleteDashboard />} />

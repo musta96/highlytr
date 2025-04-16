@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -10,13 +10,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from '@/hooks/auth';
+import { toast } from 'sonner';
 
 interface AuthButtonsProps {
   user: any;
   handleLogout: () => void;
 }
 
-const AuthButtons = ({ user, handleLogout }: AuthButtonsProps) => {
+const AuthButtons = ({ user }: AuthButtonsProps) => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success("You've been logged out successfully");
+      navigate('/');
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast.error("Failed to log out");
+    }
+  };
+
   return (
     <div className="hidden md:flex items-center gap-4">
       {user ? (
