@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth';
 
 const RequireProfileSetup = () => {
   const { user, loading, profileCompleted } = useAuth();
