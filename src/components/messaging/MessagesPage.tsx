@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +14,9 @@ import {
   Smile,
   Phone,
   Info,
-  ArrowLeft
+  ArrowLeft,
+  FileText,
+  MessageSquare
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -178,7 +179,6 @@ const MessagesPage = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-theme(spacing.16))]">
       <div className="flex-1 flex overflow-hidden bg-background rounded-lg border">
-        {/* Conversation List */}
         <div className={`w-full md:w-80 lg:w-96 border-r flex flex-col ${conversationVisible && isMobile ? 'hidden' : 'flex'}`}>
           <div className="p-4 border-b">
             <h1 className="text-xl font-bold">Messages</h1>
@@ -251,7 +251,6 @@ const MessagesPage = () => {
                     className="p-3 hover:bg-muted cursor-pointer"
                     onClick={() => handleSelectConversation(conversation)}
                   >
-                    {/* Same content as above, filtered for unread messages */}
                     <div className="flex items-center space-x-3">
                       <Avatar>
                         <AvatarImage src={conversation.recipient.avatar} alt={conversation.recipient.name} />
@@ -296,7 +295,6 @@ const MessagesPage = () => {
           </div>
         </div>
         
-        {/* Conversation View */}
         <div className={`flex-1 flex flex-col ${!conversationVisible && isMobile ? 'hidden' : 'flex'}`}>
           {activeConversation && (
             <>
