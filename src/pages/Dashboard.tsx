@@ -4,9 +4,12 @@ import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import AthleteProfile from '@/components/athlete/AthleteProfile';
+import EnhancedAthleteProfile from '@/components/athlete/EnhancedAthleteProfile';
 import SearchPage from '@/components/search/SearchPage';
 import ConnectionsPage from '@/components/connections/ConnectionsPage';
 import MessagesPage from '@/components/messaging/MessagesPage';
+import NotificationsPage from '@/components/notifications/NotificationsPage';
+import SettingsPage from '@/components/settings/SettingsPage';
 
 // Import placeholder for pages we haven't built yet
 import NotFound from './NotFound';
@@ -16,9 +19,11 @@ const Dashboard = () => {
     <Routes>
       <Route element={<DashboardLayout />}>
         <Route index element={<DashboardOverview />} />
-        <Route path="profile" element={<AthleteProfile />} />
+        <Route path="profile" element={<EnhancedAthleteProfile />} />
         <Route path="messages" element={<MessagesPage />} />
         <Route path="connections" element={<ConnectionsPage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="athletes/search" element={<SearchPage type="athletes" />} />
         <Route path="colleges/search" element={<SearchPage type="colleges" />} />
         
@@ -32,7 +37,7 @@ const Dashboard = () => {
         <Route path="coaches" element={<div className="p-4">Coaches Management Page</div>} />
         <Route path="teams" element={<div className="p-4">Teams Management Page</div>} />
         <Route path="represented" element={<div className="p-4">Represented Athletes Page</div>} />
-        <Route path="settings" element={<div className="p-4">Settings Page</div>} />
+        <Route path="saved" element={<div className="p-4">Saved Items Page</div>} />
         
         {/* Catch-all route for unmatched dashboard paths */}
         <Route path="*" element={<NotFound />} />
