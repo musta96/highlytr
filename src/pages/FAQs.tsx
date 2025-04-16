@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 
 const FAQs = () => {
-  const [searchTerm, useState] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   
   // FAQ categories
   const categories = [
