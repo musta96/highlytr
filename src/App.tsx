@@ -18,6 +18,7 @@ import Agencies from "./pages/Agencies";
 import About from "./pages/About";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import AthleteDetail from "./pages/AthleteDetail";
 
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/athletes" element={<Athletes />} />
+            <Route path="/athletes/:id" element={<AthleteDetail />} />
             <Route path="/colleges" element={<Colleges />} />
             <Route path="/agencies" element={<Agencies />} />
             <Route path="/about" element={<About />} />
