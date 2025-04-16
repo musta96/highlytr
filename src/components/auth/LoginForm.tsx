@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -6,18 +7,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuth } from '@/hooks/auth';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+  password: z.string().min(1, { message: "Password is required" }),
 });
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, user } = useAuth();
-  const { toast } = useToast();
+  const { signIn, user, accountType } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -28,36 +28,44 @@ const LoginForm = () => {
     resolver: zodResolver(formSchema),
   });
 
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (user && accountType) {
+      const dashboardPath = `/dashboard/${accountType.toLowerCase()}`;
+      navigate(dashboardPath);
+    }
+  }, [user, accountType, navigate]);
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
+      console.log("Attempting login with:", data.email);
       const { error } = await signIn({
         email: data.email,
         password: data.password,
       });
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
+        console.error("Login error:", error.message);
+        toast(`Error: ${error.message}`, {
+          description: "Please check your credentials and try again.",
         });
         setIsLoading(false);
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "Logged in successfully!",
+      toast(`Login successful!`, {
+        description: "Redirecting to dashboard...",
       });
       
-      // The redirect will happen in RequireProfileSetup component
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign in. Please try again.",
-        variant: "destructive",
+      // Note: No need to navigate here, the useEffect will handle redirect
+      // when the user state is updated
+    } catch (error: any) {
+      console.error("Unexpected login error:", error);
+      toast(`Sign in failed`, {
+        description: "An unexpected error occurred. Please try again.",
       });
+    } finally {
       setIsLoading(false);
     }
   };

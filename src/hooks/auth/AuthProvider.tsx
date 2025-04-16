@@ -31,8 +31,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           // Get user's account type from metadata
           const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
+          console.log('Account type from metadata:', userType, currentUser.user_metadata);
           setAccountType(userType || null);
-          console.log('Account type from metadata:', userType);
         } else {
           setProfileCompleted(false);
           setAccountType(null);
@@ -56,8 +56,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Get user's account type from metadata
         const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
+        console.log('Account type from metadata:', userType, currentUser.user_metadata);
         setAccountType(userType || null);
-        console.log('Account type from metadata:', userType);
       }
       
       setLoading(false);
@@ -71,17 +71,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async ({ email, password }: SignInCredentials): Promise<SignInResponse> => {
     try {
+      console.log('Signing in with:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Sign in error:', error);
+        throw error;
+      }
+      
+      console.log('Sign in successful:', data);
       
       // Check profile completion status after sign in
       if (data.user) {
         const isCompleted = await checkProfileStatus(data.user.id);
         setProfileCompleted(isCompleted);
+        
+        // Get account type from user metadata
+        const userType = data.user.user_metadata?.accountType as AccountType | undefined;
+        console.log('Retrieved account type after login:', userType);
+        setAccountType(userType || null);
       }
       
       return { error: null };
@@ -93,6 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async ({ email, password, firstName, lastName, accountType }: SignUpCredentials): Promise<SignUpResponse> => {
     try {
+      console.log('Signing up with:', email, 'account type:', accountType);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -107,6 +119,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) throw error;
 
+      console.log('Sign up successful:', data);
+
       // Show helpful information about email verification
       toast.info(
         "We've sent a verification email. Please check your inbox and click the link to verify your account.", 
@@ -115,18 +129,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return { error: null };
     } catch (error: any) {
+      console.error('Sign up error:', error);
       return { error: { message: error.message } };
     }
   };
   
-  // Implementing the missing signOut function
   const signOut = async (): Promise<void> => {
     try {
+      console.log('Signing out...');
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
       setProfileCompleted(false);
       setAccountType(null);
+      console.log('Sign out successful');
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast.error('Failed to sign out');

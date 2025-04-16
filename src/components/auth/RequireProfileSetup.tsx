@@ -15,7 +15,7 @@ const RequireProfileSetup = () => {
       
       // Only redirect if we're not already on the correct dashboard path
       if (!location.pathname.startsWith(dashboardPath)) {
-        console.log(`Redirecting to ${dashboardPath}`);
+        console.log(`Redirecting to ${dashboardPath} - User:`, user.id, 'Account type:', accountType);
         navigate(dashboardPath);
       }
     }
@@ -28,16 +28,19 @@ const RequireProfileSetup = () => {
 
   // If user is not logged in, redirect to login
   if (!user) {
+    console.log('User not logged in, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // If user is logged in but hasn't completed their profile, redirect to profile setup
   // Unless they're already on the profile setup page
   if (!profileCompleted && location.pathname !== '/profile-setup') {
+    console.log('Profile not completed, redirecting to profile setup');
     return <Navigate to="/profile-setup" replace />;
   }
 
   // If user is logged in and has completed their profile, allow access to protected routes
+  console.log('User logged in with completed profile, allowing access to protected routes');
   return <Outlet />;
 };
 

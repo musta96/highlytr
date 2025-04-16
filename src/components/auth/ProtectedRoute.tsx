@@ -4,15 +4,22 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
 
 const ProtectedRoute = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const location = useLocation();
+
+  // If we're still checking auth state, show loading
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   if (!user) {
     // Redirect to login if not authenticated
+    console.log('User not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // If authenticated, render the child routes
+  console.log('User authenticated, rendering protected route');
   return <Outlet />;
 };
 
