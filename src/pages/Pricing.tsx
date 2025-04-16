@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -152,7 +152,7 @@ const Pricing = () => {
       ],
       buttonText: 'Get Started Now',
       highlighted: true,
-      badge: 'Limited Time' // Added badge here
+      badge: 'Limited Time'
     },
     {
       id: 'premium',
@@ -265,8 +265,11 @@ const Pricing = () => {
                       className="w-full"
                       variant={plan.id === 'pro' ? 'outline' : (plan.highlighted ? 'default' : 'outline')}
                       disabled={plan.comingSoon}
+                      asChild
                     >
-                      {plan.buttonText}
+                      <Link to="/register">
+                        {plan.buttonText}
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -311,8 +314,11 @@ const Pricing = () => {
                       className={`w-full ${plan.highlighted ? 'bg-highlyt-blue hover:bg-highlyt-blue-dark' : ''}`}
                       variant={plan.highlighted ? 'default' : 'outline'}
                       disabled={plan.comingSoon}
+                      asChild
                     >
-                      {plan.buttonText}
+                      <Link to="/register">
+                        {plan.buttonText}
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -359,8 +365,12 @@ const Pricing = () => {
                     <Button 
                       className="w-full"
                       variant={plan.highlighted ? 'default' : 'outline'}
+                      disabled={plan.comingSoon}
+                      asChild
                     >
-                      {plan.buttonText}
+                      <Link to="/register">
+                        {plan.buttonText}
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
