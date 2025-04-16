@@ -3,7 +3,7 @@ import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, HelpCircle } from 'lucide-react';
+import { Check, HelpCircle, X, BadgeDollarSign, Building, GraduationCap, UserCheck } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import {
   Tooltip,
@@ -11,9 +11,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Pricing = () => {
-  const plans = [
+  const athletePlans = [
     {
       id: 'free',
       name: 'Free',
@@ -22,8 +23,8 @@ const Pricing = () => {
       period: 'forever',
       features: [
         'Basic athlete profile',
+        'Video uploads (1)',
         'Browse college database',
-        'Limited video uploads (1)',
         'Community forum access',
       ],
       limitations: [
@@ -36,8 +37,8 @@ const Pricing = () => {
     {
       id: 'pro',
       name: 'Pro Athlete',
-      description: 'Everything you need to get recruited',
-      price: '24.99',
+      description: 'Currently free during launch phase',
+      price: '9.99',
       period: 'per month',
       features: [
         'Enhanced athlete profile',
@@ -48,27 +49,106 @@ const Pricing = () => {
         'Priority support',
         'College matching algorithm'
       ],
-      buttonText: 'Start Free Trial',
+      buttonText: 'Coming Soon',
       highlighted: true,
-      badge: 'Most Popular'
+      badge: 'Launch Special',
+      comingSoon: true
     },
     {
-      id: 'team',
-      name: 'Team',
-      description: 'For coaches and recruitment agencies',
+      id: 'premium',
+      name: 'Annual Premium',
+      description: 'Best value for serious athletes',
       price: '99',
-      period: 'per month',
+      period: 'per year',
       features: [
-        'Multiple athlete management',
-        'Advanced recruiting tools',
-        'Team analytics dashboard',
-        'Bulk messaging to colleges',
-        'Custom branding',
-        'API access',
-        'Dedicated account manager',
+        'All Pro features',
+        'AI recruitment insights',
+        'Featured profile placement',
+        'Early access to new features',
+        'Personalized recruitment strategy',
+        'Monthly progress reports',
+      ],
+      buttonText: 'Coming Soon',
+      highlighted: false,
+      comingSoon: true
+    }
+  ];
+  
+  const collegePlans = [
+    {
+      id: 'free',
+      name: 'Launch Special',
+      description: 'Full access during platform launch',
+      price: '0',
+      period: 'limited time',
+      features: [
+        'Full athlete database access',
+        'Team management dashboard',
+        'Direct athlete messaging',
+        'Recruitment tracking',
+        'Team collaboration tools',
+        'Basic analytics',
+      ],
+      buttonText: 'Get Started',
+      highlighted: true,
+      badge: 'Current Offer'
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise',
+      description: 'Custom solution for athletic departments',
+      price: '~10k',
+      period: 'per year/sport',
+      features: [
+        'Full platform access',
+        'Advanced AI athlete matching',
+        'Custom recruitment pipeline',
+        'Multi-sport management',
+        'Advanced analytics dashboard',
+        'API integration options',
+        'Dedicated account manager'
       ],
       buttonText: 'Contact Sales',
-      highlighted: false
+      highlighted: false,
+      comingSoon: true
+    }
+  ];
+  
+  const agencyPlans = [
+    {
+      id: 'verified',
+      name: 'Verified Agency',
+      description: 'For established recruitment agencies',
+      price: 'Free',
+      period: 'upon verification',
+      features: [
+        'Agency profile & verification badge',
+        'Athlete portfolio management',
+        'College matching tools',
+        'Placement tracking dashboard',
+        'Direct messaging with colleges',
+        'Analytics and reporting',
+      ],
+      buttonText: 'Apply for Verification',
+      highlighted: true,
+    },
+    {
+      id: 'premium',
+      name: 'Success-Fee Model',
+      description: 'Pay only for successful placements',
+      price: 'Success-based',
+      period: 'contractual terms',
+      features: [
+        'All verified features',
+        'Performance-based pricing',
+        'Custom contract terms',
+        'Priority athlete promotion',
+        'Direct line to college recruiters',
+        'Enhanced analytics',
+        'API access'
+      ],
+      buttonText: 'Contact Sales',
+      highlighted: false,
     }
   ];
   
@@ -86,6 +166,10 @@ const Pricing = () => {
       answer: 'We accept all major credit cards, including Visa, Mastercard, and American Express. We also offer PayPal as a payment option.'
     },
     {
+      question: 'Are premium features worth it?',
+      answer: 'Premium features are designed to significantly increase your visibility to college recruiters and improve your chances of getting noticed. For serious athletes, the investment often pays off quickly.'
+    },
+    {
       question: 'Is my data secure?',
       answer: 'Yes, we take security seriously. All data is encrypted and we never share your personal information with third parties without your consent.'
     }
@@ -101,60 +185,174 @@ const Pricing = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.id} 
-              className={`relative flex flex-col ${plan.highlighted ? 'border-highlyt-blue shadow-lg' : 'border-gray-200'}`}
-            >
-              {plan.badge && (
-                <div className="absolute top-0 right-0 bg-highlyt-blue text-white text-xs font-medium px-2 py-1 rounded-bl-lg rounded-tr-lg">
-                  {plan.badge}
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle className="flex flex-col">
-                  <span className="text-xl">{plan.name}</span>
-                  <div className="mt-4 flex items-end gap-1">
-                    <span className="text-3xl md:text-4xl font-bold">${plan.price}</span>
-                    <span className="text-gray-500 mb-1">/{plan.period}</span>
-                  </div>
-                </CardTitle>
-                <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <ul className="space-y-3">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <Check className="h-5 w-5 text-highlyt-green mr-2 shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                  {plan.limitations && plan.limitations.map((limitation, index) => (
-                    <li key={`limit-${index}`} className="flex items-start text-gray-500">
-                      <span className="h-5 w-5 mr-2">×</span>
-                      <span>{limitation}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter className="pt-4">
-                <Button 
-                  className={`w-full ${plan.highlighted ? 'bg-highlyt-blue hover:bg-highlyt-blue-dark' : ''}`}
-                  variant={plan.highlighted ? 'default' : 'outline'}
+        <Tabs defaultValue="athletes" className="mb-16">
+          <div className="flex justify-center mb-6">
+            <TabsList className="grid grid-cols-3 w-full max-w-md">
+              <TabsTrigger value="athletes" className="flex items-center gap-2">
+                <UserCheck className="h-4 w-4" />
+                Athletes
+              </TabsTrigger>
+              <TabsTrigger value="colleges" className="flex items-center gap-2">
+                <GraduationCap className="h-4 w-4" />
+                Colleges
+              </TabsTrigger>
+              <TabsTrigger value="agencies" className="flex items-center gap-2">
+                <Building className="h-4 w-4" />
+                Agencies
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          
+          <TabsContent value="athletes">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {athletePlans.map((plan) => (
+                <Card 
+                  key={plan.id} 
+                  className={`relative flex flex-col ${plan.highlighted ? 'border-highlyt-blue shadow-lg' : 'border-gray-200'}`}
                 >
-                  {plan.buttonText}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                  {plan.badge && (
+                    <div className="absolute top-0 right-0 bg-highlyt-blue text-white text-xs font-medium px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                      {plan.badge}
+                    </div>
+                  )}
+                  <CardHeader>
+                    <CardTitle className="flex flex-col">
+                      <span className="text-xl">{plan.name}</span>
+                      <div className="mt-4 flex items-end gap-1">
+                        <span className="text-3xl md:text-4xl font-bold">${plan.price}</span>
+                        <span className="text-gray-500 mb-1">/{plan.period}</span>
+                      </div>
+                    </CardTitle>
+                    <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <Check className="h-5 w-5 text-highlyt-green mr-2 shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                      {plan.limitations && plan.limitations.map((limitation, index) => (
+                        <li key={`limit-${index}`} className="flex items-start text-gray-500">
+                          <X className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
+                          <span>{limitation}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Button 
+                      className={`w-full ${plan.highlighted ? 'bg-highlyt-blue hover:bg-highlyt-blue-dark' : ''}`}
+                      variant={plan.highlighted ? 'default' : 'outline'}
+                      disabled={plan.comingSoon}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="colleges">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+              {collegePlans.map((plan) => (
+                <Card 
+                  key={plan.id} 
+                  className={`relative flex flex-col ${plan.highlighted ? 'border-highlyt-blue shadow-lg' : 'border-gray-200'}`}
+                >
+                  {plan.badge && (
+                    <div className="absolute top-0 right-0 bg-highlyt-blue text-white text-xs font-medium px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                      {plan.badge}
+                    </div>
+                  )}
+                  <CardHeader>
+                    <CardTitle className="flex flex-col">
+                      <span className="text-xl">{plan.name}</span>
+                      <div className="mt-4 flex items-end gap-1">
+                        <span className="text-3xl md:text-4xl font-bold">{plan.price}</span>
+                        <span className="text-gray-500 mb-1">{plan.period}</span>
+                      </div>
+                    </CardTitle>
+                    <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <Check className="h-5 w-5 text-highlyt-green mr-2 shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Button 
+                      className={`w-full ${plan.highlighted ? 'bg-highlyt-blue hover:bg-highlyt-blue-dark' : ''}`}
+                      variant={plan.highlighted ? 'default' : 'outline'}
+                      disabled={plan.comingSoon}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+            <div className="mt-8 text-center text-gray-500 max-w-xl mx-auto">
+              <p>Enterprise pricing varies based on institution size, number of sports, and custom requirements. Contact our sales team for a personalized quote.</p>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="agencies">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+              {agencyPlans.map((plan) => (
+                <Card 
+                  key={plan.id} 
+                  className={`relative flex flex-col ${plan.highlighted ? 'border-highlyt-blue shadow-lg' : 'border-gray-200'}`}
+                >
+                  <CardHeader>
+                    <CardTitle className="flex flex-col">
+                      <span className="text-xl">{plan.name}</span>
+                      <div className="mt-4 flex items-end gap-1">
+                        <span className="text-3xl md:text-4xl font-bold">{plan.price}</span>
+                        <span className="text-gray-500 mb-1">{plan.period}</span>
+                      </div>
+                    </CardTitle>
+                    <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <Check className="h-5 w-5 text-highlyt-green mr-2 shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Button 
+                      className={`w-full ${plan.highlighted ? 'bg-highlyt-blue hover:bg-highlyt-blue-dark' : ''}`}
+                      variant={plan.highlighted ? 'default' : 'outline'}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+            <div className="mt-8 text-center text-gray-500 max-w-xl mx-auto">
+              <p>Our success-fee model is negotiated individually with each agency based on placement volume and athlete profile. We believe in aligning incentives for all parties involved.</p>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <Separator className="my-16" />
 
         <div className="mb-16">
           <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {faqs.map((faq, index) => (
               <div key={index} className="p-6 border rounded-lg">
                 <h3 className="font-semibold flex items-center mb-2">
@@ -182,7 +380,7 @@ const Pricing = () => {
             We offer tailored plans for high schools, colleges, and large recruitment agencies. 
             Contact our sales team to discuss your specific needs.
           </p>
-          <Button size="lg">Contact Sales</Button>
+          <Button size="lg" className="bg-highlyt-blue hover:bg-highlyt-blue-dark">Contact Sales</Button>
         </div>
       </div>
     </Layout>
