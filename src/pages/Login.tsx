@@ -10,18 +10,8 @@ const Login = () => {
       <div className="py-16 px-4">
         <div className="max-w-md mx-auto">
           <div className="mb-8 text-center">
-            <Link to="/" className="inline-flex items-center gap-2 mb-8">
-              <img 
-                src="/logo.png" 
-                alt="HighLytr Logo" 
-                className="h-10 w-10 rounded-full object-contain"
-                onError={(e) => { 
-                  console.error('Logo failed to load', e);
-                  e.currentTarget.src = './logo.png'; 
-                }}
-              />
-              <span className="font-bold text-2xl">HighLytr</span>
-            </Link>
+            <h1 className="text-3xl font-bold">Sign In to HighLytr</h1>
+            <p className="text-gray-600 mt-2">Welcome back! Please enter your details.</p>
           </div>
           <LoginForm />
         </div>

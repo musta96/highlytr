@@ -16,8 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { Separator } from '@/components/ui/separator';
-import { Apple, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -32,8 +31,7 @@ const formSchema = z.object({
 const RegisterForm = () => {
   const [accountType, setAccountType] = useState<'athlete' | 'college' | 'agency'>('athlete');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<string | null>(null);
-  const { signUp, signInWithGoogle, signInWithApple } = useAuth();
+  const { signUp } = useAuth();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,34 +72,6 @@ const RegisterForm = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setSocialLoading('google');
-    try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        toast.error(error.message);
-      }
-    } catch (error: any) {
-      toast.error('Failed to sign in with Google. Please try again.');
-    } finally {
-      setSocialLoading(null);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    setSocialLoading('apple');
-    try {
-      const { error } = await signInWithApple();
-      if (error) {
-        toast.error(error.message);
-      }
-    } catch (error: any) {
-      toast.error('Failed to sign in with Apple. Please try again.');
-    } finally {
-      setSocialLoading(null);
-    }
-  };
-
   return (
     <div className="max-w-md w-full mx-auto">
       <div className="text-center mb-8">
@@ -109,52 +79,6 @@ const RegisterForm = () => {
         <p className="text-gray-600">
           Join HighLytr to connect with athletes, colleges, and more.
         </p>
-      </div>
-
-      {/* Social Sign Up Options */}
-      <div className="space-y-3 mb-6">
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="w-full" 
-          onClick={handleGoogleSignIn}
-          disabled={isSubmitting || socialLoading !== null}
-        >
-          {socialLoading === 'google' ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-              <path d="M1 12c0-3.32 2.68-6 6-6 1.8 0 3.38.78 4.5 2h4C19.12 8 22 10.88 22 14.5S19.12 21 15.5 21H8c-3.86 0-7-3.14-7-7Zm0 0h7" />
-            </svg>
-          )}
-          Continue with Google
-        </Button>
-        
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="w-full" 
-          onClick={handleAppleSignIn}
-          disabled={isSubmitting || socialLoading !== null}
-        >
-          {socialLoading === 'apple' ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Apple className="mr-2 h-4 w-4" />
-          )}
-          Continue with Apple
-        </Button>
-      </div>
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with email
-          </span>
-        </div>
       </div>
 
       <Form {...form}>
@@ -297,7 +221,12 @@ const RegisterForm = () => {
           />
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Creating Account...' : 'Create Account'}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating Account...
+              </>
+            ) : 'Create Account'}
           </Button>
 
           <div className="text-center text-sm">
