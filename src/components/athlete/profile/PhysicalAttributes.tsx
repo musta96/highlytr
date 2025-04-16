@@ -3,37 +3,65 @@ import React from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RulerIcon } from 'lucide-react';
+import { AthleteProfileData } from './ProfileData';
 
 interface PhysicalAttributesProps {
-  profile: any;
+  profile: AthleteProfileData;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: AthleteProfileData) => void;
 }
 
 const PhysicalAttributes = ({ profile, isEditing, setProfile }: PhysicalAttributesProps) => {
+  // Safely access physical attributes
+  const attributes = profile.physicalAttributes || {
+    height: '',
+    weight: '',
+    wingspan: '',
+    verticalJump: '',
+    speed40yd: '',
+    dominantFoot: 'Right'
+  };
+
+  // Calculate age from date of birth if available
+  let age = '';
+  if (profile.date_of_birth) {
+    const birthDate = new Date(profile.date_of_birth);
+    const today = new Date();
+    let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      calculatedAge--;
+    }
+    age = calculatedAge.toString();
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Physical Attributes</CardTitle>
+        <CardTitle className="flex items-center">
+          <RulerIcon className="h-5 w-5 mr-2" />
+          Physical Attributes
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {!isEditing ? (
           <div className="grid grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-gray-600">Height</p>
-              <p className="font-medium">{profile.height}</p>
+              <p className="font-medium">{attributes.height || 'Not specified'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Weight</p>
-              <p className="font-medium">{profile.weight}</p>
+              <p className="font-medium">{attributes.weight || 'Not specified'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Age</p>
-              <p className="font-medium">{profile.age}</p>
+              <p className="font-medium">{age || 'Not specified'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Position</p>
-              <p className="font-medium">{profile.position}</p>
+              <p className="font-medium">{profile.primary_position || 'Not specified'}</p>
             </div>
           </div>
         ) : (
@@ -42,33 +70,44 @@ const PhysicalAttributes = ({ profile, isEditing, setProfile }: PhysicalAttribut
               <Label htmlFor="height">Height</Label>
               <Input 
                 id="height"
-                value={profile.height}
-                onChange={(e) => setProfile({...profile, height: e.target.value})}
+                value={attributes.height}
+                onChange={(e) => setProfile({
+                  ...profile, 
+                  physicalAttributes: {...attributes, height: e.target.value}
+                })}
               />
             </div>
             <div>
               <Label htmlFor="weight">Weight</Label>
               <Input 
                 id="weight"
-                value={profile.weight}
-                onChange={(e) => setProfile({...profile, weight: e.target.value})}
+                value={attributes.weight}
+                onChange={(e) => setProfile({
+                  ...profile, 
+                  physicalAttributes: {...attributes, weight: e.target.value}
+                })}
               />
             </div>
             <div>
-              <Label htmlFor="age">Age</Label>
+              <Label htmlFor="wingspan">Wingspan</Label>
               <Input 
-                id="age"
-                type="number"
-                value={profile.age}
-                onChange={(e) => setProfile({...profile, age: parseInt(e.target.value)})}
+                id="wingspan"
+                value={attributes.wingspan}
+                onChange={(e) => setProfile({
+                  ...profile, 
+                  physicalAttributes: {...attributes, wingspan: e.target.value}
+                })}
               />
             </div>
             <div>
-              <Label htmlFor="position">Position</Label>
+              <Label htmlFor="speed">40yd Speed</Label>
               <Input 
-                id="position"
-                value={profile.position}
-                onChange={(e) => setProfile({...profile, position: e.target.value})}
+                id="speed"
+                value={attributes.speed40yd}
+                onChange={(e) => setProfile({
+                  ...profile, 
+                  physicalAttributes: {...attributes, speed40yd: e.target.value}
+                })}
               />
             </div>
           </div>

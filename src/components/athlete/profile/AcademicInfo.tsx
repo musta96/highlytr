@@ -3,14 +3,18 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GraduationCap } from 'lucide-react';
+import { AthleteProfileData } from './ProfileData';
 
 interface AcademicInfoProps {
-  profile: any;
+  profile: AthleteProfileData;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: AthleteProfileData) => void;
 }
 
 const AcademicInfo = ({ profile, isEditing, setProfile }: AcademicInfoProps) => {
+  // Safely access education data
+  const education = profile.education || { school: '', graduationYear: 0, gpa: 0 };
+  
   return (
     <div className="mt-6 border-t pt-6">
       <h3 className="font-medium mb-4 flex items-center">
@@ -21,15 +25,15 @@ const AcademicInfo = ({ profile, isEditing, setProfile }: AcademicInfoProps) => 
         <div className="space-y-3">
           <div className="flex justify-between">
             <span className="text-gray-600">School:</span>
-            <span>{profile.school}</span>
+            <span>{education.school || 'Not specified'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Graduation:</span>
-            <span>{profile.graduationYear}</span>
+            <span>{education.graduationYear || 'Not specified'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">GPA:</span>
-            <span>{profile.gpa}</span>
+            <span>{education.gpa || 'Not specified'}</span>
           </div>
         </div>
       ) : (
@@ -38,8 +42,11 @@ const AcademicInfo = ({ profile, isEditing, setProfile }: AcademicInfoProps) => 
             <Label htmlFor="school">School</Label>
             <Input 
               id="school"
-              value={profile.school}
-              onChange={(e) => setProfile({...profile, school: e.target.value})}
+              value={education.school}
+              onChange={(e) => setProfile({
+                ...profile, 
+                education: {...education, school: e.target.value}
+              })}
             />
           </div>
           <div>
@@ -47,8 +54,11 @@ const AcademicInfo = ({ profile, isEditing, setProfile }: AcademicInfoProps) => 
             <Input 
               id="graduation"
               type="number"
-              value={profile.graduationYear}
-              onChange={(e) => setProfile({...profile, graduationYear: parseInt(e.target.value)})}
+              value={education.graduationYear}
+              onChange={(e) => setProfile({
+                ...profile, 
+                education: {...education, graduationYear: parseInt(e.target.value) || 0}
+              })}
             />
           </div>
           <div>
@@ -57,8 +67,11 @@ const AcademicInfo = ({ profile, isEditing, setProfile }: AcademicInfoProps) => 
               id="gpa"
               type="number"
               step="0.1"
-              value={profile.gpa}
-              onChange={(e) => setProfile({...profile, gpa: parseFloat(e.target.value)})}
+              value={education.gpa}
+              onChange={(e) => setProfile({
+                ...profile, 
+                education: {...education, gpa: parseFloat(e.target.value) || 0}
+              })}
             />
           </div>
         </div>

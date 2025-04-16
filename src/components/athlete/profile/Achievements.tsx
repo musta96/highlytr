@@ -3,12 +3,13 @@ import React from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Trophy } from 'lucide-react';
+import { Trophy, X } from 'lucide-react';
+import { AthleteProfileData } from './ProfileData';
 
 interface AchievementsProps {
-  profile: any;
+  profile: AthleteProfileData;
   isEditing: boolean;
-  setProfile: (profile: any) => void;
+  setProfile: (profile: AthleteProfileData) => void;
 }
 
 const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => {
@@ -25,11 +26,15 @@ const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => 
       </CardHeader>
       <CardContent>
         {!isEditing ? (
-          <ul className="list-disc pl-5 space-y-2">
-            {achievements.map((achievement: string, index: number) => (
-              <li key={index}>{achievement}</li>
-            ))}
-          </ul>
+          achievements.length > 0 ? (
+            <ul className="list-disc pl-5 space-y-2">
+              {achievements.map((achievement: string, index: number) => (
+                <li key={index}>{achievement}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No achievements added yet.</p>
+          )
         ) : (
           <div className="space-y-3">
             {achievements.map((achievement: string, index: number) => (
@@ -50,9 +55,7 @@ const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => 
                     setProfile({...profile, achievements: newAchievements});
                   }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 6L6 18M6 6l12 12"></path>
-                  </svg>
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             ))}
