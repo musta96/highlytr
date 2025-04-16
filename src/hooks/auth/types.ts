@@ -34,4 +34,5 @@ export type AuthContextType = {
   signOut: () => Promise<void>;
   loading: boolean;
   profileCompleted: boolean;
+  accountType: 'athlete' | 'college' | 'agency' | null;
 };

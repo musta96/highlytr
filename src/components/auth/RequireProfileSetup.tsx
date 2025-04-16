@@ -1,13 +1,27 @@
 
-import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
 
 const RequireProfileSetup = () => {
-  const { user, loading, profileCompleted } = useAuth();
+  const { user, loading, profileCompleted, accountType } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // If we're still checking auth state, show nothing
+  useEffect(() => {
+    // Handle redirection based on account type when profiles are completed
+    if (!loading && user && profileCompleted && accountType) {
+      const dashboardPath = `/dashboard/${accountType.toLowerCase()}`;
+      
+      // Only redirect if we're not already on the correct dashboard path
+      if (!location.pathname.startsWith(dashboardPath)) {
+        console.log(`Redirecting to ${dashboardPath}`);
+        navigate(dashboardPath);
+      }
+    }
+  }, [user, loading, profileCompleted, accountType, location.pathname, navigate]);
+
+  // If we're still checking auth state, show loading
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }

@@ -6,12 +6,14 @@ import { toast } from 'sonner';
 import { AuthContext } from './AuthContext';
 import { checkProfileStatus } from './utils';
 import { SignInCredentials, SignUpCredentials, SignInResponse, SignUpResponse } from './types';
+import { AccountType } from '@/components/auth/types';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileCompleted, setProfileCompleted] = useState(false);
+  const [accountType, setAccountType] = useState<AccountType | null>(null);
 
   useEffect(() => {
     // Set up listener for auth state changes
@@ -26,8 +28,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (currentUser) {
           const isCompleted = await checkProfileStatus(currentUser.id);
           setProfileCompleted(isCompleted);
+          
+          // Get user's account type from metadata
+          const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
+          setAccountType(userType || null);
+          console.log('Account type from metadata:', userType);
         } else {
           setProfileCompleted(false);
+          setAccountType(null);
         }
         
         setLoading(false);
@@ -45,6 +53,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (currentUser) {
         const isCompleted = await checkProfileStatus(currentUser.id);
         setProfileCompleted(isCompleted);
+        
+        // Get user's account type from metadata
+        const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
+        setAccountType(userType || null);
+        console.log('Account type from metadata:', userType);
       }
       
       setLoading(false);
@@ -106,11 +119,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    setProfileCompleted(false);
-  };
-
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -119,7 +127,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signUp, 
       signOut, 
       loading,
-      profileCompleted
+      profileCompleted,
+      accountType
     }}>
       {children}
     </AuthContext.Provider>
