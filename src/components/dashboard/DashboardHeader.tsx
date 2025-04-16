@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { User, Settings, LogOut, Menu } from 'lucide-react';
+import { User, Settings, LogOut, Menu, Bell } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,16 +12,29 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/auth';
+import { AccountType } from '@/components/auth/types';
+import { Badge } from '@/components/ui/badge';
 
 interface DashboardHeaderProps {
   onMenuToggle?: () => void;
+  accountType?: AccountType | null;
 }
 
-const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
+const DashboardHeader = ({ onMenuToggle, accountType }: DashboardHeaderProps) => {
   const { user, signOut } = useAuth();
   
   const handleLogout = async () => {
     await signOut();
+  };
+
+  // Helper function to get badge color based on account type
+  const getAccountTypeColor = (): string => {
+    switch (accountType?.toLowerCase()) {
+      case 'athlete': return 'bg-blue-500';
+      case 'college': return 'bg-green-500';
+      case 'agency': return 'bg-purple-500';
+      default: return 'bg-gray-500';
+    }
   };
 
   return (
@@ -33,15 +46,29 @@ const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
               <Menu className="h-5 w-5" />
             </Button>
           )}
-          <h1 className="text-xl font-bold">Dashboard</h1>
+          <div className="flex items-center">
+            <h1 className="text-xl font-bold">Dashboard</h1>
+            {accountType && (
+              <Badge className={`ml-2 ${getAccountTypeColor()}`} variant="secondary">
+                {accountType}
+              </Badge>
+            )}
+          </div>
         </div>
         
         <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild className="relative">
+            <Link to="/dashboard/notifications">
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </Link>
+          </Button>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
                 <User className="h-4 w-4" />
-                <span>Account</span>
+                <span className="hidden md:inline">{user?.user_metadata?.firstName || 'Account'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -53,7 +80,7 @@ const DashboardHeader = ({ onMenuToggle }: DashboardHeaderProps) => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/settings" className="flex items-center gap-2 cursor-pointer">
+                <Link to="/dashboard/settings" className="flex items-center gap-2 cursor-pointer">
                   <Settings className="h-4 w-4" />
                   <span>Settings</span>
                 </Link>

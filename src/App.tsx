@@ -24,7 +24,7 @@ import ProfileSetup from "./pages/ProfileSetup";
 import ProfileManagement from "./pages/ProfileManagement"; 
 import HowItWorks from "./pages/HowItWorks";
 import Layout from "./components/layout/Layout";
-import Analytics from "./pages/Analytics"; // Import the new Analytics page
+import Analytics from "./pages/Analytics"; 
 
 // Other Pages
 import Blog from "./pages/Blog";
@@ -38,7 +38,7 @@ import FAQs from "./pages/FAQs";
 import Pricing from "./pages/Pricing";
 import Leaderboard from "./pages/Leaderboard";
 
-// New Section Pages
+// Section Pages
 import ForAthletes from "./pages/ForAthletes";
 import ForColleges from "./pages/ForColleges";
 import ForAgencies from "./pages/ForAgencies";
@@ -47,9 +47,7 @@ import SuccessStories from "./pages/SuccessStories";
 // Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RequireProfileSetup from "./components/auth/RequireProfileSetup";
-
-// Import athlete profile components
-import AthleteProfile from "./components/athlete/AthleteProfile";
+import PublicRoute from "./components/auth/PublicRoute";
 
 const queryClient = new QueryClient();
 
@@ -60,28 +58,32 @@ const App = () => (
         <ScrollToTop />
         <TooltipProvider>
           <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/athletes" element={<Athletes />} />
-            <Route path="/athletes/:id" element={<AthleteDetail />} />
-            <Route path="/colleges" element={<Colleges />} />
-            <Route path="/agencies" element={<Agencies />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            
-            {/* User type sections */}
-            <Route path="/for-athletes" element={<ForAthletes />} />
-            <Route path="/for-colleges" element={<ForColleges />} />
-            <Route path="/for-agencies" element={<ForAgencies />} />
-            <Route path="/success-stories" element={<SuccessStories />} />
-            
-            {/* New routes for previously missing pages */}
+            {/* Public routes with redirect for authenticated users */}
+            <Route element={<PublicRoute />}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/athletes" element={<Athletes />} />
+              <Route path="/athletes/:id" element={<AthleteDetail />} />
+              <Route path="/colleges" element={<Colleges />} />
+              <Route path="/agencies" element={<Agencies />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              
+              {/* User type sections */}
+              <Route path="/for-athletes" element={<ForAthletes />} />
+              <Route path="/for-colleges" element={<ForColleges />} />
+              <Route path="/for-agencies" element={<ForAgencies />} />
+              <Route path="/success-stories" element={<SuccessStories />} />
+              
+              {/* Legal and info pages - these remain accessible to all users */}
+            </Route>
+
+            {/* Legal and info pages - accessible to everyone */}
             <Route path="/blog" element={<Blog />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/contact" element={<Contact />} />
