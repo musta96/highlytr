@@ -1,15 +1,17 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardRoutes from '@/components/dashboard/DashboardRoutes';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
   const { user, accountType, loading } = useAuth();
   const navigate = useNavigate();
+  const [retryCount, setRetryCount] = useState(0);
+  const [showRetryButton, setShowRetryButton] = useState(false);
   
   useEffect(() => {
     // Clear any existing console logs for debugging
@@ -18,7 +20,8 @@ const Dashboard = () => {
       userId: user?.id,
       accountType, 
       loading,
-      metadata: user?.user_metadata
+      metadata: user?.user_metadata,
+      retryCount
     });
     
     // If user is logged in but doesn't have an account type, redirect to profile setup
@@ -27,14 +30,40 @@ const Dashboard = () => {
       toast.info('Please complete your profile setup');
       navigate('/profile-setup', { replace: true });
     }
-  }, [user, loading, accountType, navigate]);
+
+    // Show retry button if still loading after 5 seconds
+    const timer = setTimeout(() => {
+      if (loading) {
+        setShowRetryButton(true);
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [user, loading, accountType, navigate, retryCount]);
+
+  // Function to retry loading the dashboard
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    setShowRetryButton(false);
+    window.location.reload();
+  };
 
   // Show loading state if auth is still being checked
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <p>Loading your dashboard...</p>
+        <p className="mb-6">Loading your dashboard...</p>
+        {showRetryButton && (
+          <Button 
+            onClick={handleRetry}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Retry Loading
+          </Button>
+        )}
       </div>
     );
   }
@@ -63,12 +92,11 @@ const Dashboard = () => {
             Complete Profile Setup
           </Button>
           <Button 
-            onClick={() => {
-              // Force reload the page to retry loading account data
-              window.location.reload();
-            }} 
+            onClick={handleRetry} 
             variant="outline"
+            className="flex items-center gap-2"
           >
+            <RefreshCw className="h-4 w-4" />
             Retry Loading
           </Button>
         </div>

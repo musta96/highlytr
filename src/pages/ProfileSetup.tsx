@@ -10,12 +10,14 @@ const ProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const navigate = useNavigate();
 
-  // Log the current state for debugging
+  // Log the current state for detailed debugging
   console.log('[ProfileSetup]', {
-    user: !!user,
+    hasUser: !!user,
+    userId: user?.id,
     loading,
     profileCompleted,
-    accountType
+    accountType,
+    userMetadata: user?.user_metadata
   });
 
   // Handle case where profile is already completed
@@ -41,7 +43,11 @@ const ProfileSetup = () => {
   // Show login redirect if no user
   if (!user) {
     console.log('[ProfileSetup] No user, redirecting to login');
-    navigate('/login');
+    // Use setTimeout to prevent potential navigation loops
+    setTimeout(() => {
+      navigate('/login');
+    }, 100);
+    
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-[60vh]">

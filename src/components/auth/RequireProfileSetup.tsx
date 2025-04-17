@@ -14,7 +14,8 @@ const RequireProfileSetup = () => {
     hasUser: !!user,
     profileCompleted,
     accountType,
-    path: location.pathname
+    path: location.pathname,
+    userId: user?.id
   });
 
   // If we're still checking auth state, show loading
