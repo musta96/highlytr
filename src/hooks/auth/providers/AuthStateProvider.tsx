@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { AuthContext } from '../AuthContext';
@@ -53,15 +52,11 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     initAuth
   });
 
-  // Set up auth state listener only once with improved error handling
   useEffect(() => {
-    // First, initialize auth state
     initAuth();
     
-    // Set up listener for auth state changes
     const cleanupFunction = setupAuthListener();
     
-    // Clean up subscription on unmount
     return cleanupFunction;
   }, [initAuth, setupAuthListener]);
 
