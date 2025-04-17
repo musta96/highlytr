@@ -7,37 +7,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
-import { 
-  Select as DateSelect, 
-  SelectContent as DateSelectContent, 
-  SelectItem as DateSelectItem, 
-  SelectTrigger as DateSelectTrigger, 
-  SelectValue as DateSelectValue 
-} from '@/components/ui/select';
-import PlaceOfBirthInput from './PlaceOfBirthInput';
+import PersonalInfoSection from './sections/PersonalInfoSection';
+import SportsInfoSection from './sections/SportsInfoSection';
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -53,43 +27,10 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const sportPositions = {
-  soccer: ['Goalkeeper', 'Defender', 'Midfielder', 'Forward', 'Striker', 'Winger', 'Other'],
-  basketball: ['Point Guard', 'Shooting Guard', 'Small Forward', 'Power Forward', 'Center', 'Other'],
-  baseball: ['Pitcher', 'Catcher', 'First Base', 'Second Base', 'Third Base', 'Shortstop', 'Outfield', 'Other'],
-  football: ['Quarterback', 'Running Back', 'Wide Receiver', 'Tight End', 'Offensive Line', 'Defensive Line', 'Linebacker', 'Cornerback', 'Safety', 'Kicker', 'Punter', 'Other'],
-  volleyball: ['Outside Hitter', 'Opposite', 'Middle Blocker', 'Setter', 'Libero', 'Other'],
-  tennis: ['Singles Player', 'Doubles Specialist', 'Other'],
-  swimming: ['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'Individual Medley', 'Other'],
-  track: ['Sprinter', 'Middle Distance', 'Long Distance', 'Hurdler', 'Jumper', 'Thrower', 'Other'],
-  other: ['Not Specified'],
-};
-
-const sportsList = [
-  'Soccer',
-  'Basketball',
-  'Baseball',
-  'Football',
-  'Volleyball', 
-  'Tennis',
-  'Swimming',
-  'Track',
-  'Gymnastics',
-  'Hockey',
-  'Rugby',
-  'Lacrosse',
-  'Golf',
-  'Wrestling',
-  'Other'
-];
-
 const ProfileSetupForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [primarySport, setPrimarySport] = useState('');
-  const [secondarySport, setSecondarySport] = useState('');
-  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -104,35 +45,6 @@ const ProfileSetupForm = () => {
       secondaryPosition: '',
     },
   });
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
-  
-  const months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  const getSportKey = (sportName: string) => {
-    return sportName.toLowerCase();
-  };
-
-  const getPositionsForSport = (sport: string) => {
-    const sportKey = getSportKey(sport);
-    return sportPositions[sportKey as keyof typeof sportPositions] || sportPositions.other;
-  };
-
-  const handleCalendarYearChange = (year: string) => {
-    const newDate = new Date(calendarMonth);
-    newDate.setFullYear(parseInt(year));
-    setCalendarMonth(newDate);
-  };
-
-  const handleCalendarMonthChange = (month: string) => {
-    const newDate = new Date(calendarMonth);
-    newDate.setMonth(months.indexOf(month));
-    setCalendarMonth(newDate);
-  };
 
   const onSubmit = async (data: FormValues) => {
     if (!user) {
@@ -173,270 +85,11 @@ const ProfileSetupForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Personal Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your first name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your last name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dateOfBirth"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date of Birth</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <div className="p-3 border-b">
-                        <div className="flex items-center justify-between">
-                          <DateSelect onValueChange={handleCalendarMonthChange} value={months[calendarMonth.getMonth()]}>
-                            <DateSelectTrigger className="w-[120px]">
-                              <DateSelectValue placeholder="Month" />
-                            </DateSelectTrigger>
-                            <DateSelectContent>
-                              {months.map(month => (
-                                <DateSelectItem key={month} value={month}>{month}</DateSelectItem>
-                              ))}
-                            </DateSelectContent>
-                          </DateSelect>
-                          <DateSelect onValueChange={handleCalendarYearChange} value={calendarMonth.getFullYear().toString()}>
-                            <DateSelectTrigger className="w-[90px]">
-                              <DateSelectValue placeholder="Year" />
-                            </DateSelectTrigger>
-                            <DateSelectContent className="max-h-[300px] overflow-y-auto">
-                              {years.map(year => (
-                                <DateSelectItem key={year} value={year.toString()}>{year}</DateSelectItem>
-                              ))}
-                            </DateSelectContent>
-                          </DateSelect>
-                        </div>
-                      </div>
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        month={calendarMonth}
-                        onMonthChange={setCalendarMonth}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="placeOfBirth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Place of Birth</FormLabel>
-                  <FormControl>
-                    <PlaceOfBirthInput value={field.value} onChange={field.onChange} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="citizenship"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Citizenship</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your citizenship" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
+        <PersonalInfoSection form={form} />
 
         <Separator />
         
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Sport Information</h2>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="primarySport"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Primary Sport</FormLabel>
-                    <Select 
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setPrimarySport(value);
-                        // Reset position when sport changes
-                        form.setValue('primaryPosition', '');
-                      }}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your main sport" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {sportsList.map((sport) => (
-                          <SelectItem key={sport} value={sport}>
-                            {sport}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="primaryPosition"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Primary Position</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      disabled={!primarySport}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={primarySport ? "Select position" : "Select sport first"} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {primarySport && getPositionsForSport(primarySport).map((position) => (
-                          <SelectItem key={position} value={position}>
-                            {position}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="secondarySport"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Secondary Sport (Optional)</FormLabel>
-                    <Select 
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setSecondarySport(value);
-                        // Reset position when sport changes
-                        form.setValue('secondaryPosition', '');
-                      }}
-                      value={field.value || ''}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select another sport (optional)" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem key="none" value="none">None</SelectItem>
-                        {sportsList.map((sport) => (
-                          <SelectItem key={sport} value={sport}>
-                            {sport}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="secondaryPosition"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Secondary Position (Optional)</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value || ''}
-                      disabled={!secondarySport || secondarySport === 'none'}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={secondarySport && secondarySport !== 'none' ? "Select position" : "Select sport first"} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem key="none" value="none">None</SelectItem>
-                        {secondarySport && secondarySport !== 'none' && getPositionsForSport(secondarySport).map((position) => (
-                          <SelectItem key={position} value={position}>
-                            {position}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-        </div>
+        <SportsInfoSection form={form} />
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting} className="min-w-32">
