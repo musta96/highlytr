@@ -5,6 +5,7 @@ import CountrySelect from './CountrySelect';
 import RegionSelect from './RegionSelect';
 import CityInput from './CityInput';
 import PlaceOfBirthTooltip from './PlaceOfBirthTooltip';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface PlaceOfBirthInputContainerProps {
   value?: string;
@@ -57,38 +58,54 @@ const PlaceOfBirthInputContainer: React.FC<PlaceOfBirthInputContainerProps> = ({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className={`transition-all duration-300 ${animateField === 'country' ? 'scale-105' : ''}`}>
+        <div className="flex-1">
           <CountrySelect 
             value={country} 
             onChange={handleCountryChange} 
           />
         </div>
         
-        <TooltipProvider>
-          <PlaceOfBirthTooltip />
-        </TooltipProvider>
+        <div className="px-2">
+          <TooltipProvider>
+            <PlaceOfBirthTooltip />
+          </TooltipProvider>
+        </div>
       </div>
 
-      {country && (
-        <div className={`transition-all duration-300 ${animateField === 'region' ? 'animate-fade-in' : ''}`}>
-          <RegionSelect 
-            country={country}
-            value={region}
-            onChange={handleRegionChange}
-          />
-        </div>
-      )}
+      <AnimatePresence>
+        {country && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <RegionSelect 
+              country={country}
+              value={region}
+              onChange={handleRegionChange}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {country && (
-        <div className={`transition-all duration-300 ${animateField === 'city' ? 'animate-fade-in' : ''}`}>
-          <CityInput 
-            value={city}
-            onChange={handleCityChange}
-            country={country}
-            region={region}
-          />
-        </div>
-      )}
+      <AnimatePresence>
+        {country && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <CityInput 
+              value={city}
+              onChange={handleCityChange}
+              country={country}
+              region={region}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

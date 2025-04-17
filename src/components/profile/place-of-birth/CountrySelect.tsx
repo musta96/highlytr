@@ -1,14 +1,9 @@
 
 import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { countries } from './data';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -22,9 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { countries } from './data';
 
 interface CountrySelectProps {
   value: string;
@@ -33,14 +26,9 @@ interface CountrySelectProps {
 
 const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
-  
-  const handleSelect = (currentValue: string) => {
-    onChange(currentValue);
-    setOpen(false);
-  };
 
   return (
-    <div>
+    <div className="space-y-2 w-full">
       <Label htmlFor="country">Country</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -49,22 +37,26 @@ const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange }) => {
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between"
+            id="country"
           >
-            {value ? value : "Select country"}
+            {value || "Select country"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className="w-full p-0">
           <Command>
-            <CommandInput placeholder="Search country..." />
+            <CommandInput placeholder="Search countries..." />
             <CommandList>
               <CommandEmpty>No country found.</CommandEmpty>
-              <CommandGroup>
+              <CommandGroup heading="Countries" className="max-h-[300px] overflow-y-auto">
                 {countries.map((country) => (
                   <CommandItem
                     key={country}
                     value={country}
-                    onSelect={() => handleSelect(country)}
+                    onSelect={() => {
+                      onChange(country);
+                      setOpen(false);
+                    }}
                     className="cursor-pointer"
                   >
                     {country}
@@ -76,6 +68,18 @@ const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange }) => {
                     />
                   </CommandItem>
                 ))}
+                {!countries.includes(value) && value && (
+                  <CommandItem
+                    value={value}
+                    onSelect={() => {
+                      setOpen(false);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    {value}
+                    <Check className="ml-auto h-4 w-4 opacity-100" />
+                  </CommandItem>
+                )}
               </CommandGroup>
             </CommandList>
           </Command>

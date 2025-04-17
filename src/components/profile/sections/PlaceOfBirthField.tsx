@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { UseFormReturn } from 'react-hook-form';
-import PlaceOfBirthInput from '../PlaceOfBirthInput';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import PlaceOfBirthInputContainer from '../place-of-birth/PlaceOfBirthInputContainer';
 
 interface PlaceOfBirthFieldProps {
   form: UseFormReturn<any>;
@@ -14,10 +14,13 @@ const PlaceOfBirthField: React.FC<PlaceOfBirthFieldProps> = ({ form }) => {
       control={form.control}
       name="placeOfBirth"
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>Place of Birth</FormLabel>
+        <FormItem className="col-span-2">
+          <FormLabel className="mb-1 block">Place of Birth</FormLabel>
           <FormControl>
-            <PlaceOfBirthInput value={field.value} onChange={field.onChange} />
+            <PlaceOfBirthInputContainer 
+              value={field.value} 
+              onChange={field.onChange}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

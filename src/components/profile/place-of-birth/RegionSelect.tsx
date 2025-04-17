@@ -1,15 +1,9 @@
 
 import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { regionsByCountry } from './data';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -23,8 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { regionsByCountry } from './data';
 
 interface RegionSelectProps {
   country: string;
@@ -33,150 +26,69 @@ interface RegionSelectProps {
 }
 
 const RegionSelect: React.FC<RegionSelectProps> = ({ country, value, onChange }) => {
-  const [otherRegion, setOtherRegion] = useState<string>(
-    !regionsByCountry[country]?.includes(value) && value ? value : ''
-  );
   const [open, setOpen] = useState(false);
-
-  const handleRegionChange = (newRegion: string) => {
-    onChange(newRegion);
-  };
-
-  const handleOtherRegionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOtherRegion(e.target.value);
-    onChange(e.target.value);
-  };
-
-  const handleSelect = (selectedRegion: string) => {
-    setOtherRegion(selectedRegion);
-    onChange(selectedRegion);
-    setOpen(false);
-  };
-
-  // Get common regions based on country
-  const commonRegions = regionsByCountry[country] || [];
-
-  // If no country selected or country is "Other" with no regions, or country doesn't exist in our data
-  if (!country || !regionsByCountry[country] || regionsByCountry[country]?.length === 0) {
-    return (
-      <div>
-        <Label htmlFor="region">
-          {country === 'United States' ? 'State' : 
-          country === 'Other' ? 'Region/Province' : 'Region'}
-        </Label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <div className="flex items-center gap-1">
-              <Input
-                id="region"
-                value={otherRegion}
-                onChange={handleOtherRegionChange}
-                placeholder={`Enter ${country === 'United States' ? 'state' : 'region/province'}`}
-                className="w-full"
-              />
-              <div className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
-                <ChevronsUpDown className="h-4 w-4 opacity-50" />
-              </div>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
-            <Command>
-              <CommandInput placeholder={`Search ${country === 'United States' ? 'states' : 'regions'}`} />
-              <CommandList>
-                <CommandEmpty>No region found.</CommandEmpty>
-                <CommandGroup heading={country === 'United States' ? 'Common States' : 'Common Regions'}>
-                  {['North', 'South', 'East', 'West', 'Central'].map((region) => (
-                    <CommandItem
-                      key={region}
-                      value={region}
-                      onSelect={handleSelect}
-                      className="cursor-pointer"
-                    >
-                      {region}
-                      <Check
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          otherRegion === region ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
-    );
-  }
+  
+  // Get regions for selected country
+  const regions = country ? regionsByCountry[country] || [] : [];
 
   return (
-    <div>
-      <Label htmlFor="region">
-        {country === 'United States' ? 'State' : 'Region'}
-      </Label>
-      
-      <Select value={value} onValueChange={handleRegionChange}>
-        <SelectTrigger id="region">
-          <SelectValue placeholder={`Select ${country === 'United States' ? 'state' : 'region'}`} />
-        </SelectTrigger>
-        <SelectContent>
-          {regionsByCountry[country]?.map((region) => (
-            <SelectItem key={region} value={region}>
-              {region}
-            </SelectItem>
-          ))}
-          <SelectItem key="other" value="other">Other</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {value === 'other' && (
-        <div className="mt-3">
-          <Label htmlFor="otherRegion">Specify Region</Label>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <div className="flex items-center gap-1">
-                <Input
-                  id="otherRegion"
-                  value={otherRegion}
-                  onChange={handleOtherRegionChange}
-                  placeholder="Enter region/province"
-                  className="w-full"
-                />
-                <div className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
-                  <ChevronsUpDown className="h-4 w-4 opacity-50" />
-                </div>
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0">
-              <Command>
-                <CommandInput placeholder={`Search ${country === 'United States' ? 'states' : 'regions'}`} />
-                <CommandList>
-                  <CommandEmpty>No region found.</CommandEmpty>
-                  <CommandGroup heading={country === 'United States' ? 'Common States' : 'Common Regions'}>
-                    {['North', 'South', 'East', 'West', 'Central'].map((region) => (
-                      <CommandItem
-                        key={region}
-                        value={region}
-                        onSelect={handleSelect}
-                        className="cursor-pointer"
-                      >
-                        {region}
-                        <Check
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            otherRegion === region ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
+    <div className="space-y-2">
+      <Label htmlFor="region">Region/State</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between"
+            id="region"
+          >
+            {value || "Select region/state"}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0">
+          <Command>
+            <CommandInput placeholder="Search regions..." />
+            <CommandList>
+              <CommandEmpty>No region found.</CommandEmpty>
+              <CommandGroup heading={`Regions in ${country}`} className="max-h-[300px] overflow-y-auto">
+                {regions.map((region) => (
+                  <CommandItem
+                    key={region}
+                    value={region}
+                    onSelect={() => {
+                      onChange(region);
+                      setOpen(false);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    {region}
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        value === region ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+                {!regions.includes(value) && value && (
+                  <CommandItem
+                    value={value}
+                    onSelect={() => {
+                      setOpen(false);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    {value}
+                    <Check className="ml-auto h-4 w-4 opacity-100" />
+                  </CommandItem>
+                )}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };

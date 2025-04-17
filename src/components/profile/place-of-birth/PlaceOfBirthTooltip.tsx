@@ -1,18 +1,26 @@
 
 import React from 'react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
-const PlaceOfBirthTooltip: React.FC = () => {
+const PlaceOfBirthTooltip = () => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="p-1.5 rounded-full hover:bg-muted cursor-help">
-          <Info className="h-4 w-4 text-muted-foreground" />
-        </div>
+        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/10">
+          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+          <span className="sr-only">Help with place of birth</span>
+        </Button>
       </TooltipTrigger>
-      <TooltipContent>
-        <p className="text-sm max-w-60">Your place of birth helps personalize your experience and connect you with others from your region</p>
+      <TooltipContent className="max-w-xs">
+        <p className="text-sm">
+          Your place of birth helps colleges understand your background and may be relevant for scholarship eligibility.
+        </p>
       </TooltipContent>
     </Tooltip>
   );
