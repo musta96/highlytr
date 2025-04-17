@@ -29,9 +29,13 @@ const Navbar = () => {
           <NavLogo />
           
           <div className="flex items-center gap-4">
-            <Link to="/dashboard">
-              <Button variant="default">Go to Dashboard</Button>
-            </Link>
+            <Button 
+              variant="default" 
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2"
+            >
+              Go to Dashboard
+            </Button>
             <AuthButtons user={user} />
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,17 +31,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Check profile completion status when user authenticates
         if (currentUser) {
           try {
-            const isCompleted = await checkProfileStatus(currentUser.id);
-            setProfileCompleted(isCompleted);
+            // Check if profile exists in the profiles table
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('account_type')
+              .eq('id', currentUser.id)
+              .single();
             
-            // Get user's account type from metadata
+            if (error) {
+              console.error('[AuthProvider] Error fetching profile:', error);
+              // Don't set loading to false here as we'll try metadata as fallback
+            } else {
+              console.log('[AuthProvider] Profile data from DB:', profile);
+              // If we have a profile in the DB, use that account type
+              if (profile && profile.account_type) {
+                setAccountType(profile.account_type as AccountType);
+                setProfileCompleted(true);
+              }
+            }
+            
+            // As a fallback, check user metadata
             const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
             console.log('[AuthProvider] Account type from metadata:', userType, currentUser.user_metadata);
-            setAccountType(userType || null);
+            
+            // Only use metadata if we didn't get a valid account type from the profile table
+            if ((!profile || !profile.account_type) && userType) {
+              setAccountType(userType);
+              
+              // If account type exists but no profile info, check if profile is completed
+              const isCompleted = await checkProfileStatus(currentUser.id);
+              setProfileCompleted(isCompleted);
+            }
           } catch (error) {
             console.error('[AuthProvider] Error checking profile status:', error);
           }
         } else {
+          // Reset states when logged out
           setProfileCompleted(false);
           setAccountType(null);
         }
@@ -61,14 +87,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setSession(currentSession);
           setUser(currentSession.user);
           
-          // Check profile completion status
-          const isCompleted = await checkProfileStatus(currentSession.user.id);
-          setProfileCompleted(isCompleted);
-          
-          // Get user's account type from metadata
-          const userType = currentSession.user.user_metadata?.accountType as AccountType | undefined;
-          console.log('[AuthProvider] Account type from metadata on load:', userType, currentSession.user.user_metadata);
-          setAccountType(userType || null);
+          try {
+            // Check if profile exists in the profiles table
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('account_type, profile_completed')
+              .eq('id', currentSession.user.id)
+              .single();
+            
+            if (error) {
+              console.error('[AuthProvider] Error fetching profile on session load:', error);
+            } else {
+              console.log('[AuthProvider] Profile data from DB on load:', profile);
+              // If we have a profile in the DB, use that account type
+              if (profile && profile.account_type) {
+                setAccountType(profile.account_type as AccountType);
+                setProfileCompleted(profile.profile_completed || false);
+              }
+            }
+            
+            // As a fallback, check user metadata
+            const userType = currentSession.user.user_metadata?.accountType as AccountType | undefined;
+            console.log('[AuthProvider] Account type from metadata on load:', userType, currentSession.user.user_metadata);
+            
+            // Only use metadata if we didn't get a valid account type from the profile table
+            if ((!profile || !profile.account_type) && userType) {
+              setAccountType(userType);
+              
+              // Check profile completion status
+              const isCompleted = await checkProfileStatus(currentSession.user.id);
+              setProfileCompleted(isCompleted);
+            }
+          } catch (error) {
+            console.error('[AuthProvider] Error checking profile status on load:', error);
+          }
         }
       } catch (error) {
         console.error('[AuthProvider] Error getting session:', error);
