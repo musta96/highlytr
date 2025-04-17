@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAuth } from '@/hooks/auth';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
@@ -17,7 +17,7 @@ const formSchema = z.object({
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, user, accountType, loading } = useAuth();
+  const { signIn, user, accountType, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -29,13 +29,14 @@ const LoginForm = () => {
     handleSubmit,
     formState: { errors },
     setError,
+    reset,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   // Redirect if user is already logged in
   useEffect(() => {
-    if (!loading && user) {
+    if (!authLoading && user) {
       console.log("[LoginForm] User already logged in, redirecting", { accountType });
       
       // If they have an account type, go to the dashboard
@@ -46,9 +47,11 @@ const LoginForm = () => {
         navigate("/profile-setup");
       }
     }
-  }, [user, accountType, navigate, loading]);
+  }, [user, accountType, navigate, authLoading]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (isLoading) return; // Prevent multiple submissions
+    
     setIsLoading(true);
     try {
       console.log("[LoginForm] Attempting login with:", data.email);
@@ -64,13 +67,16 @@ const LoginForm = () => {
         if (error.message.includes("Invalid login credentials")) {
           setError("email", { message: "Invalid email or password" });
           setError("password", { message: "Invalid email or password" });
+          toast.error("Invalid login credentials", {
+            description: "Please check your email and password."
+          });
         } else {
-          toast.error(`Error: ${error.message}`, {
-            description: "Please check your credentials and try again.",
+          toast.error(`Login failed`, {
+            description: error.message || "Please check your credentials and try again.",
           });
         }
         
-        setIsLoading(false);
+        reset({ email: data.email, password: "" });
         return;
       }
 
@@ -107,9 +113,10 @@ const LoginForm = () => {
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isLoading}
             {...register("email")}
+            aria-describedby="email-error"
           />
           {errors.email && (
-            <p className="text-sm text-red-500">{errors.email?.message}</p>
+            <p id="email-error" className="text-sm text-red-500">{errors.email?.message}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -125,9 +132,10 @@ const LoginForm = () => {
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isLoading}
             {...register("password")}
+            aria-describedby="password-error"
           />
           {errors.password && (
-            <p className="text-sm text-red-500">{errors.password?.message}</p>
+            <p id="password-error" className="text-sm text-red-500">{errors.password?.message}</p>
           )}
         </div>
         <Button disabled={isLoading} className="w-full" type="submit">
