@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -29,7 +28,14 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { 
+  Select as DateSelect, 
+  SelectContent as DateSelectContent, 
+  SelectItem as DateSelectItem, 
+  SelectTrigger as DateSelectTrigger, 
+  SelectValue as DateSelectValue 
+} from '@/components/ui/select';
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -45,7 +51,6 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-// Sport options and their positions
 const sportPositions = {
   soccer: ['Goalkeeper', 'Defender', 'Midfielder', 'Forward', 'Striker', 'Winger', 'Other'],
   basketball: ['Point Guard', 'Shooting Guard', 'Small Forward', 'Power Forward', 'Center', 'Other'],
@@ -82,6 +87,7 @@ const ProfileSetupForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [primarySport, setPrimarySport] = useState('');
   const [secondarySport, setSecondarySport] = useState('');
+  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -97,6 +103,14 @@ const ProfileSetupForm = () => {
     },
   });
 
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+  
+  const months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   const getSportKey = (sportName: string) => {
     return sportName.toLowerCase();
   };
@@ -104,6 +118,18 @@ const ProfileSetupForm = () => {
   const getPositionsForSport = (sport: string) => {
     const sportKey = getSportKey(sport);
     return sportPositions[sportKey as keyof typeof sportPositions] || sportPositions.other;
+  };
+
+  const handleCalendarYearChange = (year: string) => {
+    const newDate = new Date(calendarMonth);
+    newDate.setFullYear(parseInt(year));
+    setCalendarMonth(newDate);
+  };
+
+  const handleCalendarMonthChange = (month: string) => {
+    const newDate = new Date(calendarMonth);
+    newDate.setMonth(months.indexOf(month));
+    setCalendarMonth(newDate);
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -115,7 +141,6 @@ const ProfileSetupForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Save profile data to database
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -191,7 +216,7 @@ const ProfileSetupForm = () => {
                           className={`w-full pl-3 text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
                         >
                           {field.value ? (
-                            format(field.value, "PP")
+                            format(field.value, "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -200,6 +225,30 @@ const ProfileSetupForm = () => {
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
+                      <div className="p-3 border-b">
+                        <div className="flex items-center justify-between">
+                          <DateSelect onValueChange={handleCalendarMonthChange} value={months[calendarMonth.getMonth()]}>
+                            <DateSelectTrigger className="w-[120px]">
+                              <DateSelectValue placeholder="Month" />
+                            </DateSelectTrigger>
+                            <DateSelectContent>
+                              {months.map(month => (
+                                <DateSelectItem key={month} value={month}>{month}</DateSelectItem>
+                              ))}
+                            </DateSelectContent>
+                          </DateSelect>
+                          <DateSelect onValueChange={handleCalendarYearChange} value={calendarMonth.getFullYear().toString()}>
+                            <DateSelectTrigger className="w-[90px]">
+                              <DateSelectValue placeholder="Year" />
+                            </DateSelectTrigger>
+                            <DateSelectContent className="max-h-[300px] overflow-y-auto">
+                              {years.map(year => (
+                                <DateSelectItem key={year} value={year.toString()}>{year}</DateSelectItem>
+                              ))}
+                            </DateSelectContent>
+                          </DateSelect>
+                        </div>
+                      </div>
                       <Calendar
                         mode="single"
                         selected={field.value}
@@ -207,7 +256,10 @@ const ProfileSetupForm = () => {
                         disabled={(date) =>
                           date > new Date() || date < new Date("1900-01-01")
                         }
+                        month={calendarMonth}
+                        onMonthChange={setCalendarMonth}
                         initialFocus
+                        className="p-3 pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>

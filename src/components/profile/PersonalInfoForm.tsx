@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { ProfileData } from '@/types/profile';
+import { 
+  Select as DateSelect, 
+  SelectContent as DateSelectContent, 
+  SelectItem as DateSelectItem, 
+  SelectTrigger as DateSelectTrigger, 
+  SelectValue as DateSelectValue 
+} from '@/components/ui/select';
 
 interface PersonalInfoFormProps {
   profileData: ProfileData;
@@ -16,6 +23,24 @@ interface PersonalInfoFormProps {
 }
 
 const PersonalInfoForm = ({ profileData, setProfileData }: PersonalInfoFormProps) => {
+  // Convert ISO string to Date object for the calendar
+  const dateOfBirth = profileData.date_of_birth 
+    ? new Date(profileData.date_of_birth) 
+    : undefined;
+  
+  // State for managing the calendar month independently
+  const [calendarMonth, setCalendarMonth] = useState<Date>(dateOfBirth || new Date());
+
+  // Generate year options: from 100 years ago to current year
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+  
+  // Month names
+  const months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfileData(prev => {
@@ -32,10 +57,17 @@ const PersonalInfoForm = ({ profileData, setProfileData }: PersonalInfoFormProps
     });
   };
 
-  // Convert ISO string to Date object for the calendar
-  const dateOfBirth = profileData.date_of_birth 
-    ? new Date(profileData.date_of_birth) 
-    : undefined;
+  const handleCalendarYearChange = (year: string) => {
+    const newDate = new Date(calendarMonth);
+    newDate.setFullYear(parseInt(year));
+    setCalendarMonth(newDate);
+  };
+
+  const handleCalendarMonthChange = (month: string) => {
+    const newDate = new Date(calendarMonth);
+    newDate.setMonth(months.indexOf(month));
+    setCalendarMonth(newDate);
+  };
 
   return (
     <Card>
@@ -80,6 +112,30 @@ const PersonalInfoForm = ({ profileData, setProfileData }: PersonalInfoFormProps
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
+                <div className="p-3 border-b">
+                  <div className="flex items-center justify-between">
+                    <DateSelect onValueChange={handleCalendarMonthChange} value={months[calendarMonth.getMonth()]}>
+                      <DateSelectTrigger className="w-[120px]">
+                        <DateSelectValue placeholder="Month" />
+                      </DateSelectTrigger>
+                      <DateSelectContent>
+                        {months.map(month => (
+                          <DateSelectItem key={month} value={month}>{month}</DateSelectItem>
+                        ))}
+                      </DateSelectContent>
+                    </DateSelect>
+                    <DateSelect onValueChange={handleCalendarYearChange} value={calendarMonth.getFullYear().toString()}>
+                      <DateSelectTrigger className="w-[90px]">
+                        <DateSelectValue placeholder="Year" />
+                      </DateSelectTrigger>
+                      <DateSelectContent className="max-h-[300px] overflow-y-auto">
+                        {years.map(year => (
+                          <DateSelectItem key={year} value={year.toString()}>{year}</DateSelectItem>
+                        ))}
+                      </DateSelectContent>
+                    </DateSelect>
+                  </div>
+                </div>
                 <Calendar
                   mode="single"
                   selected={dateOfBirth}
@@ -87,7 +143,10 @@ const PersonalInfoForm = ({ profileData, setProfileData }: PersonalInfoFormProps
                   disabled={(date) =>
                     date > new Date() || date < new Date("1900-01-01")
                   }
+                  month={calendarMonth}
+                  onMonthChange={setCalendarMonth}
                   initialFocus
+                  className="p-3 pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
