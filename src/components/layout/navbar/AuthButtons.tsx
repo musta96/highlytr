@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
@@ -10,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from '@/hooks/auth/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 interface AuthButtonsProps {

@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAuth } from '@/hooks/auth/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { AccountType } from '@/components/auth/types';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
