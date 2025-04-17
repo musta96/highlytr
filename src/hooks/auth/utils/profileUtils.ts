@@ -32,12 +32,6 @@ export const fetchAccountInfo = async (
     
     if (error) {
       console.error('[AuthProvider] Error fetching profile:', error);
-      // Let the UI know there was an issue
-      toast.error('Error fetching profile data', {
-        description: 'Please try refreshing the page',
-        duration: 4000,
-        id: 'profile-fetch-error',
-      });
       return false;
     }
     
@@ -52,19 +46,24 @@ export const fetchAccountInfo = async (
       
       // Create a profile automatically if it doesn't exist
       try {
-        // Add a default account type when creating a new profile
+        // Create a profile with a default account type to satisfy schema requirement
+        const defaultAccountType: AccountType = 'athlete';
+        
         const { error: createError } = await supabase
           .from('profiles')
           .insert({ 
             id: userId, 
             profile_completed: false,
-            account_type: 'athlete' // Adding default account type to satisfy the schema requirement
+            account_type: defaultAccountType
           });
           
         if (createError) {
           console.error('[AuthProvider] Error creating profile:', createError);
         } else {
-          console.log('[AuthProvider] Created new profile for user');
+          console.log('[AuthProvider] Created new profile for user with default account type:', defaultAccountType);
+          // Since we've just created a profile with a default account type, let's use it
+          setAccountType(defaultAccountType);
+          return true;
         }
       } catch (err) {
         console.error('[AuthProvider] Failed to create profile:', err);

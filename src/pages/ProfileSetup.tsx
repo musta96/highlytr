@@ -15,6 +15,7 @@ const ProfileSetup = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [localLoading, setLocalLoading] = useState(true);
   const [showRetryButton, setShowRetryButton] = useState(false);
+  const [forceContentRender, setForceContentRender] = useState(false);
   
   // Log the current state for detailed debugging
   useEffect(() => {
@@ -27,11 +28,21 @@ const ProfileSetup = () => {
       userMetadata: user?.user_metadata,
       contentVisible,
       retryCount,
-      localLoading
+      localLoading,
+      forceContentRender
     });
 
-    // Ensure that content is always visible
+    // Always ensure content is visible
     setContentVisible(true);
+    
+    // If user exists, force content render after a short delay regardless of other states
+    if (user && !forceContentRender) {
+      const forceRenderTimer = setTimeout(() => {
+        setForceContentRender(true);
+        setLocalLoading(false);
+      }, 500);
+      return () => clearTimeout(forceRenderTimer);
+    }
     
     // Only redirect if profile is completed and we have all required data
     if (!loading && user && profileCompleted && accountType) {
@@ -40,23 +51,23 @@ const ProfileSetup = () => {
       navigate('/dashboard');
     }
     
-    // Show retry button after a delay - reduced from 5000ms to 3000ms for better UX
+    // Show retry button after a short delay
     const showRetryTimer = setTimeout(() => {
       if (loading || !user) {
         setShowRetryButton(true);
       }
-    }, 3000);
+    }, 2000);
     
     // Local loading state with a minimum display time to prevent flashing
     const loadingTimer = setTimeout(() => {
       setLocalLoading(false);
-    }, 800);
+    }, 500);
     
     return () => {
       clearTimeout(showRetryTimer);
       clearTimeout(loadingTimer);
     };
-  }, [loading, user, profileCompleted, accountType, navigate, retryCount]);
+  }, [loading, user, profileCompleted, accountType, navigate, retryCount, forceContentRender]);
 
   // Function to manually retry loading
   const handleRetry = () => {
@@ -65,11 +76,28 @@ const ProfileSetup = () => {
     window.location.reload();
   };
   
+  // If we have a user but form isn't showing yet, force it to render
+  useEffect(() => {
+    if (user && !loading && !localLoading && !contentVisible) {
+      console.log('[ProfileSetup] Forcing content to be visible');
+      setContentVisible(true);
+    }
+  }, [user, loading, localLoading, contentVisible]);
+  
   // IMPORTANT: Always render the layout with meaningful content
   return (
     <Layout>
       <div className="container py-8 max-w-3xl mx-auto min-h-[60vh] flex flex-col">
-        {(loading || localLoading) ? (
+        {/* If user exists but we're technically still loading, show the form anyway */}
+        {user && (forceContentRender || !localLoading) ? (
+          <div className="flex-grow">
+            <h1 className="text-3xl font-bold mb-6">Complete Your Profile</h1>
+            <p className="text-gray-600 mb-8">
+              Welcome to HighLytr! Please provide some information about yourself to complete your profile.
+            </p>
+            <ProfileSetupForm />
+          </div>
+        ) : (loading || localLoading) ? (
           <div className="flex flex-col items-center justify-center flex-grow py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
             <p className="mb-6">Loading your account information...</p>

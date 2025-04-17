@@ -37,7 +37,7 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, []);
 
-  // Initialize auth state
+  // Initialize auth state with faster timeouts
   const initAuth = useCallback(async () => {
     if (hasInitialized || isInitializingRef.current) return;
     
@@ -46,12 +46,23 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log(`[AuthStateProvider] Initializing auth (attempt ${initAttempts + 1})...`);
       setLoading(true);
       
-      const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+      // Use a timeout to ensure we don't hang indefinitely
+      const authPromise = supabase.auth.getSession();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Auth session timeout')), 5000)
+      );
+      
+      const { data: { session: currentSession }, error } = await Promise.race([
+        authPromise,
+        timeoutPromise.then(() => {
+          throw new Error('Auth session timeout');
+        })
+      ]) as Awaited<ReturnType<typeof supabase.auth.getSession>>;
       
       if (error) {
         console.error('[AuthStateProvider] Error getting session:', error);
         toast.error('Authentication error', { 
-          description: 'There was a problem connecting to the authentication service. Please try refreshing the page.',
+          description: 'There was a problem connecting to the authentication service. Please refresh the page.',
           duration: 5000
         });
         setLoading(false);
@@ -79,9 +90,9 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (currentSession.user) {
         console.log('[AuthStateProvider] Checking account info for user:', currentSession.user.id);
         try {
-          // First try to get account type from profiles table with a timeout
+          // Set a shorter timeout for account info fetch to prevent long waits
           const timeoutPromise = new Promise<boolean>((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout fetching account info')), 5000)
+            setTimeout(() => reject(new Error('Timeout fetching account info')), 3000)
           );
           
           const fetchPromise = Promise.race([
@@ -92,11 +103,17 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             return false;
           });
           
-          const success = await fetchPromise || checkUserMetadata(currentSession.user, setAccountType);
+          let success = await fetchPromise;
+          
+          // If DB fetch failed, try metadata as fallback
+          if (!success) {
+            success = checkUserMetadata(currentSession.user, setAccountType);
+          }
           
           if (!success) {
             console.warn('[AuthStateProvider] User has no account type in profile or metadata');
-            setAccountType(null);
+            // Use 'athlete' as the default account type in this case
+            setAccountType('athlete');
             setProfileCompleted(false);
           } else {
             console.log('[AuthStateProvider] Successfully loaded account info:', { 
@@ -106,6 +123,8 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           }
         } catch (error) {
           console.error('[AuthStateProvider] Error checking account info:', error);
+          // Set a default account type to prevent blank screens
+          setAccountType('athlete');
         }
       }
       
@@ -123,7 +142,7 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, [initAttempts, accountType, profileCompleted]);
 
-  // Set up auth state listener only once
+  // Set up auth state listener only once with improved error handling
   useEffect(() => {
     console.log('[AuthStateProvider] Setting up auth state listener...');
     
@@ -170,7 +189,8 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               }).then(success => {
                 if (!success) {
                   console.warn('[AuthStateProvider] User has no account type in profile or metadata');
-                  setAccountType(null);
+                  // Use 'athlete' as default account type to prevent blank screens
+                  setAccountType('athlete');
                   setProfileCompleted(false);
                 } else {
                   console.log('[AuthStateProvider] User account data loaded on event:', event, { 
@@ -180,6 +200,8 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 }
               }).catch(error => {
                 console.error('[AuthStateProvider] Error processing auth event data:', error);
+                // Set a default account type
+                setAccountType('athlete');
               }).finally(() => {
                 setLoading(false);
               });
@@ -187,6 +209,8 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             } catch (error) {
               console.error('[AuthStateProvider] Error in deferred profile processing:', error);
               setLoading(false);
+              // Set a default account type
+              setAccountType('athlete');
             }
           }, 0);
         }
@@ -200,14 +224,14 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return cleanupListener;
   }, [cleanupListener, initAuth]);
 
-  // Add a recovery mechanism when initialization fails
+  // Add a recovery mechanism when initialization fails with faster retries
   useEffect(() => {
     if (!user && !loading && initAttempts < 3 && !hasInitialized && !isInitializingRef.current) {
       const timer = setTimeout(() => {
         console.log(`[AuthStateProvider] Retrying initialization (attempt ${initAttempts + 1})...`);
         setInitAttempts(prev => prev + 1);
         initAuth();
-      }, 2000); // Retry every 2 seconds up to 3 times
+      }, 1000); // Retry faster, every 1 second up to 3 times
       
       return () => clearTimeout(timer);
     }

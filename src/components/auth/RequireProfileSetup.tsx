@@ -26,25 +26,36 @@ const RequireProfileSetup = () => {
       renderPhase
     });
     
-    // First quick stable render after 300ms
+    // First quick stable render after 100ms - faster initial check
     if (renderPhase === 0) {
       const timer1 = setTimeout(() => {
         setRenderPhase(1);
-      }, 300);
+      }, 100);
       return () => clearTimeout(timer1);
     }
     
-    // Second more definitive stable render after 1000ms (reduced from 1500ms)
+    // Second more definitive stable render after 500ms (reduced further for better performance)
     if (renderPhase === 1) {
       const timer2 = setTimeout(() => {
         setStableRender(true);
-      }, 1000);
+      }, 500);
       return () => clearTimeout(timer2);
     }
   }, [user, loading, profileCompleted, accountType, location.pathname, stableRender, renderPhase]);
 
-  // Always show loading UI until we are sure about the user state
-  // This prevents the blank screen issue
+  // When user is not null but we're still technically loading, show immediate content
+  // This helps prevent blank screen issues
+  if (user && !stableRender) {
+    console.log('[RequireProfileSetup] User exists but not fully stable, rendering preliminary content');
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-foreground mb-6">Preparing your profile setup...</p>
+      </div>
+    );
+  }
+
+  // Show loading UI until we are sure about the user state
   if (!stableRender || loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background">
