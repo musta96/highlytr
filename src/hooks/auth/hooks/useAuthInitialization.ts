@@ -1,10 +1,10 @@
+
 import { useState, useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AccountType } from '@/components/auth/types';
-import { fetchAccountInfo } from '../utils';
-import { checkUserMetadata } from '../utils';
+import { fetchAccountInfo, checkUserMetadata } from '../utils';
 
 interface UseAuthInitializationProps {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
