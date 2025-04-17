@@ -52,9 +52,14 @@ export const fetchAccountInfo = async (
       
       // Create a profile automatically if it doesn't exist
       try {
+        // FIX: Add a default account type when creating a new profile
         const { error: createError } = await supabase
           .from('profiles')
-          .insert({ id: userId, profile_completed: false });
+          .insert({ 
+            id: userId, 
+            profile_completed: false,
+            account_type: 'athlete' // Adding default account type to satisfy the schema requirement
+          });
           
         if (createError) {
           console.error('[AuthProvider] Error creating profile:', createError);
