@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from '@/hooks/auth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { toast } from 'sonner';
 
 interface AuthButtonsProps {
@@ -23,9 +23,11 @@ const AuthButtons = ({ user }: AuthButtonsProps) => {
 
   const handleLogout = async () => {
     try {
+      console.log("Logging out user...");
       await signOut();
       toast.success("You've been logged out successfully");
-      navigate('/');
+      console.log("Logout successful, navigating to home");
+      navigate('/', { replace: true });
     } catch (error) {
       console.error("Error logging out:", error);
       toast.error("Failed to log out");
