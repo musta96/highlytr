@@ -7,43 +7,37 @@ import { Loader2 } from 'lucide-react';
 const RequireProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const location = useLocation();
-  const [localLoading, setLocalLoading] = useState(true);
-  const [renderDelay, setRenderDelay] = useState(true);
-
+  const [stableRender, setStableRender] = useState(false);
+  
+  // Add detailed console logging to help debug issues
   useEffect(() => {
-    // Add detailed console logging to help debug issues
-    console.log('[RequireProfileSetup]', {
+    console.log('[RequireProfileSetup] Rendering with:', {
       isLoading: loading,
       hasUser: !!user,
       profileCompleted,
       accountType,
       path: location.pathname,
       userId: user?.id,
-      metadata: user?.user_metadata
+      metadata: user?.user_metadata,
+      stableRender
     });
     
-    // Use a short delay to let auth state settle before making decisions
+    // Ensure we always have a stable render state after a delay
+    // This prevents flickering or blank screens
     const timer = setTimeout(() => {
-      setLocalLoading(false);
-    }, 500);
-    
-    // Ensure component stays visible during transitions
-    const renderTimer = setTimeout(() => {
-      setRenderDelay(false);
+      setStableRender(true);
     }, 1000);
     
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(renderTimer);
-    };
-  }, [user, loading, profileCompleted, accountType, location.pathname]);
+    return () => clearTimeout(timer);
+  }, [user, loading, profileCompleted, accountType, location.pathname, stableRender]);
 
-  // If we're still checking auth state or in the render delay, show loading
-  if (loading || localLoading || renderDelay) {
+  // Always show loading UI until stable render is complete
+  // This prevents the blank screen issue
+  if (!stableRender || loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <p>Loading your account information...</p>
+        <p className="text-foreground">Loading your account information...</p>
       </div>
     );
   }

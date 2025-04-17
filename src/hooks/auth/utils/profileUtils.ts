@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { AccountType } from '@/components/auth/types';
 
-// Function to fetch and set account information
+// Function to fetch and set account information with better error handling
 export const fetchAccountInfo = async (
   userId: string,
   setAccountType: (type: AccountType | null) => void,
@@ -26,55 +26,64 @@ export const fetchAccountInfo = async (
     
     if (error) {
       console.error('[AuthProvider] Error fetching profile:', error);
+      // Don't fail completely on error, log and continue
       return false;
     }
     
     console.log('[AuthProvider] Profile data from DB:', profile);
+    
+    // Always update profile completion status if we have data
+    if (profile !== null) {
+      setProfileCompleted(profile?.profile_completed || false);
+    } else {
+      // If no profile found, ensure profile is marked as not completed
+      setProfileCompleted(false);
+    }
     
     // If we have a profile with account type, use it
     if (profile && profile.account_type) {
       const accountType = profile.account_type.toLowerCase() as AccountType;
       if (['athlete', 'college', 'agency'].includes(accountType)) {
         setAccountType(accountType);
-        setProfileCompleted(profile.profile_completed || false);
-        console.log('[AuthProvider] Account type set from DB:', accountType, 'Profile completed:', profile.profile_completed);
+        console.log('[AuthProvider] Account type set from DB:', accountType);
         return true;
       } else {
         console.warn('[AuthProvider] Invalid account type in profile:', profile.account_type);
       }
     } else {
       console.log('[AuthProvider] No account type found in profile or profile not found');
-      
-      // Even if no account type is found, we should set the profile completion status
-      if (profile !== null) {
-        setProfileCompleted(profile?.profile_completed || false);
-      }
     }
     
     return false;
   } catch (error) {
     console.error('[AuthProvider] Error in fetchAccountInfo:', error);
+    // Don't update states on error to avoid potential issues
     return false;
   }
 };
 
-// Function to check user metadata as fallback
+// Function to check user metadata as fallback with improved logging
 export const checkUserMetadata = (
   currentUser: User,
   setAccountType: (type: AccountType | null) => void
 ): boolean => {
-  if (!currentUser?.user_metadata) {
+  if (!currentUser) {
+    console.log('[AuthProvider] No user provided to checkUserMetadata');
+    return false;
+  }
+  
+  if (!currentUser.user_metadata) {
     console.log('[AuthProvider] No user metadata available');
     return false;
   }
   
-  // Try different possible keys for account type in metadata
+  // Try different possible keys for account type in metadata with better logging
   const userType = (
     currentUser.user_metadata?.accountType || 
     currentUser.user_metadata?.account_type
   ) as AccountType | undefined;
   
-  console.log('[AuthProvider] Account type from metadata:', userType, currentUser.user_metadata);
+  console.log('[AuthProvider] Account type from metadata:', userType, 'Full metadata:', currentUser.user_metadata);
   
   if (userType && ['athlete', 'college', 'agency'].includes(userType.toLowerCase())) {
     const normalizedType = userType.toLowerCase() as AccountType;
@@ -86,7 +95,7 @@ export const checkUserMetadata = (
   return false;
 };
 
-// Check if user has completed their profile
+// Check if user has completed their profile with better error handling
 export const checkProfileStatus = async (userId: string): Promise<boolean> => {
   if (!userId) {
     console.error('[AuthProvider] Cannot check profile status: userId is empty');
@@ -115,9 +124,10 @@ export const checkProfileStatus = async (userId: string): Promise<boolean> => {
   }
 };
 
-// Use this for direct lookup without side effects
+// Use this for direct lookup without side effects - with better error handling
 export const getProfileData = async (userId: string) => {
   if (!userId) {
+    console.log('[AuthProvider] Cannot get profile data: userId is empty');
     return null;
   }
   
@@ -133,6 +143,7 @@ export const getProfileData = async (userId: string) => {
       return null;
     }
     
+    console.log('[AuthProvider] Successfully retrieved profile data:', data ? 'Found' : 'Not found');
     return data;
   } catch (error) {
     console.error('[AuthProvider] Exception in getProfileData:', error);

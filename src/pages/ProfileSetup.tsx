@@ -6,16 +6,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 
 const ProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const navigate = useNavigate();
-  const [showRetryButton, setShowRetryButton] = useState(false);
-  const [localLoading, setLocalLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [stableRender, setStableRender] = useState(false);
-
+  const [contentVisible, setContentVisible] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  
   // Log the current state for detailed debugging
   useEffect(() => {
     console.log('[ProfileSetup]', {
@@ -24,64 +21,35 @@ const ProfileSetup = () => {
       loading,
       profileCompleted,
       accountType,
-      userMetadata: user?.user_metadata
+      userMetadata: user?.user_metadata,
+      contentVisible,
+      retryCount
     });
 
-    // Set a local loading state for initial render
-    const timer = setTimeout(() => {
-      setLocalLoading(false);
-    }, 1000);
+    // Ensure that content is always visible
+    setContentVisible(true);
     
-    // Ensure stable rendering regardless of auth state
-    const stableTimer = setTimeout(() => {
-      setStableRender(true);
-    }, 1500);
-
-    // Only redirect if profile is completed AND we have stable rendering
-    if (!loading && user && profileCompleted && accountType && stableRender) {
+    // Only redirect if profile is completed and we have all required data
+    if (!loading && user && profileCompleted && accountType) {
       console.log('[ProfileSetup] Profile already completed, redirecting to dashboard');
       navigate('/dashboard');
     }
-
-    // Show retry button if still loading after 5 seconds
-    const retryTimer = setTimeout(() => {
-      if (loading) {
-        setShowRetryButton(true);
-      }
-    }, 5000);
-
-    // Force reload after 15 seconds if still loading
-    const forceReloadTimer = setTimeout(() => {
-      if (loading) {
-        console.log('[ProfileSetup] Still loading after timeout, forcing reload');
-        setError('Loading timed out. Please try reloading the page.');
-      }
-    }, 15000);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(stableTimer);
-      clearTimeout(retryTimer);
-      clearTimeout(forceReloadTimer);
-    };
-  }, [loading, user, profileCompleted, accountType, navigate, stableRender]);
+  }, [loading, user, profileCompleted, accountType, navigate, retryCount]);
 
   // Function to manually retry loading
   const handleRetry = () => {
-    console.log('[ProfileSetup] Manual retry triggered');
-    setLocalLoading(true);
-    setError(null);
+    setRetryCount(prev => prev + 1);
     window.location.reload();
   };
   
-  // Always render the layout to prevent blank screen
+  // Always render the layout and some content to prevent blank screen
   return (
     <Layout>
-      {(loading || localLoading) ? (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-          <p className="mb-6">Loading your account information...</p>
-          {showRetryButton && (
+      <div className="container py-8 max-w-3xl mx-auto min-h-[60vh] flex flex-col">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center flex-grow py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="mb-6">Loading your account information...</p>
             <Button 
               onClick={handleRetry}
               variant="outline"
@@ -90,41 +58,28 @@ const ProfileSetup = () => {
               <RefreshCw className="h-4 w-4" />
               Retry Loading
             </Button>
-          )}
-        </div>
-      ) : error ? (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
-          <AlertCircle className="h-8 w-8 text-destructive mb-4" />
-          <p className="mb-6 text-destructive">{error}</p>
-          <Button 
-            onClick={handleRetry}
-            variant="default"
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Reload Page
-          </Button>
-        </div>
-      ) : !user ? (
-        <div className="flex flex-col items-center justify-center h-[60vh]">
-          <AlertCircle className="h-8 w-8 text-amber-500 mb-4" />
-          <p className="mb-6">You need to be logged in to access this page</p>
-          <Button 
-            onClick={() => navigate('/login')}
-            variant="default"
-          >
-            Go to Login
-          </Button>
-        </div>
-      ) : (
-        <div className="container py-8 max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Complete Your Profile</h1>
-          <p className="text-gray-600 mb-8">
-            Welcome to HighLytr! Please provide some information about yourself to complete your profile.
-          </p>
-          <ProfileSetupForm />
-        </div>
-      )}
+          </div>
+        ) : !user ? (
+          <div className="flex flex-col items-center justify-center flex-grow py-12">
+            <AlertCircle className="h-8 w-8 text-amber-500 mb-4" />
+            <p className="mb-6">You need to be logged in to access this page</p>
+            <Button 
+              onClick={() => navigate('/login')}
+              variant="default"
+            >
+              Go to Login
+            </Button>
+          </div>
+        ) : (
+          <div className="flex-grow">
+            <h1 className="text-3xl font-bold mb-6">Complete Your Profile</h1>
+            <p className="text-gray-600 mb-8">
+              Welcome to HighLytr! Please provide some information about yourself to complete your profile.
+            </p>
+            <ProfileSetupForm />
+          </div>
+        )}
+      </div>
     </Layout>
   );
 };
