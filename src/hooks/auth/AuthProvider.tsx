@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -14,9 +13,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [profileCompleted, setProfileCompleted] = useState(false);
   const [accountType, setAccountType] = useState<AccountType | null>(null);
+  const [initAttempts, setInitAttempts] = useState(0);
 
   // Function to fetch and set account information
-  const fetchAccountInfo = async (userId: string) => {
+  const fetchAccountInfo = useCallback(async (userId: string) => {
     console.log('[AuthProvider] Fetching account info for user:', userId);
     try {
       // First try to get account type from profiles table
@@ -45,10 +45,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('[AuthProvider] Error in fetchAccountInfo:', error);
       return false;
     }
-  };
+  }, []);
 
   // Function to check user metadata as fallback
-  const checkUserMetadata = (currentUser: User) => {
+  const checkUserMetadata = useCallback((currentUser: User) => {
     if (!currentUser?.user_metadata) return false;
     
     const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
@@ -60,7 +60,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     return false;
-  };
+  }, []);
+
+  // Initialize auth state
+  const initAuth = useCallback(async () => {
+    try {
+      console.log(`[AuthProvider] Initializing auth (attempt ${initAttempts + 1})...`);
+      setLoading(true);
+      
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      console.log('[AuthProvider] Current session:', currentSession?.user?.id ? 'Active' : 'None');
+      
+      setSession(currentSession);
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
+      
+      if (!currentUser) {
+        console.log('[AuthProvider] No user found, finishing init');
+        setAccountType(null);
+        setProfileCompleted(false);
+        setLoading(false);
+        return;
+      }
+      
+      // Check for account information
+      console.log('[AuthProvider] Checking account info for user:', currentUser.id);
+      let success = await fetchAccountInfo(currentUser.id);
+      
+      if (!success) {
+        console.log('[AuthProvider] No profile found, checking metadata');
+        success = checkUserMetadata(currentUser);
+        
+        if (success) {
+          const isCompleted = await checkProfileStatus(currentUser.id);
+          setProfileCompleted(isCompleted);
+        }
+      }
+      
+      if (!success) {
+        console.warn('[AuthProvider] User has no account type in profile or metadata');
+        setAccountType(null);
+        setProfileCompleted(false);
+      }
+      
+    } catch (error) {
+      console.error('[AuthProvider] Error during auth initialization:', error);
+    } finally {
+      setLoading(false);
+      console.log('[AuthProvider] Auth initialization complete');
+    }
+  }, [initAttempts, fetchAccountInfo, checkUserMetadata]);
+  
+  // Retry initialization if it fails
+  useEffect(() => {
+    if (initAttempts > 0 && initAttempts < 3) {
+      const timer = setTimeout(() => {
+        console.log(`[AuthProvider] Retrying initialization (attempt ${initAttempts + 1})...`);
+        initAuth();
+      }, 2000); // Wait 2 seconds before retrying
+      
+      return () => clearTimeout(timer);
+    }
+  }, [initAttempts, initAuth]);
 
   useEffect(() => {
     console.log('[AuthProvider] Setting up auth state listener...');
@@ -85,6 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Check for account information when user is authenticated
         try {
+          setLoading(true);
           // First try to get account type from profiles table
           let success = await fetchAccountInfo(currentUser.id);
           
@@ -108,66 +170,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         } catch (error) {
           console.error('[AuthProvider] Error checking profile status:', error);
-        }
-        
-        // Always finish by setting loading to false
-        setLoading(false);
-      }
-    );
-
-    // Check for existing session on app load
-    const checkExistingSession = async () => {
-      try {
-        console.log('[AuthProvider] Checking for existing session...');
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        console.log('[AuthProvider] Retrieved session on load:', currentSession?.user?.id);
-        
-        if (!currentSession?.user) {
-          setLoading(false);
-          return;
-        }
-        
-        setSession(currentSession);
-        setUser(currentSession.user);
-        
-        try {
-          // Try to get account type from profiles table
-          let success = await fetchAccountInfo(currentSession.user.id);
-          
-          // If that fails, try to get it from user metadata
-          if (!success) {
-            success = checkUserMetadata(currentSession.user);
-            
-            if (success) {
-              // If we found account type in metadata but not in profile,
-              // check if profile is completed
-              const isCompleted = await checkProfileStatus(currentSession.user.id);
-              setProfileCompleted(isCompleted);
-            }
-          }
-          
-          // If we still don't have an account type, log a warning
-          if (!success) {
-            console.warn('[AuthProvider] User has no account type in profile or metadata');
-          }
-        } catch (error) {
-          console.error('[AuthProvider] Error checking profile status on load:', error);
         } finally {
           setLoading(false);
         }
-      } catch (error) {
-        console.error('[AuthProvider] Error getting session:', error);
-        setLoading(false);
       }
-    };
-    
-    checkExistingSession();
+    );
+
+    // Initialize auth state
+    initAuth().then(() => {
+      // If initialization fails or results in no user, increment attempts
+      if (!user && initAttempts < 3) {
+        setInitAttempts(prev => prev + 1);
+      }
+    });
 
     // Cleanup subscription
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [initAuth, fetchAccountInfo, checkUserMetadata, initAttempts, user]);
 
   const signIn = async ({ email, password }: SignInCredentials): Promise<SignInResponse> => {
     try {

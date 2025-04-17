@@ -3,11 +3,12 @@ import React from 'react';
 import SocialFeed from '../feed/SocialFeed';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/auth';
+import { useAuth } from '@/hooks/useAuth';
 import { ArrowRight, Bell, Calendar, Users } from 'lucide-react';
 
 const HomeView = () => {
   const { user, accountType } = useAuth();
+  console.log('[HomeView] Rendering with user:', !!user, 'accountType:', accountType);
   
   const firstName = user?.user_metadata?.firstName || 'there';
 

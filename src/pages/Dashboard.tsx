@@ -15,7 +15,7 @@ const Dashboard = () => {
   
   useEffect(() => {
     // Clear any existing console logs for debugging
-    console.log('Dashboard mount - Auth state:', { 
+    console.log('[Dashboard] Auth state:', { 
       user: !!user, 
       userId: user?.id,
       accountType, 
@@ -26,25 +26,37 @@ const Dashboard = () => {
     
     // If user is logged in but doesn't have an account type, redirect to profile setup
     if (user && !loading && !accountType) {
-      console.log('User logged in but no account type, redirecting to profile setup');
+      console.log('[Dashboard] User logged in but no account type, redirecting to profile setup');
       toast.info('Please complete your profile setup');
       navigate('/profile-setup', { replace: true });
     }
 
-    // Show retry button if still loading after 5 seconds
+    // Show retry button sooner - after 3 seconds instead of 5
     const timer = setTimeout(() => {
       if (loading) {
         setShowRetryButton(true);
       }
-    }, 5000);
+    }, 3000);
 
-    return () => clearTimeout(timer);
+    // Add a force-reload after 10 seconds if still loading
+    const forceReloadTimer = setTimeout(() => {
+      if (loading) {
+        console.log('[Dashboard] Still loading after timeout, forcing reload');
+        window.location.reload();
+      }
+    }, 10000);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(forceReloadTimer);
+    };
   }, [user, loading, accountType, navigate, retryCount]);
 
   // Function to retry loading the dashboard
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
     setShowRetryButton(false);
+    console.log('[Dashboard] Manual retry triggered');
     window.location.reload();
   };
 
@@ -70,13 +82,13 @@ const Dashboard = () => {
 
   // If user is not authenticated, redirect to login
   if (!user) {
-    console.log('No user found, redirecting to login');
+    console.log('[Dashboard] No user found, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
   // If user doesn't have account type but we're not redirecting yet, show error state with recovery options
   if (!accountType && user) {
-    console.log('User has no account type, showing error state');
+    console.log('[Dashboard] User has no account type, showing error state');
     return (
       <div className="flex flex-col items-center justify-center h-screen p-4">
         <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
@@ -105,7 +117,7 @@ const Dashboard = () => {
   }
 
   // If user has a specific account type, show the appropriate dashboard
-  console.log('Rendering dashboard for', accountType);
+  console.log('[Dashboard] Rendering dashboard for', accountType);
   return <DashboardRoutes />;
 };
 

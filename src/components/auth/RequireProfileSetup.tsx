@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
@@ -8,15 +8,18 @@ const RequireProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const location = useLocation();
 
-  // Add more detailed console logging to help debug issues
-  console.log('[RequireProfileSetup]', {
-    isLoading: loading,
-    hasUser: !!user,
-    profileCompleted,
-    accountType,
-    path: location.pathname,
-    userId: user?.id
-  });
+  useEffect(() => {
+    // Add more detailed console logging to help debug issues
+    console.log('[RequireProfileSetup]', {
+      isLoading: loading,
+      hasUser: !!user,
+      profileCompleted,
+      accountType,
+      path: location.pathname,
+      userId: user?.id,
+      metadata: user?.user_metadata
+    });
+  }, [user, loading, profileCompleted, accountType, location.pathname]);
 
   // If we're still checking auth state, show loading
   if (loading) {
