@@ -3,7 +3,7 @@ import { useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AccountType } from '@/components/auth/types';
-import { fetchAccountInfo, checkUserMetadata } from '../utils/profileUtils';
+import { fetchAccountInfo, checkUserMetadata } from '../utils';
 
 interface UseAuthListenerProps {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
