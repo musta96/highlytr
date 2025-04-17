@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -235,7 +234,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
                           <SelectValue placeholder="Select sport" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Any Sport</SelectItem>
+                          <SelectItem value="any">Any Sport</SelectItem>
                           {sportOptions.map(sport => (
                             <SelectItem key={sport} value={sport}>{sport}</SelectItem>
                           ))}
@@ -340,7 +339,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
                             <SelectValue placeholder="Any division" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Any Division</SelectItem>
+                            <SelectItem value="any">Any Division</SelectItem>
                             <SelectItem value="NCAA Division I">NCAA Division I</SelectItem>
                             <SelectItem value="NCAA Division II">NCAA Division II</SelectItem>
                             <SelectItem value="NCAA Division III">NCAA Division III</SelectItem>
@@ -403,7 +402,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
                             <SelectValue placeholder="Select sport" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Any Sport</SelectItem>
+                            <SelectItem value="any">Any Sport</SelectItem>
                             {sportOptions.map(sport => (
                               <SelectItem key={sport} value={sport}>{sport}</SelectItem>
                             ))}
@@ -432,7 +431,6 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
         <div className="lg:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {type === 'athletes' ? (
-              // Render athletes
               mockAthletes.map(athlete => (
                 <Card key={athlete.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative h-48">
@@ -478,7 +476,6 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
                 </Card>
               ))
             ) : (
-              // Render colleges
               mockColleges.map(college => (
                 <Card key={college.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative h-48">
