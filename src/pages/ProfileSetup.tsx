@@ -39,10 +39,12 @@ const ProfileSetup = () => {
     }
     
     // Only redirect if profile is completed and we have all required data
-    if (!loading && user && profileCompleted && accountType) {
+    // IMPORTANT: This check runs on every render to ensure immediate redirect once data is available
+    if (!loading && user && profileCompleted === true) {
       console.log('[ProfileSetup] Profile already completed, redirecting to dashboard');
       toast.success('Your profile is already set up!');
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
+      return;
     }
     
     // Show retry button after a short delay
