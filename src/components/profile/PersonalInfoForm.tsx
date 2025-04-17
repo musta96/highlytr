@@ -16,6 +16,7 @@ import {
   SelectTrigger as DateSelectTrigger, 
   SelectValue as DateSelectValue 
 } from '@/components/ui/select';
+import PlaceOfBirthInput from './PlaceOfBirthInput';
 
 interface PersonalInfoFormProps {
   profileData: ProfileData;
@@ -54,6 +55,13 @@ const PersonalInfoForm = ({ profileData, setProfileData }: PersonalInfoFormProps
     setProfileData(prev => {
       if (!prev) return prev;
       return { ...prev, date_of_birth: date.toISOString() };
+    });
+  };
+
+  const handlePlaceOfBirthChange = (value: string) => {
+    setProfileData(prev => {
+      if (!prev) return prev;
+      return { ...prev, place_of_birth: value };
     });
   };
 
@@ -154,12 +162,9 @@ const PersonalInfoForm = ({ profileData, setProfileData }: PersonalInfoFormProps
           
           <div className="space-y-2">
             <Label htmlFor="place_of_birth">Place of Birth</Label>
-            <Input
-              id="place_of_birth"
-              name="place_of_birth"
-              value={profileData.place_of_birth || ''}
-              onChange={handleInputChange}
-              placeholder="City, Country"
+            <PlaceOfBirthInput 
+              value={profileData.place_of_birth || ''} 
+              onChange={handlePlaceOfBirthChange}
             />
           </div>
           

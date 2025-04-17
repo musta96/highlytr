@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -28,7 +29,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { 
   Select as DateSelect, 
   SelectContent as DateSelectContent, 
@@ -36,6 +37,7 @@ import {
   SelectTrigger as DateSelectTrigger, 
   SelectValue as DateSelectValue 
 } from '@/components/ui/select';
+import PlaceOfBirthInput from './PlaceOfBirthInput';
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -275,7 +277,7 @@ const ProfileSetupForm = () => {
                 <FormItem>
                   <FormLabel>Place of Birth</FormLabel>
                   <FormControl>
-                    <Input placeholder="City, Country" {...field} />
+                    <PlaceOfBirthInput value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
