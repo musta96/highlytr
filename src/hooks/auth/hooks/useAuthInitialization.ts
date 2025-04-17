@@ -107,7 +107,9 @@ export const useAuthInitialization = ({
           }
         } catch (error) {
           console.error('[AuthStateProvider] Error checking account info:', error);
+          // Set default values to prevent UI breakage
           setAccountType('athlete');
+          setProfileCompleted(false);
         }
       }
       
@@ -118,6 +120,10 @@ export const useAuthInitialization = ({
         description: 'Failed to initialize authentication. Please refresh the page.',
         duration: 5000
       });
+      // Set default values to prevent UI breakage
+      setAccountType('athlete');
+      setProfileCompleted(false);
+      setHasInitialized(true);
     } finally {
       isInitializingRef.current = false;
       console.log('[AuthStateProvider] Auth initialization complete');

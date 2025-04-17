@@ -1,3 +1,4 @@
+
 import { useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -83,15 +84,17 @@ export const useAuthListener = ({
                 console.error('[AuthStateProvider] Error processing auth event data:', error);
                 // Set a default account type
                 setAccountType('athlete');
+                setProfileCompleted(false);
               }).finally(() => {
                 setLoading(false);
               });
               
             } catch (error) {
               console.error('[AuthStateProvider] Error in deferred profile processing:', error);
-              setLoading(false);
-              // Set a default account type
+              // Set default values to prevent UI breakage
               setAccountType('athlete');
+              setProfileCompleted(false);
+              setLoading(false);
             }
           }, 0);
         }

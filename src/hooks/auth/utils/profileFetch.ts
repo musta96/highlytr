@@ -39,6 +39,20 @@ export const fetchAccountInfo = async (
     // Always update profile completion status if we have data
     if (profile !== null) {
       setProfileCompleted(profile?.profile_completed || false);
+      
+      // If we have a profile with account type, use it
+      if (profile.account_type) {
+        const accountType = profile.account_type.toLowerCase() as AccountType;
+        if (['athlete', 'college', 'agency'].includes(accountType)) {
+          setAccountType(accountType);
+          console.log('[AuthProvider] Account type set from DB:', accountType);
+          return true;
+        } else {
+          console.warn('[AuthProvider] Invalid account type in profile:', profile.account_type);
+          // Set a default for invalid types to prevent blank screens
+          setAccountType('athlete');
+        }
+      }
     } else {
       // If no profile found, ensure profile is marked as not completed
       setProfileCompleted(false);
@@ -66,27 +80,17 @@ export const fetchAccountInfo = async (
         }
       } catch (err) {
         console.error('[AuthProvider] Failed to create profile:', err);
+        // Set a fallback account type to prevent UI from breaking
+        setAccountType('athlete');
       }
-    }
-    
-    // If we have a profile with account type, use it
-    if (profile && profile.account_type) {
-      const accountType = profile.account_type.toLowerCase() as AccountType;
-      if (['athlete', 'college', 'agency'].includes(accountType)) {
-        setAccountType(accountType);
-        console.log('[AuthProvider] Account type set from DB:', accountType);
-        return true;
-      } else {
-        console.warn('[AuthProvider] Invalid account type in profile:', profile.account_type);
-      }
-    } else {
-      console.log('[AuthProvider] No account type found in profile or profile not found');
     }
     
     return false;
   } catch (error) {
     console.error('[AuthProvider] Error in fetchAccountInfo:', error);
-    // Don't update states on error to avoid potential issues
+    // Set fallback values on error to prevent UI from breaking
+    setAccountType('athlete');
+    setProfileCompleted(false);
     return false;
   }
 };

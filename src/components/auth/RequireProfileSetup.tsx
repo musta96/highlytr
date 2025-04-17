@@ -26,19 +26,19 @@ const RequireProfileSetup = () => {
       renderPhase
     });
     
-    // First quick stable render after 100ms - faster initial check
+    // First quick stable render after 50ms - faster initial check
     if (renderPhase === 0) {
       const timer1 = setTimeout(() => {
         setRenderPhase(1);
-      }, 100);
+      }, 50);
       return () => clearTimeout(timer1);
     }
     
-    // Second more definitive stable render after 500ms (reduced further for better performance)
+    // Second more definitive stable render after 300ms (reduced for better performance)
     if (renderPhase === 1) {
       const timer2 = setTimeout(() => {
         setStableRender(true);
-      }, 500);
+      }, 300);
       return () => clearTimeout(timer2);
     }
   }, [user, loading, profileCompleted, accountType, location.pathname, stableRender, renderPhase]);

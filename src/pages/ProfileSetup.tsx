@@ -11,11 +11,9 @@ import { toast } from 'sonner';
 const ProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const navigate = useNavigate();
-  const [contentVisible, setContentVisible] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
   const [localLoading, setLocalLoading] = useState(true);
   const [showRetryButton, setShowRetryButton] = useState(false);
-  const [forceContentRender, setForceContentRender] = useState(false);
+  const [forceRender, setForceRender] = useState(false);
   
   // Log the current state for detailed debugging
   useEffect(() => {
@@ -26,21 +24,16 @@ const ProfileSetup = () => {
       profileCompleted,
       accountType,
       userMetadata: user?.user_metadata,
-      contentVisible,
-      retryCount,
       localLoading,
-      forceContentRender
+      forceRender
     });
 
-    // Always ensure content is visible
-    setContentVisible(true);
-    
-    // If user exists, force content render after a short delay regardless of other states
-    if (user && !forceContentRender) {
+    // If user exists, force render after a short delay regardless of other states
+    if (user && !forceRender) {
       const forceRenderTimer = setTimeout(() => {
-        setForceContentRender(true);
+        setForceRender(true);
         setLocalLoading(false);
-      }, 500);
+      }, 300); // Reduced delay for faster rendering
       return () => clearTimeout(forceRenderTimer);
     }
     
@@ -67,29 +60,20 @@ const ProfileSetup = () => {
       clearTimeout(showRetryTimer);
       clearTimeout(loadingTimer);
     };
-  }, [loading, user, profileCompleted, accountType, navigate, retryCount, forceContentRender]);
+  }, [loading, user, profileCompleted, accountType, navigate, forceRender]);
 
   // Function to manually retry loading
   const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
     setLocalLoading(true);
     window.location.reload();
   };
-  
-  // If we have a user but form isn't showing yet, force it to render
-  useEffect(() => {
-    if (user && !loading && !localLoading && !contentVisible) {
-      console.log('[ProfileSetup] Forcing content to be visible');
-      setContentVisible(true);
-    }
-  }, [user, loading, localLoading, contentVisible]);
   
   // IMPORTANT: Always render the layout with meaningful content
   return (
     <Layout>
       <div className="container py-8 max-w-3xl mx-auto min-h-[60vh] flex flex-col">
-        {/* If user exists but we're technically still loading, show the form anyway */}
-        {user && (forceContentRender || !localLoading) ? (
+        {/* If user exists, don't wait for other states, show the form */}
+        {user && (forceRender || !localLoading) ? (
           <div className="flex-grow">
             <h1 className="text-3xl font-bold mb-6">Complete Your Profile</h1>
             <p className="text-gray-600 mb-8">
@@ -124,6 +108,7 @@ const ProfileSetup = () => {
             </Button>
           </div>
         ) : (
+          // Fallback content to ensure something is always shown
           <div className="flex-grow">
             <h1 className="text-3xl font-bold mb-6">Complete Your Profile</h1>
             <p className="text-gray-600 mb-8">
