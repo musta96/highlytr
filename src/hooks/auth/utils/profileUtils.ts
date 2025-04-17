@@ -52,7 +52,7 @@ export const fetchAccountInfo = async (
       
       // Create a profile automatically if it doesn't exist
       try {
-        // FIX: Add a default account type when creating a new profile
+        // Add a default account type when creating a new profile
         const { error: createError } = await supabase
           .from('profiles')
           .insert({ 

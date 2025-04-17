@@ -40,17 +40,17 @@ const ProfileSetup = () => {
       navigate('/dashboard');
     }
     
-    // Show retry button after a delay
+    // Show retry button after a delay - reduced from 5000ms to 3000ms for better UX
     const showRetryTimer = setTimeout(() => {
       if (loading || !user) {
         setShowRetryButton(true);
       }
-    }, 5000);
+    }, 3000);
     
     // Local loading state with a minimum display time to prevent flashing
     const loadingTimer = setTimeout(() => {
       setLocalLoading(false);
-    }, 1000);
+    }, 800);
     
     return () => {
       clearTimeout(showRetryTimer);

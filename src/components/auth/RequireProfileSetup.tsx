@@ -34,11 +34,11 @@ const RequireProfileSetup = () => {
       return () => clearTimeout(timer1);
     }
     
-    // Second more definitive stable render after 1500ms
+    // Second more definitive stable render after 1000ms (reduced from 1500ms)
     if (renderPhase === 1) {
       const timer2 = setTimeout(() => {
         setStableRender(true);
-      }, 1500);
+      }, 1000);
       return () => clearTimeout(timer2);
     }
   }, [user, loading, profileCompleted, accountType, location.pathname, stableRender, renderPhase]);
