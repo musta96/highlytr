@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -19,7 +19,6 @@ interface AuthButtonsProps {
 
 const AuthButtons = ({ user }: AuthButtonsProps) => {
   const { signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {

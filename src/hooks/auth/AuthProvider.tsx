@@ -195,19 +195,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async (): Promise<void> => {
     try {
       console.log('[AuthProvider] Signing out...');
-      const { error } = await supabase.auth.signOut();
       
-      if (error) {
-        throw error;
-      }
-      
-      // Reset states
+      // First, clear all local state
       setUser(null);
       setSession(null);
       setProfileCompleted(false);
       setAccountType(null);
       
-      console.log('[AuthProvider] Sign out successful - states reset');
+      // Then, call Supabase to sign out and clear auth data from storage
+      const { error } = await supabase.auth.signOut({
+        scope: 'global' // This ensures all devices are signed out
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('[AuthProvider] Sign out successful - all state reset');
     } catch (error: any) {
       console.error('[AuthProvider] Error signing out:', error);
       toast.error('Failed to sign out: ' + error.message);

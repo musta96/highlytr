@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -14,15 +14,18 @@ interface MobileMenuProps {
 
 const MobileMenu = ({ isOpen, setIsOpen, mainNavItems, user }: MobileMenuProps) => {
   const { signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       console.log("Mobile menu: Logging out user...");
+      // First, close the mobile menu
+      setIsOpen(false);
+      
+      // Then attempt to sign out
       await signOut();
       toast.success("You've been logged out successfully");
-      setIsOpen(false);
       console.log("Mobile menu: Logout successful, navigating to home");
+      
       // Force a hard navigation to ensure all state is reset
       window.location.href = '/';
     } catch (error) {

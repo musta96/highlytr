@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
@@ -19,21 +19,32 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, user, accountType, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get redirect path from location state or default to dashboard
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/dashboard";
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   // Redirect if user is already logged in
   useEffect(() => {
-    if (!loading && user && accountType) {
-      console.log("[LoginForm] User already logged in, redirecting to dashboard", { accountType });
-      const dashboardPath = `/dashboard/${accountType.toLowerCase()}`;
-      navigate(dashboardPath);
+    if (!loading && user) {
+      console.log("[LoginForm] User already logged in, redirecting", { accountType });
+      
+      // If they have an account type, go to the dashboard
+      if (accountType) {
+        navigate("/dashboard");
+      } else {
+        // If no account type yet, they need to complete profile setup
+        navigate("/profile-setup");
+      }
     }
   }, [user, accountType, navigate, loading]);
 
@@ -48,9 +59,17 @@ const LoginForm = () => {
 
       if (error) {
         console.error("[LoginForm] Login error:", error.message);
-        toast.error(`Error: ${error.message}`, {
-          description: "Please check your credentials and try again.",
-        });
+        
+        // Set form errors based on the error message
+        if (error.message.includes("Invalid login credentials")) {
+          setError("email", { message: "Invalid email or password" });
+          setError("password", { message: "Invalid email or password" });
+        } else {
+          toast.error(`Error: ${error.message}`, {
+            description: "Please check your credentials and try again.",
+          });
+        }
+        
         setIsLoading(false);
         return;
       }
