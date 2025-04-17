@@ -34,6 +34,17 @@ const PlaceOfBirthInput: React.FC<PlaceOfBirthInputProps> = ({ value = '', onCha
     setRegion(newRegion);
   };
 
+  // Handle city input, accepting either event or direct string value
+  const handleCityChange = (eventOrValue: React.ChangeEvent<HTMLInputElement> | string) => {
+    // Check if it's a string or event
+    if (typeof eventOrValue === 'string') {
+      setCity(eventOrValue);
+    } else if (eventOrValue && eventOrValue.target) {
+      // It's an event
+      setCity(eventOrValue.target.value);
+    }
+  };
+
   return (
     <div className="space-y-3">
       <CountrySelect 
@@ -52,7 +63,7 @@ const PlaceOfBirthInput: React.FC<PlaceOfBirthInputProps> = ({ value = '', onCha
       {country && (
         <CityInput 
           value={city}
-          onChange={(e) => setCity(e.target.value)}
+          onChange={handleCityChange}
         />
       )}
     </div>

@@ -37,19 +37,8 @@ const CityInput: React.FC<CityInputProps> = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
   
   const handleSelect = (currentValue: string) => {
-    if (typeof onChange === 'function') {
-      if (typeof onChange === 'function' && onChange.length === 1) {
-        // If it accepts an event
-        const syntheticEvent = {
-          target: { value: currentValue },
-          currentTarget: { value: currentValue }
-        } as React.ChangeEvent<HTMLInputElement>;
-        onChange(syntheticEvent);
-      } else {
-        // If it accepts a direct string value
-        onChange(currentValue);
-      }
-    }
+    // Call onChange directly with the string
+    onChange(currentValue);
     setOpen(false);
   };
 
@@ -81,7 +70,7 @@ const CityInput: React.FC<CityInputProps> = ({ value, onChange }) => {
                   <CommandItem
                     key={city}
                     value={city}
-                    onSelect={handleSelect}
+                    onSelect={() => handleSelect(city)}
                     className="cursor-pointer"
                   >
                     {city}
