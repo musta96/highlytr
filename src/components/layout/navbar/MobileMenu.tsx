@@ -23,9 +23,10 @@ const MobileMenu = ({ isOpen, setIsOpen, mainNavItems, user }: MobileMenuProps) 
       toast.success("You've been logged out successfully");
       setIsOpen(false);
       console.log("Mobile menu: Logout successful, navigating to home");
-      navigate('/', { replace: true });
+      // Force a hard navigation to ensure all state is reset
+      window.location.href = '/';
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error("Mobile menu: Error logging out:", error);
       toast.error("Failed to log out");
     }
   };

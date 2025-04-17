@@ -31,9 +31,10 @@ const DashboardHeader = ({ onMenuToggle, accountType }: DashboardHeaderProps) =>
       await signOut();
       toast.success("You've been logged out successfully");
       console.log("Dashboard header: Logout successful, navigating to home");
-      navigate('/', { replace: true });
+      // Force a hard navigation to ensure all state is reset
+      window.location.href = '/';
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error("Dashboard header: Error logging out:", error);
       toast.error("Failed to log out");
     }
   };
