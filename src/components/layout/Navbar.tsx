@@ -21,6 +21,14 @@ const Navbar = () => {
   // Check if we're in the dashboard area
   const isDashboard = location.pathname.includes('/dashboard');
 
+  // For debugging purposes
+  console.log('[Navbar] Rendering with:', { 
+    user: !!user, 
+    accountType, 
+    isDashboard,
+    path: location.pathname
+  });
+
   // If user is logged in but not in dashboard, show a simplified nav
   if (user && !isDashboard) {
     return (
@@ -31,7 +39,11 @@ const Navbar = () => {
           <div className="flex items-center gap-4">
             <Button 
               variant="default" 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => {
+                console.log('[Navbar] Navigating to dashboard');
+                // Navigate directly to the dashboard home
+                navigate('/dashboard', { replace: true });
+              }}
               className="flex items-center gap-2"
             >
               Go to Dashboard
