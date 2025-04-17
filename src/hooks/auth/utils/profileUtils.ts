@@ -33,9 +33,14 @@ export const fetchAccountInfo = async (
     
     // If we have a profile with account type, use it
     if (profile && profile.account_type) {
-      setAccountType(profile.account_type as AccountType);
-      setProfileCompleted(profile.profile_completed || false);
-      return true;
+      const accountType = profile.account_type.toLowerCase() as AccountType;
+      if (['athlete', 'college', 'agency'].includes(accountType)) {
+        setAccountType(accountType);
+        setProfileCompleted(profile.profile_completed || false);
+        return true;
+      } else {
+        console.warn('[AuthProvider] Invalid account type in profile:', profile.account_type);
+      }
     }
     
     return false;
@@ -55,11 +60,16 @@ export const checkUserMetadata = (
     return false;
   }
   
-  const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
+  // Try different possible keys for account type in metadata
+  const userType = (
+    currentUser.user_metadata?.accountType || 
+    currentUser.user_metadata?.account_type
+  ) as AccountType | undefined;
+  
   console.log('[AuthProvider] Account type from metadata:', userType, currentUser.user_metadata);
   
-  if (userType && ['athlete', 'college', 'agency'].includes(userType)) {
-    setAccountType(userType);
+  if (userType && ['athlete', 'college', 'agency'].includes(userType.toLowerCase())) {
+    setAccountType(userType.toLowerCase() as AccountType);
     return true;
   }
   

@@ -23,8 +23,9 @@ export const useAuthMethods = ({
     try {
       console.log('[AuthProvider] Signing in with:', email);
       
+      // Create an AbortController with a longer timeout (15 seconds)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -44,6 +45,16 @@ export const useAuthMethods = ({
       if (data.user && data.session) {
         setUser(data.user);
         setSession(data.session);
+        
+        // Pre-fetch account info to speed up the process
+        try {
+          const accountType = data.user?.user_metadata?.accountType as AccountType | undefined;
+          if (accountType) {
+            setAccountType(accountType);
+          }
+        } catch (err) {
+          console.error('[AuthProvider] Error pre-fetching account info:', err);
+        }
       }
       
       return { error: null };

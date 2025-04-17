@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContext } from '../AuthContext';
@@ -17,6 +17,9 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [initAttempts, setInitAttempts] = useState(0);
   const [hasInitialized, setHasInitialized] = useState(false);
   
+  // Use a ref to track auth listener to avoid duplicates
+  const authListenerRef = useRef<{ subscription?: { unsubscribe: () => void } }>({}); 
+  
   const { signIn, signUp, signOut } = useAuthMethods({
     setUser,
     setSession,
@@ -24,9 +27,18 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setAccountType
   });
 
+  // Clean up function to remove any previous listeners
+  const cleanupListener = useCallback(() => {
+    if (authListenerRef.current.subscription) {
+      console.log('[AuthStateProvider] Cleaning up previous auth listener');
+      authListenerRef.current.subscription.unsubscribe();
+      authListenerRef.current.subscription = undefined;
+    }
+  }, []);
+
   // Initialize auth state
   const initAuth = useCallback(async () => {
-    if (hasInitialized && user) return;
+    if (hasInitialized) return;
     
     try {
       console.log(`[AuthStateProvider] Initializing auth (attempt ${initAttempts + 1})...`);
@@ -73,7 +85,10 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           setAccountType(null);
           setProfileCompleted(false);
         } else {
-          console.log('[AuthStateProvider] Successfully loaded account info:', { accountType, profileCompleted });
+          console.log('[AuthStateProvider] Successfully loaded account info:', { 
+            accountType: currentSession.user?.user_metadata?.accountType, 
+            profileCompleted 
+          });
         }
       }
       
@@ -88,11 +103,14 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setLoading(false);
       console.log('[AuthStateProvider] Auth initialization complete');
     }
-  }, [initAttempts, user, hasInitialized, accountType, profileCompleted]);
+  }, [initAttempts]);
 
-  // Set up auth state listener
+  // Set up auth state listener only once
   useEffect(() => {
     console.log('[AuthStateProvider] Setting up auth state listener...');
+    
+    // First, clean up any existing listener
+    cleanupListener();
     
     // First, initialize auth state
     initAuth();
@@ -118,38 +136,50 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         if (['SIGNED_IN', 'TOKEN_REFRESHED', 'USER_UPDATED'].includes(event)) {
           try {
             setLoading(true);
-            // First try to get account type from profiles table
-            const success = await fetchAccountInfo(
-              currentSession.user.id, 
-              setAccountType, 
-              setProfileCompleted
-            ) || checkUserMetadata(currentSession.user, setAccountType);
-            
-            if (!success) {
-              console.warn('[AuthStateProvider] User has no account type in profile or metadata');
-              setAccountType(null);
-              setProfileCompleted(false);
-            } else {
-              console.log('[AuthStateProvider] User account data loaded on event:', event, { accountType, profileCompleted });
-            }
+            // Use setTimeout to prevent potential deadlocks with Supabase auth
+            setTimeout(async () => {
+              try {
+                // First try to get account type from profiles table
+                const success = await fetchAccountInfo(
+                  currentSession.user.id, 
+                  setAccountType, 
+                  setProfileCompleted
+                ) || checkUserMetadata(currentSession.user, setAccountType);
+                
+                if (!success) {
+                  console.warn('[AuthStateProvider] User has no account type in profile or metadata');
+                  setAccountType(null);
+                  setProfileCompleted(false);
+                } else {
+                  console.log('[AuthStateProvider] User account data loaded on event:', event, { 
+                    accountType: currentSession.user?.user_metadata?.accountType, 
+                    profileCompleted 
+                  });
+                }
+              } catch (error) {
+                console.error('[AuthStateProvider] Error in deferred profile processing:', error);
+              } finally {
+                setLoading(false);
+              }
+            }, 0);
           } catch (error) {
             console.error('[AuthStateProvider] Error processing auth event:', error);
-          } finally {
             setLoading(false);
           }
         }
       }
     );
 
+    // Store the subscription for cleanup
+    authListenerRef.current.subscription = subscription;
+
     // Clean up subscription
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [initAuth]);
+    return cleanupListener;
+  }, [initAuth, cleanupListener]);
 
   // Add a recovery mechanism when initialization fails
   useEffect(() => {
-    if (!user && !loading && initAttempts < 3) {
+    if (!user && !loading && initAttempts < 3 && !hasInitialized) {
       const timer = setTimeout(() => {
         console.log(`[AuthStateProvider] Retrying initialization (attempt ${initAttempts + 1})...`);
         setInitAttempts(prev => prev + 1);
@@ -160,14 +190,14 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
     
     // If we've tried 3 times and still have issues, show message to user
-    if (initAttempts >= 3 && !user && !loading) {
+    if (initAttempts >= 3 && !user && !loading && !hasInitialized) {
       console.error('[AuthStateProvider] Failed to initialize auth after multiple attempts');
       toast.error('Authentication error', {
         description: 'We\'re having trouble connecting to the authentication service. Please refresh the page or try again later.',
         duration: 8000
       });
     }
-  }, [user, loading, initAttempts, initAuth]);
+  }, [user, loading, initAttempts, initAuth, hasInitialized]);
 
   return (
     <AuthContext.Provider value={{ 
