@@ -72,3 +72,22 @@ export const regionsByCountry: Record<string, string[]> = {
   ],
   'Other': []
 };
+
+// Sample data for cities by region
+export const citiesByRegion: Record<string, Record<string, string[]>> = {
+  'United States': {
+    'California': ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose', 'Sacramento', 'Oakland', 'Fresno', 'Long Beach', 'Bakersfield', 'Anaheim', 'Santa Ana', 'Riverside'],
+    'New York': ['New York City', 'Buffalo', 'Rochester', 'Yonkers', 'Syracuse', 'Albany', 'New Rochelle', 'Mount Vernon', 'Schenectady', 'Utica'],
+    'Texas': ['Houston', 'San Antonio', 'Dallas', 'Austin', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi', 'Plano', 'Laredo'],
+    'Florida': ['Jacksonville', 'Miami', 'Tampa', 'Orlando', 'St. Petersburg', 'Hialeah', 'Tallahassee', 'Fort Lauderdale', 'Port St. Lucie', 'Cape Coral'],
+    // Add more states as needed
+  },
+  'Italy': {
+    'Lombardy': ['Milan', 'Bergamo', 'Brescia', 'Como', 'Cremona', 'Lecco', 'Lodi', 'Mantua', 'Monza', 'Pavia', 'Sondrio', 'Varese'],
+    'Lazio': ['Rome', 'Frosinone', 'Latina', 'Rieti', 'Viterbo'],
+    'Sicily': ['Palermo', 'Catania', 'Messina', 'Syracuse', 'Ragusa', 'Trapani', 'Agrigento', 'Caltanissetta', 'Enna'],
+    'Tuscany': ['Florence', 'Arezzo', 'Grosseto', 'Livorno', 'Lucca', 'Massa', 'Pisa', 'Pistoia', 'Prato', 'Siena'],
+    // Add more regions as needed
+  },
+  // Add more countries as needed
+};

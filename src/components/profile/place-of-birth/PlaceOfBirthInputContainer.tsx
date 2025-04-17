@@ -31,12 +31,14 @@ const PlaceOfBirthInputContainer: React.FC<PlaceOfBirthInputContainerProps> = ({
   const handleCountryChange = (newCountry: string) => {
     setCountry(newCountry);
     setRegion(''); // Reset region when country changes
+    setCity(''); // Reset city when country changes
     setAnimateField('region');
     setTimeout(() => setAnimateField(null), 1000);
   };
 
   const handleRegionChange = (newRegion: string) => {
     setRegion(newRegion);
+    setCity(''); // Reset city when region changes
     setAnimateField('city');
     setTimeout(() => setAnimateField(null), 1000);
   };
@@ -82,6 +84,8 @@ const PlaceOfBirthInputContainer: React.FC<PlaceOfBirthInputContainerProps> = ({
           <CityInput 
             value={city}
             onChange={handleCityChange}
+            country={country}
+            region={region}
           />
         </div>
       )}
