@@ -1,10 +1,10 @@
-
 import { useState, useCallback, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AccountType } from '@/components/auth/types';
-import { fetchAccountInfo, checkUserMetadata } from '../utils/profileUtils';
+import { fetchAccountInfo } from '../utils';
+import { checkUserMetadata } from '../utils';
 
 interface UseAuthInitializationProps {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -37,7 +37,6 @@ export const useAuthInitialization = ({
       isInitializingRef.current = true;
       console.log(`[AuthStateProvider] Initializing auth (attempt ${initAttempts + 1})...`);
       
-      // Use a timeout to ensure we don't hang indefinitely
       const authPromise = supabase.auth.getSession();
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Auth session timeout')), 5000)
@@ -75,11 +74,9 @@ export const useAuthInitialization = ({
       setSession(currentSession);
       setUser(currentSession.user);
       
-      // Check for account information
       if (currentSession.user) {
         console.log('[AuthStateProvider] Checking account info for user:', currentSession.user.id);
         try {
-          // Set a shorter timeout for account info fetch to prevent long waits
           const timeoutPromise = new Promise<boolean>((_, reject) => 
             setTimeout(() => reject(new Error('Timeout fetching account info')), 3000)
           );
@@ -94,14 +91,12 @@ export const useAuthInitialization = ({
           
           let success = await fetchPromise;
           
-          // If DB fetch failed, try metadata as fallback
           if (!success) {
             success = checkUserMetadata(currentSession.user, setAccountType);
           }
           
           if (!success) {
             console.warn('[AuthStateProvider] User has no account type in profile or metadata');
-            // Use 'athlete' as the default account type in this case
             setAccountType('athlete');
             setProfileCompleted(false);
           } else {
@@ -112,7 +107,6 @@ export const useAuthInitialization = ({
           }
         } catch (error) {
           console.error('[AuthStateProvider] Error checking account info:', error);
-          // Set a default account type to prevent blank screens
           setAccountType('athlete');
         }
       }
