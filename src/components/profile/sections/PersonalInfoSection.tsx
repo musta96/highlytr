@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import { 
   Select as DateSelect, 
@@ -16,6 +16,16 @@ import {
   SelectValue as DateSelectValue 
 } from '@/components/ui/select';
 import PlaceOfBirthInput from '../PlaceOfBirthInput';
+import { countries } from '../place-of-birth/data';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { cn } from '@/lib/utils';
 
 interface PersonalInfoSectionProps {
   form: UseFormReturn<any>;
@@ -23,6 +33,7 @@ interface PersonalInfoSectionProps {
 
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }) => {
   const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
+  const [openCitizenship, setOpenCitizenship] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
@@ -163,7 +174,51 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }) => {
             <FormItem>
               <FormLabel>Citizenship</FormLabel>
               <FormControl>
-                <Input placeholder="Your citizenship" {...field} />
+                <Popover open={openCitizenship} onOpenChange={setOpenCitizenship}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <div className="flex items-center gap-1">
+                        <Input
+                          placeholder="Your citizenship"
+                          {...field}
+                          className="w-full"
+                        />
+                        <div className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer">
+                          <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                        </div>
+                      </div>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search citizenship..." />
+                      <CommandList>
+                        <CommandEmpty>No country found.</CommandEmpty>
+                        <CommandGroup>
+                          {countries.map((country) => (
+                            <CommandItem
+                              key={country}
+                              value={country}
+                              onSelect={(currentValue) => {
+                                field.onChange(currentValue);
+                                setOpenCitizenship(false);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              {country}
+                              <Check
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  field.value === country ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </FormControl>
               <FormMessage />
             </FormItem>
