@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { User, Settings, LogOut, Menu, Bell } from 'lucide-react';
@@ -14,6 +14,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { AccountType } from '@/components/auth/types';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface DashboardHeaderProps {
   onMenuToggle?: () => void;
@@ -65,12 +70,39 @@ const DashboardHeader = ({ onMenuToggle, accountType }: DashboardHeaderProps) =>
         </div>
         
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="relative">
-            <Link to="/dashboard/notifications">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </Link>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Notifications</h4>
+                  <Link to="/dashboard/notifications" className="text-sm text-blue-600 hover:text-blue-800">
+                    View all
+                  </Link>
+                </div>
+                <div className="space-y-2">
+                  {/* Show latest 3 notifications */}
+                  <div className="p-2 hover:bg-gray-50 rounded-lg">
+                    <p className="text-sm">Coach Johnson sent you a connection request</p>
+                    <span className="text-xs text-gray-500">2 hours ago</span>
+                  </div>
+                  <div className="p-2 hover:bg-gray-50 rounded-lg">
+                    <p className="text-sm">New message from Sarah Williams</p>
+                    <span className="text-xs text-gray-500">3 hours ago</span>
+                  </div>
+                  <div className="p-2 hover:bg-gray-50 rounded-lg">
+                    <p className="text-sm">Coach Rodriguez liked your highlight video</p>
+                    <span className="text-xs text-gray-500">Yesterday</span>
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
