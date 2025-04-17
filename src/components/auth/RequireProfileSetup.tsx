@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
@@ -7,9 +7,11 @@ import { Loader2 } from 'lucide-react';
 const RequireProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const location = useLocation();
+  const [localLoading, setLocalLoading] = useState(true);
+  const [renderDelay, setRenderDelay] = useState(true);
 
   useEffect(() => {
-    // Add more detailed console logging to help debug issues
+    // Add detailed console logging to help debug issues
     console.log('[RequireProfileSetup]', {
       isLoading: loading,
       hasUser: !!user,
@@ -19,10 +21,25 @@ const RequireProfileSetup = () => {
       userId: user?.id,
       metadata: user?.user_metadata
     });
+    
+    // Use a short delay to let auth state settle before making decisions
+    const timer = setTimeout(() => {
+      setLocalLoading(false);
+    }, 500);
+    
+    // Ensure component stays visible during transitions
+    const renderTimer = setTimeout(() => {
+      setRenderDelay(false);
+    }, 1000);
+    
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(renderTimer);
+    };
   }, [user, loading, profileCompleted, accountType, location.pathname]);
 
-  // If we're still checking auth state, show loading
-  if (loading) {
+  // If we're still checking auth state or in the render delay, show loading
+  if (loading || localLoading || renderDelay) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />

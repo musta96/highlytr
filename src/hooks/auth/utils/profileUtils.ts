@@ -44,6 +44,11 @@ export const fetchAccountInfo = async (
       }
     } else {
       console.log('[AuthProvider] No account type found in profile or profile not found');
+      
+      // Even if no account type is found, we should set the profile completion status
+      if (profile !== null) {
+        setProfileCompleted(profile?.profile_completed || false);
+      }
     }
     
     return false;
@@ -107,5 +112,30 @@ export const checkProfileStatus = async (userId: string): Promise<boolean> => {
   } catch (error) {
     console.error('[AuthProvider] Error in profile status check:', error);
     return false;
+  }
+};
+
+// Use this for direct lookup without side effects
+export const getProfileData = async (userId: string) => {
+  if (!userId) {
+    return null;
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+      
+    if (error) {
+      console.error('[AuthProvider] Error in getProfileData:', error);
+      return null;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('[AuthProvider] Exception in getProfileData:', error);
+    return null;
   }
 };
