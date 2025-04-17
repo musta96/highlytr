@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { User } from 'lucide-react';
@@ -25,9 +24,8 @@ const AuthButtons = ({ user }: AuthButtonsProps) => {
       console.log("AuthButtons: Logging out user...");
       await signOut();
       toast.success("You've been logged out successfully");
-      console.log("AuthButtons: Logout successful, navigating to home");
-      // Force a hard navigation to ensure all state is reset
-      window.location.href = '/';
+      console.log("AuthButtons: Logout successful");
+      // Auth provider will handle navigation
     } catch (error) {
       console.error("AuthButtons: Error logging out:", error);
       toast.error("Failed to log out");

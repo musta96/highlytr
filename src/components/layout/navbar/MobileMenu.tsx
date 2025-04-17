@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -24,10 +23,8 @@ const MobileMenu = ({ isOpen, setIsOpen, mainNavItems, user }: MobileMenuProps) 
       // Then attempt to sign out
       await signOut();
       toast.success("You've been logged out successfully");
-      console.log("Mobile menu: Logout successful, navigating to home");
-      
-      // Force a hard navigation to ensure all state is reset
-      window.location.href = '/';
+      console.log("Mobile menu: Logout successful");
+      // Auth provider will handle navigation
     } catch (error) {
       console.error("Mobile menu: Error logging out:", error);
       toast.error("Failed to log out");

@@ -33,9 +33,9 @@ const RequireProfileSetup = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If user is logged in but hasn't completed their profile, redirect to profile setup
-  // Unless they're already on the profile setup page
-  if (!profileCompleted && !accountType && location.pathname !== '/profile-setup') {
+  // If user is logged in but hasn't completed their profile or doesn't have an account type,
+  // redirect to profile setup unless they're already on the profile setup page
+  if ((!profileCompleted || !accountType) && location.pathname !== '/profile-setup') {
     console.log('[RequireProfileSetup] User missing profile/account type, redirecting to setup');
     return <Navigate to="/profile-setup" replace />;
   }

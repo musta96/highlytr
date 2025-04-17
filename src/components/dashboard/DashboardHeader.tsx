@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,16 +28,14 @@ const DashboardHeader = ({ onMenuToggle, accountType }: DashboardHeaderProps) =>
       console.log("Dashboard header: Logging out user...");
       await signOut();
       toast.success("You've been logged out successfully");
-      console.log("Dashboard header: Logout successful, navigating to home");
-      // Force a hard navigation to ensure all state is reset
-      window.location.href = '/';
+      console.log("Dashboard header: Logout successful");
+      // Auth provider will handle navigation
     } catch (error) {
       console.error("Dashboard header: Error logging out:", error);
       toast.error("Failed to log out");
     }
   };
 
-  // Helper function to get badge color based on account type
   const getAccountTypeColor = (): string => {
     switch (accountType?.toLowerCase()) {
       case 'athlete': return 'bg-blue-500';
