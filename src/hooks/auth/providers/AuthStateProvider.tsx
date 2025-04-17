@@ -19,6 +19,7 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   
   // Use a ref to track auth listener to avoid duplicates
   const authListenerRef = useRef<{ subscription?: { unsubscribe: () => void } }>({}); 
+  const isInitializingRef = useRef(false);
   
   const { signIn, signUp, signOut } = useAuthMethods({
     setUser,
@@ -38,9 +39,10 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Initialize auth state
   const initAuth = useCallback(async () => {
-    if (hasInitialized) return;
+    if (hasInitialized || isInitializingRef.current) return;
     
     try {
+      isInitializingRef.current = true;
       console.log(`[AuthStateProvider] Initializing auth (attempt ${initAttempts + 1})...`);
       setLoading(true);
       
@@ -53,6 +55,7 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           duration: 5000
         });
         setLoading(false);
+        isInitializingRef.current = false;
         return;
       }
       
@@ -65,6 +68,7 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setProfileCompleted(false);
         setLoading(false);
         setHasInitialized(true);
+        isInitializingRef.current = false;
         return;
       }
       
@@ -74,21 +78,34 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       // Check for account information
       if (currentSession.user) {
         console.log('[AuthStateProvider] Checking account info for user:', currentSession.user.id);
-        const success = await fetchAccountInfo(
-          currentSession.user.id, 
-          setAccountType, 
-          setProfileCompleted
-        ) || checkUserMetadata(currentSession.user, setAccountType);
-        
-        if (!success) {
-          console.warn('[AuthStateProvider] User has no account type in profile or metadata');
-          setAccountType(null);
-          setProfileCompleted(false);
-        } else {
-          console.log('[AuthStateProvider] Successfully loaded account info:', { 
-            accountType: currentSession.user?.user_metadata?.accountType, 
-            profileCompleted 
+        try {
+          // First try to get account type from profiles table with a timeout
+          const timeoutPromise = new Promise<boolean>((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout fetching account info')), 5000)
+          );
+          
+          const fetchPromise = Promise.race([
+            fetchAccountInfo(currentSession.user.id, setAccountType, setProfileCompleted),
+            timeoutPromise
+          ]).catch(err => {
+            console.warn('[AuthStateProvider] Error or timeout fetching account info:', err.message);
+            return false;
           });
+          
+          const success = await fetchPromise || checkUserMetadata(currentSession.user, setAccountType);
+          
+          if (!success) {
+            console.warn('[AuthStateProvider] User has no account type in profile or metadata');
+            setAccountType(null);
+            setProfileCompleted(false);
+          } else {
+            console.log('[AuthStateProvider] Successfully loaded account info:', { 
+              accountType, 
+              profileCompleted 
+            });
+          }
+        } catch (error) {
+          console.error('[AuthStateProvider] Error checking account info:', error);
         }
       }
       
@@ -101,9 +118,10 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
     } finally {
       setLoading(false);
+      isInitializingRef.current = false;
       console.log('[AuthStateProvider] Auth initialization complete');
     }
-  }, [initAttempts]);
+  }, [initAttempts, accountType, profileCompleted]);
 
   // Set up auth state listener only once
   useEffect(() => {
@@ -117,7 +135,7 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     
     // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentSession) => {
+      (event, currentSession) => {
         console.log('[AuthStateProvider] Auth state changed:', event, currentSession?.user?.id);
         
         // Update session and user state
@@ -134,38 +152,43 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         
         // For important auth events, process account info
         if (['SIGNED_IN', 'TOKEN_REFRESHED', 'USER_UPDATED'].includes(event)) {
-          try {
-            setLoading(true);
-            // Use setTimeout to prevent potential deadlocks with Supabase auth
-            setTimeout(async () => {
-              try {
-                // First try to get account type from profiles table
-                const success = await fetchAccountInfo(
-                  currentSession.user.id, 
-                  setAccountType, 
-                  setProfileCompleted
-                ) || checkUserMetadata(currentSession.user, setAccountType);
-                
+          // Use setTimeout to prevent potential deadlocks with Supabase auth
+          setTimeout(() => {
+            try {
+              setLoading(true);
+              
+              // Process the account info in a non-blocking way
+              fetchAccountInfo(
+                currentSession.user.id, 
+                setAccountType, 
+                setProfileCompleted
+              ).then(success => {
+                if (!success) {
+                  return checkUserMetadata(currentSession.user, setAccountType);
+                }
+                return true;
+              }).then(success => {
                 if (!success) {
                   console.warn('[AuthStateProvider] User has no account type in profile or metadata');
                   setAccountType(null);
                   setProfileCompleted(false);
                 } else {
                   console.log('[AuthStateProvider] User account data loaded on event:', event, { 
-                    accountType: currentSession.user?.user_metadata?.accountType, 
+                    accountType, 
                     profileCompleted 
                   });
                 }
-              } catch (error) {
-                console.error('[AuthStateProvider] Error in deferred profile processing:', error);
-              } finally {
+              }).catch(error => {
+                console.error('[AuthStateProvider] Error processing auth event data:', error);
+              }).finally(() => {
                 setLoading(false);
-              }
-            }, 0);
-          } catch (error) {
-            console.error('[AuthStateProvider] Error processing auth event:', error);
-            setLoading(false);
-          }
+              });
+              
+            } catch (error) {
+              console.error('[AuthStateProvider] Error in deferred profile processing:', error);
+              setLoading(false);
+            }
+          }, 0);
         }
       }
     );
@@ -175,11 +198,11 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     // Clean up subscription
     return cleanupListener;
-  }, [initAuth, cleanupListener]);
+  }, [cleanupListener, initAuth]);
 
   // Add a recovery mechanism when initialization fails
   useEffect(() => {
-    if (!user && !loading && initAttempts < 3 && !hasInitialized) {
+    if (!user && !loading && initAttempts < 3 && !hasInitialized && !isInitializingRef.current) {
       const timer = setTimeout(() => {
         console.log(`[AuthStateProvider] Retrying initialization (attempt ${initAttempts + 1})...`);
         setInitAttempts(prev => prev + 1);

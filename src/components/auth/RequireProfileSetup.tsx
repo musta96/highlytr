@@ -24,7 +24,7 @@ const RequireProfileSetup = () => {
   // If we're still checking auth state, show loading
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
         <p>Loading your account information...</p>
       </div>

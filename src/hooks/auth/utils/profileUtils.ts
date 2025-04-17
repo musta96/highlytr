@@ -37,10 +37,13 @@ export const fetchAccountInfo = async (
       if (['athlete', 'college', 'agency'].includes(accountType)) {
         setAccountType(accountType);
         setProfileCompleted(profile.profile_completed || false);
+        console.log('[AuthProvider] Account type set from DB:', accountType, 'Profile completed:', profile.profile_completed);
         return true;
       } else {
         console.warn('[AuthProvider] Invalid account type in profile:', profile.account_type);
       }
+    } else {
+      console.log('[AuthProvider] No account type found in profile or profile not found');
     }
     
     return false;
@@ -69,7 +72,9 @@ export const checkUserMetadata = (
   console.log('[AuthProvider] Account type from metadata:', userType, currentUser.user_metadata);
   
   if (userType && ['athlete', 'college', 'agency'].includes(userType.toLowerCase())) {
-    setAccountType(userType.toLowerCase() as AccountType);
+    const normalizedType = userType.toLowerCase() as AccountType;
+    setAccountType(normalizedType);
+    console.log('[AuthProvider] Account type set from metadata:', normalizedType);
     return true;
   }
   
@@ -91,14 +96,16 @@ export const checkProfileStatus = async (userId: string): Promise<boolean> => {
       .maybeSingle();
 
     if (error) {
-      console.error('Error fetching profile status:', error);
+      console.error('[AuthProvider] Error fetching profile status:', error);
       return false;
     }
     
     // Handle the case where profile_completed might be null
-    return data?.profile_completed === true;
+    const completed = data?.profile_completed === true;
+    console.log('[AuthProvider] Profile completed status:', completed);
+    return completed;
   } catch (error) {
-    console.error('Error in profile status check:', error);
+    console.error('[AuthProvider] Error in profile status check:', error);
     return false;
   }
 };

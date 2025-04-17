@@ -4,7 +4,7 @@ import Layout from '@/components/layout/Layout';
 import ProfileSetupForm from '@/components/profile/ProfileSetupForm';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -12,6 +12,8 @@ const ProfileSetup = () => {
   const { user, loading, profileCompleted, accountType } = useAuth();
   const navigate = useNavigate();
   const [showRetryButton, setShowRetryButton] = useState(false);
+  const [localLoading, setLocalLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Log the current state for detailed debugging
   useEffect(() => {
@@ -24,6 +26,11 @@ const ProfileSetup = () => {
       userMetadata: user?.user_metadata
     });
 
+    // Set a local loading state for initial render
+    const timer = setTimeout(() => {
+      setLocalLoading(false);
+    }, 1000);
+
     // Handle case where profile is already completed
     if (!loading && user && profileCompleted && accountType) {
       console.log('[ProfileSetup] Profile already completed, redirecting to dashboard');
@@ -31,7 +38,7 @@ const ProfileSetup = () => {
     }
 
     // Show retry button if still loading after 3 seconds
-    const timer = setTimeout(() => {
+    const retryTimer = setTimeout(() => {
       if (loading) {
         setShowRetryButton(true);
       }
@@ -41,12 +48,13 @@ const ProfileSetup = () => {
     const forceReloadTimer = setTimeout(() => {
       if (loading) {
         console.log('[ProfileSetup] Still loading after timeout, forcing reload');
-        window.location.reload();
+        setError('Loading timed out. Please try reloading the page.');
       }
     }, 10000);
 
     return () => {
       clearTimeout(timer);
+      clearTimeout(retryTimer);
       clearTimeout(forceReloadTimer);
     };
   }, [loading, user, profileCompleted, accountType, navigate]);
@@ -54,11 +62,13 @@ const ProfileSetup = () => {
   // Function to manually retry loading
   const handleRetry = () => {
     console.log('[ProfileSetup] Manual retry triggered');
+    setLocalLoading(true);
+    setError(null);
     window.location.reload();
   };
   
   // Show loading state while checking auth
-  if (loading) {
+  if (loading || localLoading) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-[60vh]">
@@ -79,20 +89,45 @@ const ProfileSetup = () => {
     );
   }
 
+  // Show error state if there's an error
+  if (error) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center h-[60vh]">
+          <AlertCircle className="h-8 w-8 text-destructive mb-4" />
+          <p className="mb-6 text-destructive">{error}</p>
+          <Button 
+            onClick={handleRetry}
+            variant="default"
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Reload Page
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
+
   // Show login redirect if no user
   if (!user) {
     console.log('[ProfileSetup] No user, redirecting to login');
     toast.error('Please log in to set up your profile');
-    // Use setTimeout to prevent potential navigation loops
-    setTimeout(() => {
-      navigate('/login', { replace: true });
-    }, 100);
+    
+    // Use effect to navigate to prevent render issues
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }, []);
     
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-          <p>Please log in to set up your profile...</p>
+          <p>Redirecting to login page...</p>
         </div>
       </Layout>
     );
