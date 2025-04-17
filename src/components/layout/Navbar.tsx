@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { AlignJustify, X, ChevronLeft } from 'lucide-react';
+import { AlignJustify, X, LayoutDashboard, ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 // Import our components
@@ -29,7 +28,7 @@ const Navbar = () => {
     path: location.pathname
   });
 
-  // If user is logged in but not in dashboard, show a simplified nav
+  // If user is logged in but not in dashboard, add a dashboard button
   if (user && !isDashboard) {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
@@ -41,11 +40,11 @@ const Navbar = () => {
               variant="default" 
               onClick={() => {
                 console.log('[Navbar] Navigating to dashboard');
-                // Navigate directly to the dashboard home
                 navigate('/dashboard', { replace: true });
               }}
               className="flex items-center gap-2"
             >
+              <LayoutDashboard className="h-4 w-4" />
               Go to Dashboard
             </Button>
             <AuthButtons user={user} />

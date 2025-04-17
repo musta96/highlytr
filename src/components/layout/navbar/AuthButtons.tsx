@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu,
@@ -18,6 +19,7 @@ interface AuthButtonsProps {
 
 const AuthButtons = ({ user }: AuthButtonsProps) => {
   const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -25,7 +27,6 @@ const AuthButtons = ({ user }: AuthButtonsProps) => {
       await signOut();
       toast.success("You've been logged out successfully");
       console.log("AuthButtons: Logout successful");
-      // Auth provider will handle navigation
     } catch (error) {
       console.error("AuthButtons: Error logging out:", error);
       toast.error("Failed to log out");
@@ -42,14 +43,23 @@ const AuthButtons = ({ user }: AuthButtonsProps) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link to="/dashboard">Dashboard</Link>
+            <DropdownMenuItem 
+              onClick={() => navigate('/dashboard')} 
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboard
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/profile">Profile</Link>
+              <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                <User className="h-4 w-4" />
+                Profile
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/settings">Settings</Link>
+              <Link to="/settings" className="flex items-center gap-2 cursor-pointer">
+                Settings
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
@@ -72,3 +82,4 @@ const AuthButtons = ({ user }: AuthButtonsProps) => {
 };
 
 export default AuthButtons;
+
