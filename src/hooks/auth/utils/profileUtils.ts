@@ -10,13 +10,19 @@ export const fetchAccountInfo = async (
   setProfileCompleted: (completed: boolean) => void
 ): Promise<boolean> => {
   console.log('[AuthProvider] Fetching account info for user:', userId);
+  
+  if (!userId) {
+    console.error('[AuthProvider] Cannot fetch account info: userId is empty');
+    return false;
+  }
+  
   try {
     // First try to get account type from profiles table
     const { data: profile, error } = await supabase
       .from('profiles')
       .select('account_type, profile_completed')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
     
     if (error) {
       console.error('[AuthProvider] Error fetching profile:', error);
@@ -44,12 +50,15 @@ export const checkUserMetadata = (
   currentUser: User,
   setAccountType: (type: AccountType | null) => void
 ): boolean => {
-  if (!currentUser?.user_metadata) return false;
+  if (!currentUser?.user_metadata) {
+    console.log('[AuthProvider] No user metadata available');
+    return false;
+  }
   
   const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
   console.log('[AuthProvider] Account type from metadata:', userType, currentUser.user_metadata);
   
-  if (userType) {
+  if (userType && ['athlete', 'college', 'agency'].includes(userType)) {
     setAccountType(userType);
     return true;
   }
@@ -59,12 +68,17 @@ export const checkUserMetadata = (
 
 // Check if user has completed their profile
 export const checkProfileStatus = async (userId: string): Promise<boolean> => {
+  if (!userId) {
+    console.error('[AuthProvider] Cannot check profile status: userId is empty');
+    return false;
+  }
+  
   try {
     const { data, error } = await supabase
       .from('profiles')
       .select('profile_completed')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching profile status:', error);

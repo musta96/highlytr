@@ -17,6 +17,7 @@ const formSchema = z.object({
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loginTimeout, setLoginTimeout] = useState<NodeJS.Timeout | null>(null);
   const { signIn, user, accountType, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +34,15 @@ const LoginForm = () => {
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (loginTimeout) {
+        clearTimeout(loginTimeout);
+      }
+    };
+  }, [loginTimeout]);
 
   // Redirect if user is already logged in
   useEffect(() => {
@@ -53,12 +63,33 @@ const LoginForm = () => {
     if (isLoading) return; // Prevent multiple submissions
     
     setIsLoading(true);
+    
+    // Set a timeout to handle stuck login attempts
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        console.error("[LoginForm] Login request timed out");
+        setIsLoading(false);
+        toast.error("Login request timed out", {
+          description: "Please try again. If the problem persists, refresh the page.",
+        });
+        reset({ email: data.email, password: "" });
+      }
+    }, 15000); // 15 seconds timeout
+    
+    setLoginTimeout(timeout);
+    
     try {
       console.log("[LoginForm] Attempting login with:", data.email);
       const { error } = await signIn({
         email: data.email,
         password: data.password,
       });
+
+      // Clear the timeout since we got a response
+      if (loginTimeout) {
+        clearTimeout(loginTimeout);
+        setLoginTimeout(null);
+      }
 
       if (error) {
         console.error("[LoginForm] Login error:", error.message);
@@ -77,6 +108,7 @@ const LoginForm = () => {
         }
         
         reset({ email: data.email, password: "" });
+        setIsLoading(false);
         return;
       }
 
@@ -91,7 +123,6 @@ const LoginForm = () => {
       toast.error(`Sign in failed`, {
         description: "An unexpected error occurred. Please try again.",
       });
-    } finally {
       setIsLoading(false);
     }
   };

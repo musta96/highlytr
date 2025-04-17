@@ -6,6 +6,7 @@ import { AuthContext } from '../AuthContext';
 import { useAuthMethods } from '../hooks/useAuthMethods';
 import { fetchAccountInfo, checkUserMetadata } from '../utils/profileUtils';
 import { AccountType } from '@/components/auth/types';
+import { toast } from 'sonner';
 
 export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -14,6 +15,7 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [profileCompleted, setProfileCompleted] = useState(false);
   const [accountType, setAccountType] = useState<AccountType | null>(null);
   const [initAttempts, setInitAttempts] = useState(0);
+  const [hasInitialized, setHasInitialized] = useState(false);
   
   const { signIn, signUp, signOut } = useAuthMethods({
     setUser,
@@ -22,171 +24,150 @@ export const AuthStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setAccountType
   });
 
-  // Function to check user metadata as fallback
-  const handleUserMetadata = useCallback((currentUser: User) => {
-    if (!currentUser?.user_metadata) return false;
-    
-    const userType = currentUser.user_metadata?.accountType as AccountType | undefined;
-    console.log('[AuthProvider] Account type from metadata:', userType, currentUser.user_metadata);
-    
-    if (userType) {
-      setAccountType(userType);
-      return true;
-    }
-    
-    return false;
-  }, []);
-
   // Initialize auth state
   const initAuth = useCallback(async () => {
+    if (hasInitialized && user) return;
+    
     try {
-      console.log(`[AuthProvider] Initializing auth (attempt ${initAttempts + 1})...`);
+      console.log(`[AuthStateProvider] Initializing auth (attempt ${initAttempts + 1})...`);
       setLoading(true);
       
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
-      console.log('[AuthProvider] Current session:', currentSession?.user?.id ? 'Active' : 'None');
+      const { data: { session: currentSession }, error } = await supabase.auth.getSession();
       
-      setSession(currentSession);
-      const currentUser = currentSession?.user ?? null;
-      setUser(currentUser);
-      
-      if (!currentUser) {
-        console.log('[AuthProvider] No user found, finishing init');
-        setAccountType(null);
-        setProfileCompleted(false);
+      if (error) {
+        console.error('[AuthStateProvider] Error getting session:', error);
+        toast.error('Authentication error', { 
+          description: 'There was a problem connecting to the authentication service. Please try refreshing the page.',
+          duration: 5000
+        });
         setLoading(false);
         return;
       }
       
-      // Check for account information
-      console.log('[AuthProvider] Checking account info for user:', currentUser.id);
-      let success = await fetchAccountInfo(currentUser.id, setAccountType, setProfileCompleted);
+      console.log('[AuthStateProvider] Current session:', currentSession?.user?.id ? 'Active' : 'None');
       
-      if (!success) {
-        console.log('[AuthProvider] No profile found, checking metadata');
-        success = handleUserMetadata(currentUser);
+      if (!currentSession) {
+        setUser(null);
+        setSession(null);
+        setAccountType(null);
+        setProfileCompleted(false);
+        setLoading(false);
+        setHasInitialized(true);
+        return;
+      }
+      
+      setSession(currentSession);
+      setUser(currentSession.user);
+      
+      // Check for account information
+      if (currentSession.user) {
+        console.log('[AuthStateProvider] Checking account info for user:', currentSession.user.id);
+        const success = await fetchAccountInfo(
+          currentSession.user.id, 
+          setAccountType, 
+          setProfileCompleted
+        ) || checkUserMetadata(currentSession.user, setAccountType);
         
-        if (success) {
-          const isCompleted = await checkProfileStatus(currentUser.id);
-          setProfileCompleted(isCompleted);
+        if (!success) {
+          console.warn('[AuthStateProvider] User has no account type in profile or metadata');
+          setAccountType(null);
+          setProfileCompleted(false);
+        } else {
+          console.log('[AuthStateProvider] Successfully loaded account info:', { accountType, profileCompleted });
         }
       }
       
-      if (!success) {
-        console.warn('[AuthProvider] User has no account type in profile or metadata');
-        setAccountType(null);
-        setProfileCompleted(false);
-      }
-      
+      setHasInitialized(true);
     } catch (error) {
-      console.error('[AuthProvider] Error during auth initialization:', error);
+      console.error('[AuthStateProvider] Error during auth initialization:', error);
+      toast.error('Authentication error', { 
+        description: 'Failed to initialize authentication. Please refresh the page.',
+        duration: 5000
+      });
     } finally {
       setLoading(false);
-      console.log('[AuthProvider] Auth initialization complete');
+      console.log('[AuthStateProvider] Auth initialization complete');
     }
-  }, [initAttempts, handleUserMetadata]);
-  
-  // Retry initialization if it fails
-  useEffect(() => {
-    if (initAttempts > 0 && initAttempts < 3) {
-      const timer = setTimeout(() => {
-        console.log(`[AuthProvider] Retrying initialization (attempt ${initAttempts + 1})...`);
-        initAuth();
-      }, 2000); // Wait 2 seconds before retrying
-      
-      return () => clearTimeout(timer);
-    }
-  }, [initAttempts, initAuth]);
+  }, [initAttempts, user, hasInitialized, accountType, profileCompleted]);
 
   // Set up auth state listener
   useEffect(() => {
-    console.log('[AuthProvider] Setting up auth state listener...');
+    console.log('[AuthStateProvider] Setting up auth state listener...');
+    
+    // First, initialize auth state
+    initAuth();
     
     // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
-        console.log('[AuthProvider] Auth state changed:', event, currentSession?.user?.id);
+        console.log('[AuthStateProvider] Auth state changed:', event, currentSession?.user?.id);
         
         // Update session and user state
         setSession(currentSession);
-        const currentUser = currentSession?.user ?? null;
-        setUser(currentUser);
+        setUser(currentSession?.user ?? null);
         
         // If user has logged out, reset states
-        if (!currentUser) {
+        if (!currentSession?.user) {
           setAccountType(null);
           setProfileCompleted(false);
           setLoading(false);
           return;
         }
         
-        // Check for account information when user is authenticated
-        try {
-          setLoading(true);
-          // First try to get account type from profiles table
-          let success = await fetchAccountInfo(currentUser.id, setAccountType, setProfileCompleted);
-          
-          // If that fails, try to get it from user metadata
-          if (!success) {
-            success = handleUserMetadata(currentUser);
+        // For important auth events, process account info
+        if (['SIGNED_IN', 'TOKEN_REFRESHED', 'USER_UPDATED'].includes(event)) {
+          try {
+            setLoading(true);
+            // First try to get account type from profiles table
+            const success = await fetchAccountInfo(
+              currentSession.user.id, 
+              setAccountType, 
+              setProfileCompleted
+            ) || checkUserMetadata(currentSession.user, setAccountType);
             
-            if (success) {
-              // If we found account type in metadata but not in profile,
-              // check if profile is completed
-              const isCompleted = await checkProfileStatus(currentUser.id);
-              setProfileCompleted(isCompleted);
+            if (!success) {
+              console.warn('[AuthStateProvider] User has no account type in profile or metadata');
+              setAccountType(null);
+              setProfileCompleted(false);
+            } else {
+              console.log('[AuthStateProvider] User account data loaded on event:', event, { accountType, profileCompleted });
             }
+          } catch (error) {
+            console.error('[AuthStateProvider] Error processing auth event:', error);
+          } finally {
+            setLoading(false);
           }
-          
-          // If neither approach worked, user probably needs to complete profile setup
-          if (!success) {
-            console.warn('[AuthProvider] User has no account type in profile or metadata');
-            setAccountType(null);
-            setProfileCompleted(false);
-          }
-        } catch (error) {
-          console.error('[AuthProvider] Error checking profile status:', error);
-        } finally {
-          setLoading(false);
         }
       }
     );
 
-    // Initialize auth state
-    initAuth().then(() => {
-      // If initialization fails or results in no user, increment attempts
-      if (!user && initAttempts < 3) {
-        setInitAttempts(prev => prev + 1);
-      }
-    });
-
-    // Cleanup subscription
+    // Clean up subscription
     return () => {
       subscription.unsubscribe();
     };
-  }, [initAuth, handleUserMetadata, initAttempts, user]);
+  }, [initAuth]);
 
-  // Function imported from utils - directly embedded here for simplicity when refactoring
-  const checkProfileStatus = async (userId: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('profile_completed')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching profile status:', error);
-        return false;
-      }
+  // Add a recovery mechanism when initialization fails
+  useEffect(() => {
+    if (!user && !loading && initAttempts < 3) {
+      const timer = setTimeout(() => {
+        console.log(`[AuthStateProvider] Retrying initialization (attempt ${initAttempts + 1})...`);
+        setInitAttempts(prev => prev + 1);
+        initAuth();
+      }, 2000); // Retry every 2 seconds up to 3 times
       
-      // Handle the case where profile_completed might be null
-      return data?.profile_completed === true;
-    } catch (error) {
-      console.error('Error in profile status check:', error);
-      return false;
+      return () => clearTimeout(timer);
     }
-  };
+    
+    // If we've tried 3 times and still have issues, show message to user
+    if (initAttempts >= 3 && !user && !loading) {
+      console.error('[AuthStateProvider] Failed to initialize auth after multiple attempts');
+      toast.error('Authentication error', {
+        description: 'We\'re having trouble connecting to the authentication service. Please refresh the page or try again later.',
+        duration: 8000
+      });
+    }
+  }, [user, loading, initAttempts, initAuth]);
 
   return (
     <AuthContext.Provider value={{ 

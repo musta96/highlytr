@@ -22,10 +22,16 @@ export const useAuthMethods = ({
   const signIn = async ({ email, password }: SignInCredentials): Promise<SignInResponse> => {
     try {
       console.log('[AuthProvider] Signing in with:', email);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      clearTimeout(timeoutId);
       
       if (error) {
         console.error('[AuthProvider] Sign in error:', error);
@@ -34,10 +40,21 @@ export const useAuthMethods = ({
       
       console.log('[AuthProvider] Sign in successful:', data.user?.id, 'Session:', data.session?.access_token ? 'Valid' : 'Invalid');
       
-      // We don't need to manually set the user/session here as the onAuthStateChange handler will do it
+      // Update state immediately to ensure UI updates even if onAuthStateChange is delayed
+      if (data.user && data.session) {
+        setUser(data.user);
+        setSession(data.session);
+      }
+      
       return { error: null };
     } catch (error: any) {
       console.error('[AuthProvider] Sign in exception:', error);
+      
+      // Handle AbortController timeout
+      if (error.name === 'AbortError') {
+        return { error: { message: 'Login request timed out. Please try again.' } };
+      }
+      
       return { error: { message: error.message } };
     }
   };
