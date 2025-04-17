@@ -58,45 +58,34 @@ export const useAuthListener = ({
         
         // For important auth events, process account info
         if (['SIGNED_IN', 'TOKEN_REFRESHED', 'USER_UPDATED'].includes(event)) {
-          // Use setTimeout to prevent potential deadlocks with Supabase auth
-          setTimeout(() => {
-            try {
-              setLoading(true);
-              
-              // Process the account info in a non-blocking way
-              fetchAccountInfo(
-                currentSession.user.id, 
-                setAccountType, 
-                setProfileCompleted
-              ).then(success => {
-                if (!success) {
-                  return checkUserMetadata(currentSession.user, setAccountType);
-                }
-                return true;
-              }).then(success => {
-                if (!success) {
-                  console.warn('[AuthStateProvider] User has no account type in profile or metadata');
-                  // Use 'athlete' as default account type to prevent blank screens
-                  setAccountType('athlete');
-                  setProfileCompleted(false);
-                }
-              }).catch(error => {
-                console.error('[AuthStateProvider] Error processing auth event data:', error);
-                // Set a default account type
-                setAccountType('athlete');
-                setProfileCompleted(false);
-              }).finally(() => {
-                setLoading(false);
-              });
-              
-            } catch (error) {
-              console.error('[AuthStateProvider] Error in deferred profile processing:', error);
-              // Set default values to prevent UI breakage
+          // Use simplified approach to prevent deadlocks
+          setLoading(true);
+          
+          // Process the account info immediately
+          fetchAccountInfo(
+            currentSession.user.id, 
+            setAccountType, 
+            setProfileCompleted
+          ).then(success => {
+            if (!success) {
+              return checkUserMetadata(currentSession.user, setAccountType);
+            }
+            return true;
+          }).then(success => {
+            if (!success) {
+              console.warn('[AuthStateProvider] User has no account type in profile or metadata');
+              // Use 'athlete' as default account type to prevent blank screens
               setAccountType('athlete');
               setProfileCompleted(false);
-              setLoading(false);
             }
-          }, 0);
+          }).catch(error => {
+            console.error('[AuthStateProvider] Error processing auth event data:', error);
+            // Set a default account type
+            setAccountType('athlete');
+            setProfileCompleted(false);
+          }).finally(() => {
+            setLoading(false);
+          });
         }
       }
     );

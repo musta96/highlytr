@@ -44,25 +44,19 @@ const Dashboard = () => {
       navigate('/profile-setup', { replace: true });
     }
 
-    // Show retry button after a shorter delay - 3 seconds
+    // Show retry button after a delay - 10 seconds instead of 3
     const timer = setTimeout(() => {
       if ((loading || localLoading) && isPageMounted) {
         setShowRetryButton(true);
       }
-    }, 3000);
-
-    // Add a force-reload after 10 seconds if still loading
-    const forceReloadTimer = setTimeout(() => {
-      if ((loading || localLoading) && isPageMounted) {
-        console.log('[Dashboard] Still loading after timeout, forcing reload');
-        window.location.reload();
-      }
     }, 10000);
+
+    // Remove the automatic force-reload after 10 seconds
+    // This was causing the page to refresh automatically
 
     return () => {
       setIsPageMounted(false);
       clearTimeout(timer);
-      clearTimeout(forceReloadTimer);
       clearTimeout(loadTimer);
     };
   }, [user, loading, accountType, navigate, retryCount]);

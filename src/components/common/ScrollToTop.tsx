@@ -6,7 +6,11 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Use a smoother scroll to top that's less jarring
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }, [pathname]);
 
   return null;
