@@ -16,10 +16,31 @@ const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => 
   // Check if profile and achievements exist before attempting to map
   const achievements = profile?.achievements || [];
 
+  // Memoize handlers for better performance
+  const handleRemoveAchievement = React.useCallback((indexToRemove: number) => {
+    setProfile({
+      ...profile,
+      achievements: achievements.filter((_, i) => i !== indexToRemove)
+    });
+  }, [profile, achievements, setProfile]);
+
+  const handleAddAchievement = React.useCallback(() => {
+    setProfile({
+      ...profile,
+      achievements: [...achievements, '']
+    });
+  }, [profile, achievements, setProfile]);
+
+  const handleUpdateAchievement = React.useCallback((index: number, value: string) => {
+    const newAchievements = [...achievements];
+    newAchievements[index] = value;
+    setProfile({...profile, achievements: newAchievements});
+  }, [profile, achievements, setProfile]);
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
+    <Card className="h-full transition-all">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center text-xl">
           <Trophy className="h-5 w-5 mr-2" />
           Achievements
         </CardTitle>
@@ -27,33 +48,28 @@ const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => 
       <CardContent>
         {!isEditing ? (
           achievements.length > 0 ? (
-            <ul className="list-disc pl-5 space-y-2">
+            <ul className="list-disc pl-5 space-y-1.5">
               {achievements.map((achievement: string, index: number) => (
-                <li key={index}>{achievement}</li>
+                <li key={index} className="text-sm sm:text-base">{achievement}</li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500">No achievements added yet.</p>
+            <p className="text-gray-500 text-sm">No achievements added yet.</p>
           )
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {achievements.map((achievement: string, index: number) => (
               <div key={index} className="flex items-center gap-2">
                 <Input 
                   value={achievement}
-                  onChange={(e) => {
-                    const newAchievements = [...achievements];
-                    newAchievements[index] = e.target.value;
-                    setProfile({...profile, achievements: newAchievements});
-                  }}
+                  onChange={(e) => handleUpdateAchievement(index, e.target.value)}
+                  className="text-sm h-9"
                 />
                 <Button 
                   variant="destructive" 
                   size="icon"
-                  onClick={() => {
-                    const newAchievements = achievements.filter((_, i) => i !== index);
-                    setProfile({...profile, achievements: newAchievements});
-                  }}
+                  onClick={() => handleRemoveAchievement(index)}
+                  className="h-9 w-9"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -61,9 +77,8 @@ const Achievements = ({ profile, isEditing, setProfile }: AchievementsProps) => 
             ))}
             <Button 
               variant="outline" 
-              onClick={() => {
-                setProfile({...profile, achievements: [...achievements, '']});
-              }}
+              onClick={handleAddAchievement}
+              className="w-full text-sm"
             >
               Add Achievement
             </Button>

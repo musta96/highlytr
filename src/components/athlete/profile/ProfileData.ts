@@ -9,6 +9,7 @@ export interface HighlightVideo {
   videoUrl: string;
   source: 'upload' | 'youtube';
   uploadDate: string;
+  isPlaying?: boolean; // Add this to track play state for lazy loading
 }
 
 export interface AthleteProfileData extends ProfileData {
@@ -44,6 +45,7 @@ export interface AthleteProfileData extends ProfileData {
   highlights: HighlightVideo[];
 }
 
+// Optimized mock data with lighter thumbnail references
 export const mockAthleteProfile: AthleteProfileData = {
   id: '1',
   first_name: 'Marco',
@@ -58,7 +60,7 @@ export const mockAthleteProfile: AthleteProfileData = {
   profile_completed: true,
   account_type: 'athlete',
   isPublic: true,
-  bio: "I've been playing soccer since I was 5 years old. My passion for the game started when my father took me to see AC Milan play. Since then, I've been dedicated to improving my skills and reaching the highest level possible. I hope to play professionally one day and represent my country in international competitions.",
+  bio: "I've been playing soccer since I was 5 years old. My passion for the game started when my father took me to see AC Milan play. Since then, I've been dedicated to improving my skills and reaching the highest level possible.",
   achievements: [
     'Team MVP 2023',
     'Regional Championship Winner 2022',
@@ -94,11 +96,11 @@ export const mockAthleteProfile: AthleteProfileData = {
     },
     gamesPlayed: {
       value: 34,
-      label: 'Games Played'
+      label: 'Games'
     },
     minutesPlayed: {
       value: 2856,
-      label: 'Minutes Played'
+      label: 'Minutes'
     },
     yellowCards: {
       value: 5,
@@ -114,7 +116,7 @@ export const mockAthleteProfile: AthleteProfileData = {
       id: '1',
       title: 'Game Winner vs. Rivals',
       description: 'Scored the winning goal in the last minute of the championship game.',
-      thumbnail: 'https://images.unsplash.com/photo-1631194758628-71ec7c35137e?q=80&w=1374',
+      thumbnail: 'https://images.unsplash.com/photo-1631194758628-71ec7c35137e?q=80&w=800&auto=format',
       videoUrl: 'https://youtu.be/DGe2uaq8xYo',
       source: 'youtube',
       uploadDate: '2023-05-15T14:30:00Z'
@@ -123,7 +125,7 @@ export const mockAthleteProfile: AthleteProfileData = {
       id: '2',
       title: 'Season Highlights',
       description: 'A compilation of my best moments from the 2022-2023 season.',
-      thumbnail: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=1449',
+      thumbnail: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=800&auto=format',
       videoUrl: 'https://youtu.be/DGe2uaq8xYo',
       source: 'youtube',
       uploadDate: '2023-04-02T10:15:00Z'
@@ -132,7 +134,7 @@ export const mockAthleteProfile: AthleteProfileData = {
       id: '3',
       title: 'Skills Demo',
       description: 'Technical skills showcase including dribbling, shooting, and free kicks.',
-      thumbnail: 'https://images.unsplash.com/photo-1526676037777-05a232554f77?q=80&w=1470',
+      thumbnail: 'https://images.unsplash.com/photo-1526676037777-05a232554f77?q=80&w=800&auto=format',
       videoUrl: 'https://youtu.be/DGe2uaq8xYo', 
       source: 'youtube',
       uploadDate: '2023-02-28T09:45:00Z'

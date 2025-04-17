@@ -14,24 +14,27 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
   const stats = profile?.stats || {};
   
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
+    <Card className="h-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center text-xl">
           <BarChartIcon className="h-5 w-5 mr-2" />
           Performance Statistics
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           {Object.entries(stats).map(([key, stat]: [string, any]) => (
-            <div key={key} className="bg-gray-50 p-4 rounded-lg text-center">
-              <p className="text-3xl font-bold text-highlyt-blue">{stat.value}</p>
-              <p className="text-sm text-gray-600">{stat.label}</p>
+            <div 
+              key={key} 
+              className="bg-gray-50 p-3 rounded-lg text-center transition-all hover:bg-gray-100"
+            >
+              <p className="text-2xl sm:text-3xl font-bold text-highlyt-blue">{stat.value}</p>
+              <p className="text-xs sm:text-sm text-gray-600">{stat.label}</p>
             </div>
           ))}
         </div>
         {isEditing && (
-          <Button variant="outline" className="mt-6 w-full">
+          <Button variant="outline" className="mt-4 w-full text-sm">
             Edit Statistics
           </Button>
         )}
