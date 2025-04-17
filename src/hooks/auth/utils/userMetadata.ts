@@ -1,52 +1,32 @@
 
 import { User } from '@supabase/supabase-js';
 import { AccountType } from '@/components/auth/types';
-import { supabase } from '@/integrations/supabase/client';
 
-// Function to check user metadata as fallback with improved logging
+// Check user metadata for account type information
 export const checkUserMetadata = (
-  currentUser: User,
+  user: User | null,
   setAccountType: (type: AccountType | null) => void
 ): boolean => {
-  if (!currentUser) {
-    console.log('[AuthProvider] No user provided to checkUserMetadata');
+  if (!user) {
+    console.log('[AuthProvider] Cannot check user metadata: user is null');
     return false;
   }
   
-  if (!currentUser.user_metadata) {
-    console.log('[AuthProvider] No user metadata available');
-    return false;
-  }
-  
-  // Try different possible keys for account type in metadata with better logging
-  const userType = (
-    currentUser.user_metadata?.accountType || 
-    currentUser.user_metadata?.account_type
-  ) as AccountType | undefined;
-  
-  console.log('[AuthProvider] Account type from metadata:', userType, 'Full metadata:', currentUser.user_metadata);
-  
-  if (userType && ['athlete', 'college', 'agency'].includes(userType.toLowerCase())) {
-    const normalizedType = userType.toLowerCase() as AccountType;
-    setAccountType(normalizedType);
-    console.log('[AuthProvider] Account type set from metadata:', normalizedType);
+  try {
+    // Get account type from user metadata if available
+    const metadata = user.user_metadata || {};
+    const accountType = metadata.accountType?.toLowerCase() as AccountType | undefined;
     
-    // Try to save this to the database for future consistency
-    try {
-      supabase.from('profiles').upsert({
-        id: currentUser.id,
-        account_type: normalizedType
-      }).then(({error}) => {
-        if (error) {
-          console.error('[AuthProvider] Error saving account type to DB:', error);
-        }
-      });
-    } catch (err) {
-      console.error('[AuthProvider] Failed to save account type to DB:', err);
+    if (accountType && ['athlete', 'college', 'agency'].includes(accountType)) {
+      console.log('[AuthProvider] Found account type in user metadata:', accountType);
+      setAccountType(accountType);
+      return true;
+    } else {
+      console.log('[AuthProvider] No valid account type in user metadata:', metadata);
+      return false;
     }
-    
-    return true;
+  } catch (error) {
+    console.error('[AuthProvider] Error checking user metadata:', error);
+    return false;
   }
-  
-  return false;
 };
