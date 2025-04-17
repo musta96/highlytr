@@ -12,8 +12,19 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [retryCount, setRetryCount] = useState(0);
   const [showRetryButton, setShowRetryButton] = useState(false);
+  const [isPageMounted, setIsPageMounted] = useState(true);
+  const [localLoading, setLocalLoading] = useState(true);
   
   useEffect(() => {
+    setIsPageMounted(true);
+    
+    // Set minimum load time to avoid flashing
+    const loadTimer = setTimeout(() => {
+      if (isPageMounted) {
+        setLocalLoading(false);
+      }
+    }, 800);
+    
     // Clear any existing console logs for debugging
     console.log('[Dashboard] Auth state:', { 
       user: !!user, 
@@ -21,7 +32,9 @@ const Dashboard = () => {
       accountType, 
       loading,
       metadata: user?.user_metadata,
-      retryCount
+      retryCount,
+      showRetryButton,
+      localLoading
     });
     
     // If user is logged in but doesn't have an account type, redirect to profile setup
@@ -31,24 +44,26 @@ const Dashboard = () => {
       navigate('/profile-setup', { replace: true });
     }
 
-    // Show retry button sooner - after 3 seconds instead of 5
+    // Show retry button after a shorter delay - 3 seconds
     const timer = setTimeout(() => {
-      if (loading) {
+      if ((loading || localLoading) && isPageMounted) {
         setShowRetryButton(true);
       }
     }, 3000);
 
     // Add a force-reload after 10 seconds if still loading
     const forceReloadTimer = setTimeout(() => {
-      if (loading) {
+      if ((loading || localLoading) && isPageMounted) {
         console.log('[Dashboard] Still loading after timeout, forcing reload');
         window.location.reload();
       }
     }, 10000);
 
     return () => {
+      setIsPageMounted(false);
       clearTimeout(timer);
       clearTimeout(forceReloadTimer);
+      clearTimeout(loadTimer);
     };
   }, [user, loading, accountType, navigate, retryCount]);
 
@@ -56,16 +71,18 @@ const Dashboard = () => {
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
     setShowRetryButton(false);
+    setLocalLoading(true);
     console.log('[Dashboard] Manual retry triggered');
+    toast.info('Reloading dashboard...');
     window.location.reload();
   };
 
   // Show loading state if auth is still being checked
-  if (loading) {
+  if (loading || localLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center h-screen p-4 bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <p className="mb-6">Loading your dashboard...</p>
+        <p className="mb-6 text-foreground">Loading your dashboard...</p>
         {showRetryButton && (
           <Button 
             onClick={handleRetry}
@@ -83,6 +100,7 @@ const Dashboard = () => {
   // If user is not authenticated, redirect to login
   if (!user) {
     console.log('[Dashboard] No user found, redirecting to login');
+    toast.error('You must be logged in to view the dashboard');
     return <Navigate to="/login" replace />;
   }
 
@@ -90,10 +108,10 @@ const Dashboard = () => {
   if (!accountType && user) {
     console.log('[Dashboard] User has no account type, showing error state');
     return (
-      <div className="flex flex-col items-center justify-center h-screen p-4">
+      <div className="flex flex-col items-center justify-center h-screen p-4 bg-background">
         <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Account Type Missing</h2>
-        <p className="text-gray-500 text-center mb-6">
+        <h2 className="text-2xl font-bold mb-2 text-foreground">Account Type Missing</h2>
+        <p className="text-muted-foreground text-center mb-6 max-w-md">
           We couldn't determine your account type. This is needed to show you the right dashboard.
         </p>
         <div className="flex flex-col gap-3 w-full max-w-xs">

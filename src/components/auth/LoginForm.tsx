@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -8,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -18,6 +17,7 @@ const formSchema = z.object({
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginTimeout, setLoginTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [loginAttempted, setLoginAttempted] = useState(false);
   const { signIn, user, accountType, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,9 +31,32 @@ const LoginForm = () => {
     formState: { errors },
     setError,
     reset,
+    watch,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    }
   });
+
+  // For better debugging
+  const watchedValues = watch();
+  
+  useEffect(() => {
+    console.log("[LoginForm] Form state:", { 
+      errors, 
+      values: {
+        email: watchedValues.email?.length > 0 ? "provided" : "empty",
+        password: watchedValues.password?.length > 0 ? "provided" : "empty"
+      },
+      isLoading,
+      loginAttempted,
+      authLoading,
+      user: !!user,
+      accountType
+    });
+  }, [watchedValues, errors, isLoading, loginAttempted, authLoading, user, accountType]);
 
   // Clear timeout on unmount
   useEffect(() => {
@@ -51,10 +74,10 @@ const LoginForm = () => {
       
       // If they have an account type, go to the dashboard
       if (accountType) {
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       } else {
         // If no account type yet, they need to complete profile setup
-        navigate("/profile-setup");
+        navigate("/profile-setup", { replace: true });
       }
     }
   }, [user, accountType, navigate, authLoading]);
@@ -63,6 +86,7 @@ const LoginForm = () => {
     if (isLoading) return; // Prevent multiple submissions
     
     setIsLoading(true);
+    setLoginAttempted(true);
     
     // Set a timeout to handle stuck login attempts
     const timeout = setTimeout(() => {
@@ -80,6 +104,8 @@ const LoginForm = () => {
     
     try {
       console.log("[LoginForm] Attempting login with:", data.email);
+      toast.info("Signing in...");
+      
       const { error } = await signIn({
         email: data.email,
         password: data.password,
@@ -118,6 +144,9 @@ const LoginForm = () => {
       
       // Note: We'll let the useEffect handle the redirect
       // when the user state is updated
+      
+      // If we've made it here, login was initiated - keep loading state
+      // The redirect will happen via the useEffect
     } catch (error: any) {
       console.error("[LoginForm] Unexpected login error:", error);
       toast.error(`Sign in failed`, {
@@ -126,6 +155,13 @@ const LoginForm = () => {
       setIsLoading(false);
     }
   };
+
+  // Keep track of form errors in console for debugging
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log("[LoginForm] Form errors:", errors);
+    }
+  }, [errors]);
 
   return (
     <div className="space-y-6">
@@ -147,7 +183,10 @@ const LoginForm = () => {
             aria-describedby="email-error"
           />
           {errors.email && (
-            <p id="email-error" className="text-sm text-red-500">{errors.email?.message}</p>
+            <p id="email-error" className="text-sm text-red-500 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" />
+              {errors.email?.message}
+            </p>
           )}
         </div>
         <div className="space-y-2">
@@ -166,7 +205,10 @@ const LoginForm = () => {
             aria-describedby="password-error"
           />
           {errors.password && (
-            <p id="password-error" className="text-sm text-red-500">{errors.password?.message}</p>
+            <p id="password-error" className="text-sm text-red-500 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" />
+              {errors.password?.message}
+            </p>
           )}
         </div>
         <Button disabled={isLoading} className="w-full" type="submit">

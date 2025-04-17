@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,13 +7,119 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const SettingsPage = () => {
+  const { user, loading } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('account');
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        console.log('[SettingsPage] Fetching profile data for', user.id);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+          
+        if (error) {
+          throw error;
+        }
+        
+        console.log('[SettingsPage] Profile data loaded:', data);
+        setProfileData(data || {
+          first_name: user.user_metadata?.firstName || '',
+          last_name: user.user_metadata?.lastName || '',
+          email: user.email || '',
+        });
+      } catch (error: any) {
+        console.error('[SettingsPage] Error loading profile:', error);
+        toast.error('Failed to load settings', {
+          description: error.message
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    if (!loading) {
+      fetchProfileData();
+    }
+  }, [user, loading]);
+  
+  const handleSaveAccount = async () => {
+    if (!user || !profileData) return;
+    
+    setIsSaving(true);
+    try {
+      console.log('[SettingsPage] Saving account changes');
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: profileData.first_name,
+          last_name: profileData.last_name,
+        })
+        .eq('id', user.id);
+        
+      if (error) throw error;
+      
+      toast.success('Account settings saved successfully');
+    } catch (error: any) {
+      console.error('[SettingsPage] Error saving account:', error);
+      toast.error('Failed to save settings', {
+        description: error.message
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  const handleInputChange = (field: string, value: string) => {
+    setProfileData((prev: any) => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  if (loading || isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p>Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh]">
+        <p className="text-lg mb-4">You must be logged in to view settings</p>
+        <Button onClick={() => window.location.href = '/login'}>
+          Go to Login
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
       
-      <Tabs defaultValue="account" className="space-y-6">
+      <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="mb-4">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -33,22 +138,51 @@ const SettingsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="first-name">First Name</Label>
-                    <Input id="first-name" defaultValue="Marco" />
+                    <Input 
+                      id="first-name" 
+                      value={profileData?.first_name || ''} 
+                      onChange={(e) => handleInputChange('first_name', e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="last-name">Last Name</Label>
-                    <Input id="last-name" defaultValue="Rossi" />
+                    <Input 
+                      id="last-name" 
+                      value={profileData?.last_name || ''} 
+                      onChange={(e) => handleInputChange('last_name', e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue="marco.rossi@example.com" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={user.email || ''}
+                    disabled
+                  />
+                  <p className="text-xs text-muted-foreground">Email cannot be changed directly. Contact support for email changes.</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" defaultValue="+1 (555) 123-4567" />
+                  <Input 
+                    id="phone" 
+                    value={profileData?.phone || ''} 
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Enter your phone number"
+                  />
                 </div>
-                <Button>Save Changes</Button>
+                <Button 
+                  onClick={handleSaveAccount} 
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : 'Save Changes'}
+                </Button>
               </CardContent>
             </Card>
             
