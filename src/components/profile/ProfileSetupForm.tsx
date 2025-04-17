@@ -338,7 +338,7 @@ const ProfileSetupForm = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem key="none" value="none">None</SelectItem>
                         {sportsList.map((sport) => (
                           <SelectItem key={sport} value={sport}>
                             {sport}
@@ -360,16 +360,16 @@ const ProfileSetupForm = () => {
                     <Select
                       onValueChange={field.onChange}
                       value={field.value || ''}
-                      disabled={!secondarySport}
+                      disabled={!secondarySport || secondarySport === 'none'}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={secondarySport ? "Select position" : "Select sport first"} />
+                          <SelectValue placeholder={secondarySport && secondarySport !== 'none' ? "Select position" : "Select sport first"} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
-                        {secondarySport && getPositionsForSport(secondarySport).map((position) => (
+                        <SelectItem key="none" value="none">None</SelectItem>
+                        {secondarySport && secondarySport !== 'none' && getPositionsForSport(secondarySport).map((position) => (
                           <SelectItem key={position} value={position}>
                             {position}
                           </SelectItem>

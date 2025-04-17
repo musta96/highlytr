@@ -133,14 +133,14 @@ const SportsInfoForm = ({ profileData, setProfileData }: SportsInfoFormProps) =>
             <div className="space-y-2">
               <Label htmlFor="secondary_sport">Secondary Sport (Optional)</Label>
               <Select 
-                value={profileData.secondary_sport || ''} 
+                value={profileData.secondary_sport || 'none'} 
                 onValueChange={(value) => handleSportChange(value, 'secondary_sport')}
               >
                 <SelectTrigger id="secondary_sport">
                   <SelectValue placeholder="Select a sport (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem key="none" value="none">None</SelectItem>
                   {sportsList.map((sport) => (
                     <SelectItem key={sport} value={sport}>
                       {sport}
@@ -153,15 +153,15 @@ const SportsInfoForm = ({ profileData, setProfileData }: SportsInfoFormProps) =>
             <div className="space-y-2">
               <Label htmlFor="secondary_position">Secondary Position (Optional)</Label>
               <Select 
-                value={profileData.secondary_position || ''} 
+                value={profileData.secondary_position || 'none'} 
                 onValueChange={(value) => handlePositionChange(value, 'secondary_position')}
-                disabled={!profileData.secondary_sport}
+                disabled={!profileData.secondary_sport || profileData.secondary_sport === 'none'}
               >
                 <SelectTrigger id="secondary_position">
-                  <SelectValue placeholder={profileData.secondary_sport ? "Select position" : "Select sport first"} />
+                  <SelectValue placeholder={profileData.secondary_sport && profileData.secondary_sport !== 'none' ? "Select position" : "Select sport first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem key="none" value="none">None</SelectItem>
                   {secondaryPositions.map((position) => (
                     <SelectItem key={position} value={position}>
                       {position}
