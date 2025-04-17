@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import DashboardSidebar from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/hooks/auth';
+import { useAuth } from '@/hooks/useAuth';
 
 const DashboardLayout = () => {
   const isMobile = useIsMobile();
