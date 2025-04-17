@@ -48,6 +48,16 @@ type Filters = {
   hasScholarship: boolean;
 };
 
+const usStates = [
+  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
+  'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 
+  'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 
+  'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 
+  'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 
+  'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 
+  'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+];
+
 // Mock data for athletes
 const mockAthletes = [
   {
@@ -209,7 +219,6 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Desktop Filters */}
         <div className="hidden md:block">
           <div className="bg-white rounded-lg border p-6 sticky top-4">
             <div className="flex justify-between items-center mb-6">
@@ -288,13 +297,21 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
                 <AccordionTrigger>Location</AccordionTrigger>
                 <AccordionContent>
                   <div>
-                    <Label htmlFor="location">{type === 'athletes' ? 'Country' : 'State'}</Label>
-                    <Input 
-                      id="location" 
-                      placeholder={type === 'athletes' ? "Any country" : "Any state"}
-                      value={filters.countryOrState}
-                      onChange={(e) => handleFilterChange('countryOrState', e.target.value)}
-                    />
+                    <Label htmlFor="location">State</Label>
+                    <Select 
+                      value={filters.countryOrState} 
+                      onValueChange={(value) => handleFilterChange('countryOrState', value)}
+                    >
+                      <SelectTrigger id="location">
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any State</SelectItem>
+                        {usStates.map((state) => (
+                          <SelectItem key={state} value={state}>{state}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -370,7 +387,6 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
           </div>
         </div>
         
-        {/* Mobile Filters Slide-in Panel */}
         {showMobileFilters && (
           <div className="fixed inset-0 z-50 bg-black/50 md:hidden">
             <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-white p-6 overflow-y-auto animate-slide-in-right">
@@ -385,9 +401,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
                 </Button>
               </div>
               
-              {/* Same accordion as desktop filters */}
               <Accordion type="multiple" defaultValue={['sport']}>
-                {/* Same content as desktop filters */}
                 <AccordionItem value="sport">
                   <AccordionTrigger>Sport</AccordionTrigger>
                   <AccordionContent>
@@ -412,7 +426,6 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-                {/* Additional filters would be added here */}
               </Accordion>
               
               <div className="flex gap-4 mt-8">
@@ -427,7 +440,6 @@ const SearchPage: React.FC<SearchPageProps> = ({ type }) => {
           </div>
         )}
         
-        {/* Results */}
         <div className="lg:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {type === 'athletes' ? (
