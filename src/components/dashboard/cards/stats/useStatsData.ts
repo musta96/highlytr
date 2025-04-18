@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,15 +15,20 @@ export interface Stat {
 
 export const useStatsData = () => {
   const [stats, setStats] = useState<Stat[]>(() => {
-    const { user } = useAuth();
-    const userId = user?.id;
-    const userSpecificKey = userId ? `athlete-stats-${userId}` : 'athlete-stats';
-    const savedStats = localStorage.getItem(userSpecificKey);
-    
-    if (savedStats) {
-      return JSON.parse(savedStats);
+    try {
+      const { user } = useAuth();
+      const userId = user?.id;
+      const userSpecificKey = userId ? `athlete-stats-${userId}` : 'athlete-stats';
+      const savedStats = localStorage.getItem(userSpecificKey);
+      
+      if (savedStats) {
+        return JSON.parse(savedStats);
+      }
+    } catch (error) {
+      console.error('Error loading initial stats data:', error);
     }
     
+    // Default fallback data if localStorage fails or is empty
     return [
       { id: '1', category: 'sports', label: 'Games Played', value: 28 },
       { id: '2', category: 'sports', label: 'Goals', value: 15, change: '3', isPositive: true },
@@ -53,41 +59,45 @@ export const useStatsData = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user?.id) {
-      localStorage.setItem(`athlete-stats-${user.id}`, JSON.stringify(stats));
-      
-      const updateProfileStats = async () => {
-        try {
-          const statsObject: Record<string, any> = {};
-          
-          stats.forEach(stat => {
-            statsObject[stat.id] = {
-              label: stat.label,
-              value: stat.value,
-              change: stat.change,
-              isPositive: stat.isPositive,
-              category: stat.category
-            };
-          });
-          
-          const { error } = await supabase
-            .from('profiles')
-            .update({
-              athlete_stats: statsObject
-            })
-            .eq('id', user.id);
+    try {
+      if (user?.id) {
+        localStorage.setItem(`athlete-stats-${user.id}`, JSON.stringify(stats));
+        
+        const updateProfileStats = async () => {
+          try {
+            const statsObject: Record<string, any> = {};
             
-          if (error) {
-            console.error('Error updating stats in profile:', error);
+            stats.forEach(stat => {
+              statsObject[stat.id] = {
+                label: stat.label,
+                value: stat.value,
+                change: stat.change,
+                isPositive: stat.isPositive,
+                category: stat.category
+              };
+            });
+            
+            const { error } = await supabase
+              .from('profiles')
+              .update({
+                athlete_stats: statsObject
+              })
+              .eq('id', user.id);
+              
+            if (error) {
+              console.error('Error updating stats in profile:', error);
+            }
+          } catch (err) {
+            console.error('Failed to update profile stats:', err);
           }
-        } catch (err) {
-          console.error('Failed to update profile stats:', err);
-        }
-      };
-      
-      updateProfileStats();
-    } else {
-      localStorage.setItem('athlete-stats', JSON.stringify(stats));
+        };
+        
+        updateProfileStats();
+      } else {
+        localStorage.setItem('athlete-stats', JSON.stringify(stats));
+      }
+    } catch (error) {
+      console.error('Error saving stats data:', error);
     }
   }, [stats, user]);
 
@@ -103,26 +113,44 @@ export const useStatsData = () => {
       return;
     }
 
-    const newStat: Stat = {
-      id: Date.now().toString(),
-      category,
-      label,
-      value,
-      change: change || undefined,
-      isPositive: change ? isPositive : undefined
-    };
+    try {
+      const newStat: Stat = {
+        id: Date.now().toString(),
+        category,
+        label,
+        value,
+        change: change || undefined,
+        isPositive: change ? isPositive : undefined
+      };
 
-    setStats([...stats, newStat]);
-    toast.success(`Added ${label} to your ${category} stats`);
+      setStats([...stats, newStat]);
+      toast.success(`Added ${label} to your ${category} stats`);
+    } catch (error) {
+      console.error('Error adding stat:', error);
+      toast.error('Failed to add stat. Please try again.');
+    }
   };
 
   const handleDeleteStat = (id: string) => {
-    setStats(stats.filter(stat => stat.id !== id));
-    toast.success('Stat removed successfully');
+    try {
+      setStats(stats.filter(stat => stat.id !== id));
+      toast.success('Stat removed successfully');
+    } catch (error) {
+      console.error('Error deleting stat:', error);
+      toast.error('Failed to remove stat. Please try again.');
+    }
   };
 
-  const filteredStats = (category: string) => {
-    return stats.filter(stat => stat.category === category);
+  const filteredStats = (category: string): Stat[] => {
+    try {
+      if (!stats || !Array.isArray(stats)) {
+        return [];
+      }
+      return stats.filter(stat => stat.category === category);
+    } catch (error) {
+      console.error('Error filtering stats:', error);
+      return [];
+    }
   };
 
   return {

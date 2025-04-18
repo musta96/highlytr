@@ -108,7 +108,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Season 2024/25</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {seasonStats.length > 0 ? (
+                {seasonStats && seasonStats.length > 0 ? (
                   seasonStats.map(stat => (
                     <StatItem 
                       key={stat.id}
@@ -128,7 +128,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
               </div>
             </div>
             
-            {careerStats.length > 0 && (
+            {careerStats && careerStats.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium mb-3">Career Summary</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -152,7 +152,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Academic Performance</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('academic').length > 0 ? (
+                {filteredStats('academic')?.length > 0 ? (
                   filteredStats('academic').map(stat => (
                     <StatItem 
                       key={stat.id}
@@ -177,7 +177,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Physical Attributes</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('physical').length > 0 ? (
+                {filteredStats('physical')?.length > 0 ? (
                   filteredStats('physical').map(stat => (
                     <StatItem 
                       key={stat.id}
