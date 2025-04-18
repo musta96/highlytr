@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -51,6 +51,7 @@ import {
   academicStats,
   StatDefinition 
 } from '@/utils/sportsStatsData';
+import { useAuth } from '@/hooks/auth';
 
 interface PerformanceStatsProps {
   profile: any;
@@ -58,7 +59,8 @@ interface PerformanceStatsProps {
 }
 
 const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
-  const stats = profile?.stats || {};
+  const { user } = useAuth();
+  const [stats, setStats] = useState<Record<string, any>>({});
   const [isAddStatDialogOpen, setIsAddStatDialogOpen] = useState(false);
   const [newStatType, setNewStatType] = useState<string>("");
   const [newStatValue, setNewStatValue] = useState<string>("");
@@ -70,6 +72,40 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
   const primaryPosition = profile?.primary_position;
   const suggestedStats = primarySport ? 
     getStatSuggestions(primarySport, primaryPosition) : [];
+  
+  // Load stats from profile or localStorage
+  useEffect(() => {
+    let loadedStats: Record<string, any> = {};
+    
+    // First try to get stats from the profile prop
+    if (profile?.stats && Object.keys(profile.stats).length > 0) {
+      loadedStats = profile.stats;
+    } 
+    // If not available, try to get from localStorage (for dashboard integration)
+    else if (user?.id) {
+      const savedStats = localStorage.getItem(`athlete-stats-${user.id}`);
+      
+      if (savedStats) {
+        try {
+          // Convert array format from localStorage to object format
+          const statsArray = JSON.parse(savedStats);
+          statsArray.forEach((stat: any) => {
+            loadedStats[stat.id] = {
+              label: stat.label,
+              value: stat.value,
+              change: stat.change,
+              isPositive: stat.isPositive,
+              category: stat.category
+            };
+          });
+        } catch (err) {
+          console.error('Error parsing stats from localStorage', err);
+        }
+      }
+    }
+    
+    setStats(loadedStats);
+  }, [profile, user]);
   
   const handleAddStat = () => {
     if (!newStatType || !newStatValue) return;
@@ -89,6 +125,27 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
         ...prev,
         stats: updatedStats
       }));
+    }
+    
+    setStats(updatedStats);
+    
+    // Save to localStorage too for dashboard integration
+    if (user?.id) {
+      try {
+        // Convert to array format for localStorage
+        const statsArray = Object.entries(updatedStats).map(([id, data]: [string, any]) => ({
+          id,
+          category: data.category || currentStatCategory,
+          label: data.label,
+          value: data.value,
+          change: data.change,
+          isPositive: data.isPositive
+        }));
+        
+        localStorage.setItem(`athlete-stats-${user.id}`, JSON.stringify(statsArray));
+      } catch (err) {
+        console.error('Error saving stats to localStorage', err);
+      }
     }
     
     // Reset form and close dialog

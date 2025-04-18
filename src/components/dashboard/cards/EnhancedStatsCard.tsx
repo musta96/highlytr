@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StatItemProps {
   label: string;
@@ -68,10 +71,20 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
   const [newStatChange, setNewStatChange] = useState('');
   const [newStatIsPositive, setNewStatIsPositive] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const { user } = useAuth();
   
   const [stats, setStats] = useState<Stat[]>(() => {
-    const savedStats = localStorage.getItem('athlete-stats');
-    return savedStats ? JSON.parse(savedStats) : [
+    // First try to load from localStorage with user-specific key
+    const userId = user?.id;
+    const userSpecificKey = userId ? `athlete-stats-${userId}` : 'athlete-stats';
+    const savedStats = localStorage.getItem(userSpecificKey);
+    
+    if (savedStats) {
+      return JSON.parse(savedStats);
+    }
+    
+    // Fall back to default stats if no saved stats exist
+    return [
       { id: '1', category: 'sports', label: 'Games Played', value: 28 },
       { id: '2', category: 'sports', label: 'Goals', value: 15, change: '3', isPositive: true },
       { id: '3', category: 'sports', label: 'Assists', value: 12, change: '2', isPositive: true },
@@ -99,8 +112,49 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('athlete-stats', JSON.stringify(stats));
-  }, [stats]);
+    // Update localStorage with the current stats
+    if (user?.id) {
+      localStorage.setItem(`athlete-stats-${user.id}`, JSON.stringify(stats));
+      
+      // Also update the stats in the athlete's profile in Supabase
+      const updateProfileStats = async () => {
+        try {
+          // Convert stats array to object format expected by PerformanceStats
+          const statsObject: Record<string, any> = {};
+          
+          stats.forEach(stat => {
+            statsObject[stat.id] = {
+              label: stat.label,
+              value: stat.value,
+              change: stat.change,
+              isPositive: stat.isPositive,
+              category: stat.category
+            };
+          });
+          
+          // Update the profile with the stats
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              stats: statsObject
+            })
+            .eq('id', user.id);
+            
+          if (error) {
+            console.error('Error updating stats in profile:', error);
+          }
+        } catch (err) {
+          console.error('Failed to update profile stats:', err);
+        }
+      };
+      
+      // Uncomment this when ready to integrate with Supabase
+      // updateProfileStats();
+    } else {
+      // Fallback to non-user-specific storage
+      localStorage.setItem('athlete-stats', JSON.stringify(stats));
+    }
+  }, [stats, user]);
 
   const handleAddStat = () => {
     if (!newStatLabel.trim() || !newStatValue.trim()) {
@@ -120,9 +174,12 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
     setStats([...stats, newStat]);
     toast.success(`Added ${newStatLabel} to your ${activeTab} stats`);
     
+    // Don't close the dialog automatically so user can add multiple stats
+    // Just reset the form fields
     setNewStatLabel('');
     setNewStatValue('');
     setNewStatChange('');
+    setNewStatIsPositive(true);
   };
 
   const handleDeleteStat = (id: string) => {
@@ -132,6 +189,25 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
 
   const filteredStats = (category: string) => {
     return stats.filter(stat => stat.category === category);
+  };
+  
+  const handleDialogClose = () => {
+    // Only close if there are no unsaved changes
+    if (newStatLabel || newStatValue || newStatChange) {
+      if (confirm("You have unsaved changes. Are you sure you want to close?")) {
+        resetFormAndClose();
+      }
+    } else {
+      resetFormAndClose();
+    }
+  };
+  
+  const resetFormAndClose = () => {
+    setNewStatLabel('');
+    setNewStatValue('');
+    setNewStatChange('');
+    setNewStatIsPositive(true);
+    setIsAddStatDialogOpen(false);
   };
 
   return (
@@ -316,18 +392,15 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
               )}
             </div>
             <DialogFooter className="flex justify-between">
-              <Button type="button" variant="outline" onClick={() => {
-                setNewStatLabel('');
-                setNewStatValue('');
-                setNewStatChange('');
-                setNewStatIsPositive(true);
-                setIsAddStatDialogOpen(false);
-              }}>
+              <Button type="button" variant="outline" onClick={handleDialogClose}>
                 Cancel
               </Button>
               <div className="flex gap-2">
                 <Button type="button" onClick={handleAddStat} disabled={!newStatLabel || !newStatValue}>
                   Add Stat
+                </Button>
+                <Button type="button" onClick={resetFormAndClose} variant="default">
+                  Done
                 </Button>
               </div>
             </DialogFooter>
