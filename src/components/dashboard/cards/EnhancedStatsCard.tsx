@@ -101,7 +101,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Physical Attributes</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <StatItem label="Height" value="6'2\"" />
+                <StatItem label="Height" value="6'2&quot;" />
                 <StatItem label="Weight" value="175 lbs" />
                 <StatItem label="Vertical Jump" value='32"' change="2" isPositive={true} />
                 <StatItem label="40-yard Dash" value="4.5s" change="0.1s" isPositive={true} />
