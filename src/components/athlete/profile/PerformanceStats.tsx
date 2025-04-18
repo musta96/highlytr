@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -7,7 +7,9 @@ import {
   TrendingUp, 
   AlertCircle,
   Plus,
-  ChevronRight
+  ChevronRight,
+  X,
+  Check
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -17,6 +19,38 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatStatValue, getStatColor } from '@/utils/statsFormatter';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from '@/components/ui/tabs';
+import { 
+  getStatSuggestions, 
+  generalAthleticStats,
+  academicStats,
+  StatDefinition 
+} from '@/utils/sportsStatsData';
 
 interface PerformanceStatsProps {
   profile: any;
@@ -25,6 +59,49 @@ interface PerformanceStatsProps {
 
 const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
   const stats = profile?.stats || {};
+  const [isAddStatDialogOpen, setIsAddStatDialogOpen] = useState(false);
+  const [newStatType, setNewStatType] = useState<string>("");
+  const [newStatValue, setNewStatValue] = useState<string>("");
+  const [newStatLabel, setNewStatLabel] = useState<string>("");
+  const [currentStatCategory, setCurrentStatCategory] = useState<string>("sport");
+  
+  // Get suggested stats based on the athlete's primary sport and position
+  const primarySport = profile?.primary_sport;
+  const primaryPosition = profile?.primary_position;
+  const suggestedStats = primarySport ? 
+    getStatSuggestions(primarySport, primaryPosition) : [];
+  
+  const handleAddStat = () => {
+    if (!newStatType || !newStatValue) return;
+    
+    // Create a new stat object
+    const updatedStats = {
+      ...stats,
+      [newStatType]: {
+        value: Number(newStatValue) || newStatValue,
+        label: newStatLabel || newStatType,
+      }
+    };
+    
+    // Update the profile stats
+    if (profile.setProfile) {
+      profile.setProfile((prev: any) => ({
+        ...prev,
+        stats: updatedStats
+      }));
+    }
+    
+    // Reset form and close dialog
+    setNewStatType("");
+    setNewStatValue("");
+    setNewStatLabel("");
+    setIsAddStatDialogOpen(false);
+  };
+  
+  const handleStatSelect = (statDefinition: StatDefinition) => {
+    setNewStatType(statDefinition.id);
+    setNewStatLabel(statDefinition.label);
+  };
   
   if (!profile) {
     return (
@@ -58,9 +135,155 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
             Performance Statistics
           </CardTitle>
           {isEditing && (
-            <Button variant="ghost" size="sm" className="text-xs">
-              <Plus className="h-4 w-4 mr-1" /> Add Stat
-            </Button>
+            <Dialog open={isAddStatDialogOpen} onOpenChange={setIsAddStatDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-xs">
+                  <Plus className="h-4 w-4 mr-1" /> Add Stat
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[525px]">
+                <DialogHeader>
+                  <DialogTitle>Add Performance Statistic</DialogTitle>
+                  <DialogDescription>
+                    Add a new statistic to showcase your athletic performance.
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <Tabs value={currentStatCategory} onValueChange={setCurrentStatCategory} className="mt-2">
+                  <TabsList className="grid grid-cols-3 mb-2">
+                    <TabsTrigger value="sport">Sport Stats</TabsTrigger>
+                    <TabsTrigger value="physical">Physical</TabsTrigger>
+                    <TabsTrigger value="academic">Academic</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="sport" className="space-y-4">
+                    {primarySport ? (
+                      <div className="space-y-4">
+                        <div className="text-sm text-muted-foreground">
+                          Suggested statistics for {primaryPosition ? `${primaryPosition} in ${primarySport}` : primarySport}:
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {suggestedStats.map((stat: StatDefinition) => (
+                            <div 
+                              key={stat.id} 
+                              className={`p-2 text-sm rounded-md cursor-pointer border ${
+                                newStatType === stat.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                              onClick={() => handleStatSelect(stat)}
+                            >
+                              <div className="font-medium">{stat.label}</div>
+                              {stat.description && (
+                                <div className="text-xs text-gray-500">{stat.description}</div>
+                              )}
+                              {newStatType === stat.id && (
+                                <div className="flex items-center text-primary text-xs mt-1">
+                                  <Check className="h-3 w-3 mr-1" /> Selected
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <AlertCircle className="mx-auto h-8 w-8 text-gray-400" />
+                        <p className="mt-2 text-sm text-gray-600">
+                          To see suggested stats, first add your primary sport in your profile.
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="physical" className="space-y-4">
+                    <div className="text-sm text-muted-foreground mb-2">
+                      Physical attributes and performance metrics:
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {generalAthleticStats.map((stat) => (
+                        <div 
+                          key={stat.id} 
+                          className={`p-2 text-sm rounded-md cursor-pointer border ${
+                            newStatType === stat.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => handleStatSelect(stat)}
+                        >
+                          <div className="font-medium">{stat.label}</div>
+                          {stat.unit && <div className="text-xs text-gray-500">Unit: {stat.unit}</div>}
+                          {newStatType === stat.id && (
+                            <div className="flex items-center text-primary text-xs mt-1">
+                              <Check className="h-3 w-3 mr-1" /> Selected
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="academic" className="space-y-4">
+                    <div className="text-sm text-muted-foreground mb-2">
+                      Academic performance metrics:
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {academicStats.map((stat) => (
+                        <div 
+                          key={stat.id} 
+                          className={`p-2 text-sm rounded-md cursor-pointer border ${
+                            newStatType === stat.id ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => handleStatSelect(stat)}
+                        >
+                          <div className="font-medium">{stat.label}</div>
+                          {newStatType === stat.id && (
+                            <div className="flex items-center text-primary text-xs mt-1">
+                              <Check className="h-3 w-3 mr-1" /> Selected
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+                
+                <div className="grid gap-4 py-4">
+                  {newStatType && (
+                    <>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="statLabel" className="text-right">
+                          Label
+                        </Label>
+                        <Input
+                          id="statLabel"
+                          value={newStatLabel}
+                          onChange={(e) => setNewStatLabel(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="statValue" className="text-right">
+                          Value
+                        </Label>
+                        <Input
+                          id="statValue"
+                          value={newStatValue}
+                          onChange={(e) => setNewStatValue(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+                
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setIsAddStatDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={handleAddStat} disabled={!newStatType || !newStatValue}>
+                    Add Statistic
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       </CardHeader>
@@ -105,7 +328,12 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
               Add your performance statistics to showcase your abilities
             </p>
             {isEditing && (
-              <Button variant="outline" size="sm" className="gap-1">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-1"
+                onClick={() => setIsAddStatDialogOpen(true)}
+              >
                 <Plus className="h-4 w-4" /> Add Your First Stat
               </Button>
             )}
