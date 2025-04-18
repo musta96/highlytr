@@ -70,9 +70,8 @@ const AthleteDashboard = () => {
       </div>
       
       <motion.div variants={item}>
-        <RecommendedCollegesCard 
-          className="hover-card glass-effect"
-        />
+        {/* Removing className prop as we can't modify RecommendedCollegesCard */}
+        <RecommendedCollegesCard />
       </motion.div>
     </motion.div>
   );

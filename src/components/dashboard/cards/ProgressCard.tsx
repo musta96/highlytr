@@ -1,14 +1,16 @@
 
 import React from 'react';
 import XPBar from '../XPBar';
+import { cn } from "@/lib/utils";
 
 interface ProgressCardProps {
   badges: { name: string; icon: string; description: string }[];
+  className?: string; // Added className prop
 }
 
-const ProgressCard = ({ badges }: ProgressCardProps) => {
+const ProgressCard = ({ badges, className }: ProgressCardProps) => {
   return (
-    <div className="col-span-full sm:col-span-2 lg:col-span-1 order-first lg:order-none">
+    <div className={cn("col-span-full sm:col-span-2 lg:col-span-1 order-first lg:order-none", className)}>
       <XPBar 
         currentXP={650} 
         maxXP={1000} 

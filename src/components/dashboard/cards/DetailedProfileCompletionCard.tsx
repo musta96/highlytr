@@ -5,10 +5,15 @@ import { Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from '@/components/ui/badge';
+import { cn } from "@/lib/utils";
 
-const DetailedProfileCompletionCard = () => {
+interface DetailedProfileCompletionCardProps {
+  className?: string; // Added className prop
+}
+
+const DetailedProfileCompletionCard = ({ className }: DetailedProfileCompletionCardProps) => {
   return (
-    <Card>
+    <Card className={cn(className)}>
       <CardHeader className="pb-3">
         <CardTitle>Profile Completion</CardTitle>
         <CardDescription>Complete your profile to increase visibility</CardDescription>
