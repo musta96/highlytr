@@ -1,8 +1,7 @@
-
 import React from 'react';
 import WelcomeHeader from './cards/WelcomeHeader';
 import DetailedProfileCompletionCard from './cards/DetailedProfileCompletionCard';
-import StatsOverviewCard from './cards/StatsOverviewCard';
+import EnhancedStatsCard from './cards/EnhancedStatsCard';
 import RecommendedCollegesCard from './cards/RecommendedCollegesCard';
 import ProgressCard from './cards/ProgressCard';
 import { motion } from 'framer-motion';
@@ -49,7 +48,7 @@ const AthleteDashboard = () => {
       </motion.div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <motion.div variants={item} className="col-span-full lg:col-span-1 order-first lg:order-none">
+        <motion.div variants={item} className="col-span-full lg:col-span-1">
           <ProgressCard 
             badges={badges} 
             className="hover-card glass-effect h-full"
@@ -63,14 +62,13 @@ const AthleteDashboard = () => {
         </motion.div>
         
         <motion.div variants={item} className="col-span-full md:col-span-1">
-          <StatsOverviewCard 
+          <EnhancedStatsCard 
             className="hover-card glass-effect h-full"
           />
         </motion.div>
       </div>
       
       <motion.div variants={item}>
-        {/* Removing className prop as we can't modify RecommendedCollegesCard */}
         <RecommendedCollegesCard />
       </motion.div>
     </motion.div>
