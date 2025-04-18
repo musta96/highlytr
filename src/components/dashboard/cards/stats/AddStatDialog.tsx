@@ -43,6 +43,13 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
   activeTab,
   onClose,
 }) => {
+  // Handle adding stats safely
+  const handleAddStat = () => {
+    if (newStatLabel.trim() && newStatValue.trim()) {
+      onAddStat();
+    }
+  };
+  
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -111,7 +118,11 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
             Cancel
           </Button>
           <div className="flex gap-2">
-            <Button type="button" onClick={onAddStat} disabled={!newStatLabel || !newStatValue}>
+            <Button 
+              type="button" 
+              onClick={handleAddStat} 
+              disabled={!newStatLabel.trim() || !newStatValue.trim()}
+            >
               Add Stat
             </Button>
             <Button type="button" onClick={onClose} variant="default">

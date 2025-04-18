@@ -49,8 +49,19 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
       newStatChange,
       newStatIsPositive
     );
+    
+    // Reset form values after adding
+    setNewStatLabel('');
+    setNewStatValue('');
+    setNewStatChange('');
+    setNewStatIsPositive(true);
   };
 
+  // Safely get filtered stats for the current category
+  const currentStats = filteredStats(activeTab) || [];
+  const seasonStats = currentStats.slice(0, 6);
+  const careerStats = currentStats.slice(6);
+  
   return (
     <Card className={className}>
       <CardHeader>
@@ -97,25 +108,31 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Season 2024/25</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('sports').slice(0, 6).map(stat => (
-                  <StatItem 
-                    key={stat.id}
-                    label={stat.label} 
-                    value={stat.value} 
-                    change={stat.change} 
-                    isPositive={stat.isPositive}
-                    editable={isEditing}
-                    onDelete={() => handleDeleteStat(stat.id)}
-                  />
-                ))}
+                {seasonStats.length > 0 ? (
+                  seasonStats.map(stat => (
+                    <StatItem 
+                      key={stat.id}
+                      label={stat.label} 
+                      value={stat.value} 
+                      change={stat.change} 
+                      isPositive={stat.isPositive}
+                      editable={isEditing}
+                      onDelete={() => handleDeleteStat(stat.id)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-3 text-center py-4 text-muted-foreground">
+                    No sports stats added yet.
+                  </div>
+                )}
               </div>
             </div>
             
-            {filteredStats('sports').length > 6 && (
+            {careerStats.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium mb-3">Career Summary</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {filteredStats('sports').slice(6).map(stat => (
+                  {careerStats.map(stat => (
                     <StatItem 
                       key={stat.id}
                       label={stat.label} 
@@ -135,17 +152,23 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Academic Performance</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('academic').map(stat => (
-                  <StatItem 
-                    key={stat.id}
-                    label={stat.label} 
-                    value={stat.value} 
-                    change={stat.change} 
-                    isPositive={stat.isPositive}
-                    editable={isEditing}
-                    onDelete={() => handleDeleteStat(stat.id)}
-                  />
-                ))}
+                {filteredStats('academic').length > 0 ? (
+                  filteredStats('academic').map(stat => (
+                    <StatItem 
+                      key={stat.id}
+                      label={stat.label} 
+                      value={stat.value} 
+                      change={stat.change} 
+                      isPositive={stat.isPositive}
+                      editable={isEditing}
+                      onDelete={() => handleDeleteStat(stat.id)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-3 text-center py-4 text-muted-foreground">
+                    No academic stats added yet.
+                  </div>
+                )}
               </div>
             </div>
           </TabsContent>
@@ -154,17 +177,23 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Physical Attributes</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('physical').map(stat => (
-                  <StatItem 
-                    key={stat.id}
-                    label={stat.label} 
-                    value={stat.value} 
-                    change={stat.change} 
-                    isPositive={stat.isPositive}
-                    editable={isEditing}
-                    onDelete={() => handleDeleteStat(stat.id)}
-                  />
-                ))}
+                {filteredStats('physical').length > 0 ? (
+                  filteredStats('physical').map(stat => (
+                    <StatItem 
+                      key={stat.id}
+                      label={stat.label} 
+                      value={stat.value} 
+                      change={stat.change} 
+                      isPositive={stat.isPositive}
+                      editable={isEditing}
+                      onDelete={() => handleDeleteStat(stat.id)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-3 text-center py-4 text-muted-foreground">
+                    No physical stats added yet.
+                  </div>
+                )}
               </div>
             </div>
           </TabsContent>
