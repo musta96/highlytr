@@ -103,7 +103,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <StatItem label="Height" value="6'2\"" />
                 <StatItem label="Weight" value="175 lbs" />
-                <StatItem label="Vertical Jump" value='32"' change="2" isPositive={true} />
+                <StatItem label="Vertical Jump" value="32\"" change="2" isPositive={true} />
                 <StatItem label="40-yard Dash" value="4.5s" change="0.1s" isPositive={true} />
                 <StatItem label="Agility Score" value="8.5/10" />
                 <StatItem label="Endurance" value="92%" />
