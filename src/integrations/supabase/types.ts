@@ -86,6 +86,7 @@ export type Database = {
       profiles: {
         Row: {
           account_type: string
+          athlete_stats: Json | null
           avatar_url: string | null
           citizenship: string | null
           created_at: string
@@ -104,6 +105,7 @@ export type Database = {
         }
         Insert: {
           account_type: string
+          athlete_stats?: Json | null
           avatar_url?: string | null
           citizenship?: string | null
           created_at?: string
@@ -122,6 +124,7 @@ export type Database = {
         }
         Update: {
           account_type?: string
+          athlete_stats?: Json | null
           avatar_url?: string | null
           citizenship?: string | null
           created_at?: string
