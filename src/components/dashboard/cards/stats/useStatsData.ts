@@ -16,10 +16,9 @@ export interface Stat {
 export const useStatsData = () => {
   const [stats, setStats] = useState<Stat[]>(() => {
     try {
-      const { user } = useAuth();
-      const userId = user?.id;
-      const userSpecificKey = userId ? `athlete-stats-${userId}` : 'athlete-stats';
-      const savedStats = localStorage.getItem(userSpecificKey);
+      // We need to move useAuth() outside this initialization function
+      // as hooks can't be used inside other hooks or callbacks
+      const savedStats = localStorage.getItem('athlete-stats');
       
       if (savedStats) {
         return JSON.parse(savedStats);
@@ -58,8 +57,27 @@ export const useStatsData = () => {
 
   const { user } = useAuth();
 
+  // Load user-specific stats after component mounts
+  useEffect(() => {
+    if (user?.id) {
+      try {
+        const userSpecificKey = `athlete-stats-${user.id}`;
+        const savedStats = localStorage.getItem(userSpecificKey);
+        
+        if (savedStats) {
+          setStats(JSON.parse(savedStats));
+        }
+      } catch (error) {
+        console.error('Error loading user-specific stats:', error);
+      }
+    }
+  }, [user]);
+
+  // Save stats whenever they change
   useEffect(() => {
     try {
+      if (!stats) return;
+      
       if (user?.id) {
         localStorage.setItem(`athlete-stats-${user.id}`, JSON.stringify(stats));
         
@@ -123,7 +141,7 @@ export const useStatsData = () => {
         isPositive: change ? isPositive : undefined
       };
 
-      setStats([...stats, newStat]);
+      setStats(prevStats => [...(prevStats || []), newStat]);
       toast.success(`Added ${label} to your ${category} stats`);
     } catch (error) {
       console.error('Error adding stat:', error);
@@ -133,7 +151,10 @@ export const useStatsData = () => {
 
   const handleDeleteStat = (id: string) => {
     try {
-      setStats(stats.filter(stat => stat.id !== id));
+      setStats(prevStats => {
+        if (!prevStats) return [];
+        return prevStats.filter(stat => stat.id !== id);
+      });
       toast.success('Stat removed successfully');
     } catch (error) {
       console.error('Error deleting stat:', error);

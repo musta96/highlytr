@@ -32,9 +32,13 @@ export const StatItem = ({
     >
       {editable && onDelete && (
         <button 
-          onClick={onDelete}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onDelete) onDelete();
+          }}
           className="absolute top-1 right-1 p-1 text-gray-500 hover:text-red-500 rounded-full"
           aria-label="Delete stat"
+          type="button"
         >
           <X className="h-3 w-3" />
         </button>

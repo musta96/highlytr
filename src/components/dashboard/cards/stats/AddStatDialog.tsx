@@ -45,16 +45,24 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
 }) => {
   // Handle adding stats safely
   const handleAddStat = () => {
-    if (newStatLabel.trim() && newStatValue.trim()) {
+    if (newStatLabel && newStatLabel.trim() && newStatValue && newStatValue.trim()) {
       onAddStat();
     }
   };
   
+  const categoryTitle = activeTab ? activeTab.charAt(0).toUpperCase() + activeTab.slice(1) : 'New';
+  
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open && onClose) {
+        onClose();
+      } else {
+        onOpenChange(open);
+      }
+    }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Stat</DialogTitle>
+          <DialogTitle>Add New {categoryTitle} Stat</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -63,7 +71,7 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
             </Label>
             <Input
               id="statLabel"
-              value={newStatLabel}
+              value={newStatLabel || ''}
               onChange={(e) => setNewStatLabel(e.target.value)}
               className="col-span-3"
               placeholder="e.g., Goals, GPA, Weight"
@@ -75,7 +83,7 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
             </Label>
             <Input
               id="statValue"
-              value={newStatValue}
+              value={newStatValue || ''}
               onChange={(e) => setNewStatValue(e.target.value)}
               className="col-span-3"
               placeholder="e.g., 15, 3.8, 175 lbs"
@@ -87,7 +95,7 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
             </Label>
             <Input
               id="statChange"
-              value={newStatChange}
+              value={newStatChange || ''}
               onChange={(e) => setNewStatChange(e.target.value)}
               className="col-span-3"
               placeholder="Optional, e.g., 2, 0.2"
@@ -102,7 +110,7 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
                 value={newStatIsPositive ? "positive" : "negative"}
                 onValueChange={(value) => setNewStatIsPositive(value === "positive")}
               >
-                <SelectTrigger className="col-span-3">
+                <SelectTrigger id="statTrend" className="col-span-3">
                   <SelectValue placeholder="Select trend" />
                 </SelectTrigger>
                 <SelectContent>
@@ -121,12 +129,9 @@ export const AddStatDialog: React.FC<AddStatDialogProps> = ({
             <Button 
               type="button" 
               onClick={handleAddStat} 
-              disabled={!newStatLabel.trim() || !newStatValue.trim()}
+              disabled={!newStatLabel?.trim() || !newStatValue?.trim()}
             >
               Add Stat
-            </Button>
-            <Button type="button" onClick={onClose} variant="default">
-              Done
             </Button>
           </div>
         </DialogFooter>

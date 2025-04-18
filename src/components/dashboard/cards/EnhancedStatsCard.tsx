@@ -59,8 +59,10 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
 
   // Safely get filtered stats for the current category
   const currentStats = filteredStats(activeTab) || [];
-  const seasonStats = currentStats.slice(0, 6);
-  const careerStats = currentStats.slice(6);
+  
+  // Divide stats safely
+  const seasonStats = currentStats.length > 0 ? currentStats.slice(0, 6) : [];
+  const careerStats = currentStats.length > 6 ? currentStats.slice(6) : [];
   
   return (
     <Card className={className}>
@@ -152,7 +154,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Academic Performance</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('academic')?.length > 0 ? (
+                {filteredStats('academic').length > 0 ? (
                   filteredStats('academic').map(stat => (
                     <StatItem 
                       key={stat.id}
@@ -177,7 +179,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             <div>
               <h4 className="text-sm font-medium mb-3">Physical Attributes</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('physical')?.length > 0 ? (
+                {filteredStats('physical').length > 0 ? (
                   filteredStats('physical').map(stat => (
                     <StatItem 
                       key={stat.id}
