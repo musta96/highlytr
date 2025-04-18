@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trophy, GraduationCap, Activity, Plus } from 'lucide-react';
-import { StatItem } from './stats/StatItem';
+import { Trophy, GraduationCap, Activity } from 'lucide-react';
+import { StatsCardHeader } from './stats/StatsCardHeader';
+import { StatsCategoryContent } from './stats/StatsCategoryContent';
 import { AddStatDialog } from './stats/AddStatDialog';
 import { useStatsData } from './stats/useStatsData';
 
@@ -49,12 +50,7 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
       newStatChange,
       newStatIsPositive
     );
-    
-    // Reset form values after adding
-    setNewStatLabel('');
-    setNewStatValue('');
-    setNewStatChange('');
-    setNewStatIsPositive(true);
+    resetFormAndClose();
   };
 
   // Safely get filtered stats for the current category
@@ -66,30 +62,21 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
   
   return (
     <Card className={className}>
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>Performance Statistics</CardTitle>
-          <div className="flex gap-2">
-            {isEditing ? (
-              <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
-                Done Editing
-              </Button>
-            ) : (
-              <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-                Edit Stats
-              </Button>
-            )}
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={() => setIsAddStatDialogOpen(true)}
-            >
-              <Plus className="h-4 w-4 mr-1" /> Add Stat
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
+      <StatsCardHeader 
+        isEditing={isEditing} 
+        onOpenDialog={() => setIsAddStatDialogOpen(true)} 
+      />
       <CardContent>
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            {isEditing ? 'Done Editing' : 'Edit Stats'}
+          </Button>
+        </div>
+
         <Tabs defaultValue="sports" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-4">
             <TabsTrigger value="sports" className="flex items-center gap-2">
@@ -107,97 +94,36 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
           </TabsList>
 
           <TabsContent value="sports" className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium mb-3">Season 2024/25</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {seasonStats && seasonStats.length > 0 ? (
-                  seasonStats.map(stat => (
-                    <StatItem 
-                      key={stat.id}
-                      label={stat.label} 
-                      value={stat.value} 
-                      change={stat.change} 
-                      isPositive={stat.isPositive}
-                      editable={isEditing}
-                      onDelete={() => handleDeleteStat(stat.id)}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-3 text-center py-4 text-muted-foreground">
-                    No sports stats added yet.
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {careerStats && careerStats.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium mb-3">Career Summary</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {careerStats.map(stat => (
-                    <StatItem 
-                      key={stat.id}
-                      label={stat.label} 
-                      value={stat.value} 
-                      change={stat.change} 
-                      isPositive={stat.isPositive}
-                      editable={isEditing}
-                      onDelete={() => handleDeleteStat(stat.id)}
-                    />
-                  ))}
-                </div>
-              </div>
+            <StatsCategoryContent
+              stats={seasonStats}
+              isEditing={isEditing}
+              onDelete={handleDeleteStat}
+              title="Season 2024/25"
+            />
+            {careerStats.length > 0 && (
+              <StatsCategoryContent
+                stats={careerStats}
+                isEditing={isEditing}
+                onDelete={handleDeleteStat}
+                title="Career Summary"
+              />
             )}
           </TabsContent>
 
-          <TabsContent value="academic" className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium mb-3">Academic Performance</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('academic').length > 0 ? (
-                  filteredStats('academic').map(stat => (
-                    <StatItem 
-                      key={stat.id}
-                      label={stat.label} 
-                      value={stat.value} 
-                      change={stat.change} 
-                      isPositive={stat.isPositive}
-                      editable={isEditing}
-                      onDelete={() => handleDeleteStat(stat.id)}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-3 text-center py-4 text-muted-foreground">
-                    No academic stats added yet.
-                  </div>
-                )}
-              </div>
-            </div>
+          <TabsContent value="academic">
+            <StatsCategoryContent
+              stats={filteredStats('academic')}
+              isEditing={isEditing}
+              onDelete={handleDeleteStat}
+            />
           </TabsContent>
 
-          <TabsContent value="physical" className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium mb-3">Physical Attributes</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {filteredStats('physical').length > 0 ? (
-                  filteredStats('physical').map(stat => (
-                    <StatItem 
-                      key={stat.id}
-                      label={stat.label} 
-                      value={stat.value} 
-                      change={stat.change} 
-                      isPositive={stat.isPositive}
-                      editable={isEditing}
-                      onDelete={() => handleDeleteStat(stat.id)}
-                    />
-                  ))
-                ) : (
-                  <div className="col-span-3 text-center py-4 text-muted-foreground">
-                    No physical stats added yet.
-                  </div>
-                )}
-              </div>
-            </div>
+          <TabsContent value="physical">
+            <StatsCategoryContent
+              stats={filteredStats('physical')}
+              isEditing={isEditing}
+              onDelete={handleDeleteStat}
+            />
           </TabsContent>
         </Tabs>
 
