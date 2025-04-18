@@ -6,33 +6,18 @@ export interface PerformanceStatsProps {
   isEditing: boolean;
 }
 
-export interface StatCardProps {
-  title: string;
-  stats: Record<string, any>;
+export interface CompetitionStat {
+  competition: string;
+  logo?: string;
+  appearances: number;
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+  minutesPlayed: number;
+}
+
+export interface StatTableProps {
+  stats: CompetitionStat[];
   isEditing: boolean;
-  onAddStat: () => void;
-}
-
-export interface StatDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddStat: (data: AddStatFormData) => void;
-  primarySport?: string;
-  primaryPosition?: string;
-}
-
-export interface AddStatFormData {
-  label: string;
-  value: string;
-  change?: string;
-  isPositive?: boolean;
-}
-
-export interface Stat {
-  id: string;
-  category: string;
-  label: string;
-  value: string | number;
-  change?: string;
-  isPositive?: boolean;
 }
