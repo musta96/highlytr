@@ -12,11 +12,16 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
     console.log('Adding stat:', data);
   };
 
+  // Ensure we have a valid Record<string, any> for stats
+  const stats = profile.athlete_stats && typeof profile.athlete_stats === 'object' && !Array.isArray(profile.athlete_stats)
+    ? profile.athlete_stats as Record<string, any>
+    : {};
+
   return (
     <div className="space-y-6">
       <StatCard
         title="Sport Statistics"
-        stats={profile.athlete_stats || {}}
+        stats={stats}
         isEditing={isEditing}
         onAddStat={() => setIsStatDialogOpen(true)}
       />
