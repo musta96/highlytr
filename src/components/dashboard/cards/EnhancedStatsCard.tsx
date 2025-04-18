@@ -132,11 +132,14 @@ const EnhancedStatsCard = ({ className }: EnhancedStatsCardProps) => {
             };
           });
           
-          // Update the profile with the stats
+          // Update the profile with the stats as a jsonb field called athlete_stats
+          // instead of trying to add a stats column that doesn't exist
           const { error } = await supabase
             .from('profiles')
             .update({
-              stats: statsObject
+              // Don't include stats directly as it's not in the profile table columns
+              // Instead, we'll store it as athlete_stats
+              athlete_stats: statsObject
             })
             .eq('id', user.id);
             

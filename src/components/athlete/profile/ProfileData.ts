@@ -36,10 +36,20 @@ export interface AthleteProfileData extends ProfileData {
       ielts?: number;
     };
   };
+  // Stats can be stored either in stats (legacy) or athlete_stats (new format for Supabase)
   stats: {
     [key: string]: {
       value: number;
       label: string;
+    };
+  };
+  athlete_stats?: {
+    [key: string]: {
+      value: number | string;
+      label: string;
+      change?: string;
+      isPositive?: boolean;
+      category?: string;
     };
   };
   highlights: HighlightVideo[];

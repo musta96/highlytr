@@ -14,4 +14,5 @@ export interface ProfileData {
   secondary_position: string | null;
   profile_completed: boolean | null;
   account_type: string;
+  athlete_stats?: Record<string, any>; // Add athlete_stats field
 }

@@ -57,6 +57,27 @@ const AthleteProfile = ({ athleteId }: AthleteProfileProps) => {
           
           // Convert database profile to athlete profile format
           // This ensures compatibility with the components expecting AthleteProfileData
+          const statsFromLocalStorage = localStorage.getItem(`athlete-stats-${user.id}`);
+          let athlete_stats = {};
+          
+          if (statsFromLocalStorage) {
+            try {
+              // Convert array format from localStorage to object format
+              const statsArray = JSON.parse(statsFromLocalStorage);
+              statsArray.forEach((stat: any) => {
+                athlete_stats[stat.id] = {
+                  label: stat.label,
+                  value: stat.value,
+                  change: stat.change,
+                  isPositive: stat.isPositive,
+                  category: stat.category
+                };
+              });
+            } catch (err) {
+              console.error('Error parsing stats from localStorage', err);
+            }
+          }
+          
           profileData = {
             ...data,
             isPublic: true,
@@ -72,6 +93,7 @@ const AthleteProfile = ({ athleteId }: AthleteProfileProps) => {
               gpa: 0,
             },
             stats: {},
+            athlete_stats: athlete_stats || {},
             highlights: []
           };
           

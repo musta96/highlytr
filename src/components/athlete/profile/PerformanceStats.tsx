@@ -77,8 +77,12 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
   useEffect(() => {
     let loadedStats: Record<string, any> = {};
     
-    // First try to get stats from the profile prop
-    if (profile?.stats && Object.keys(profile.stats).length > 0) {
+    // First check if profile has athlete_stats (from Supabase)
+    if (profile?.athlete_stats && Object.keys(profile.athlete_stats).length > 0) {
+      loadedStats = profile.athlete_stats;
+    }
+    // Then check if profile has stats directly (from mock data)
+    else if (profile?.stats && Object.keys(profile.stats).length > 0) {
       loadedStats = profile.stats;
     } 
     // If not available, try to get from localStorage (for dashboard integration)
@@ -123,7 +127,7 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
     if (profile.setProfile) {
       profile.setProfile((prev: any) => ({
         ...prev,
-        stats: updatedStats
+        athlete_stats: updatedStats
       }));
     }
     
