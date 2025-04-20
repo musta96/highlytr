@@ -37,12 +37,12 @@ export const StatDialog: React.FC<StatDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    const processedValue = typeof formData.value === 'number' 
+    const stringValue = typeof formData.value === 'number' 
       ? formData.value.toString() 
       : formData.value;
     
     const processedLabel = formData.label.trim();
-    const processedValue = processedValue.trim();
+    const processedValue = stringValue.trim();
 
     if (processedLabel && processedValue) {
       onAddStat({
