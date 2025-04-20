@@ -13,6 +13,7 @@ export const useStats = (profile: ProfileData & { setProfile?: (updateFn: (prev:
 
   const handleStatUpdate = (key: string, newValue: any) => {
     if (profile.setProfile) {
+      console.log('Updating stat:', key, newValue);
       profile.setProfile((prev: any) => ({
         ...prev,
         athlete_stats: {
@@ -25,6 +26,7 @@ export const useStats = (profile: ProfileData & { setProfile?: (updateFn: (prev:
 
   const handleAddStat = (newStat: any) => {
     if (profile.setProfile) {
+      console.log('Adding new stat:', newStat);
       profile.setProfile((prev: any) => ({
         ...prev,
         athlete_stats: {
@@ -33,7 +35,8 @@ export const useStats = (profile: ProfileData & { setProfile?: (updateFn: (prev:
             value: newStat.value,
             label: newStat.label,
             change: newStat.change,
-            isPositive: newStat.isPositive
+            isPositive: newStat.isPositive,
+            details: newStat.details || []
           }
         }
       }));

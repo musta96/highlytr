@@ -24,13 +24,18 @@ export const StatTooltip: React.FC<StatTooltipProps> = ({
 }) => {
   const [showDetail, setShowDetail] = useState(false);
 
+  const handleClick = () => {
+    // Always show detail dialog on click
+    setShowDetail(true);
+  };
+
   return (
     <>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <div
-              onClick={() => setShowDetail(true)}
+              onClick={handleClick}
               className="bg-gray-50 p-4 rounded-lg text-center transition-all hover:shadow-md hover:bg-gray-100 cursor-pointer group"
             >
               <div className="flex items-center justify-center mb-1">

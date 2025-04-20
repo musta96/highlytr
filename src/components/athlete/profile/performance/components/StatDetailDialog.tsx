@@ -90,24 +90,32 @@ export const StatDetailDialog: React.FC<StatDetailProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {details.map((detail: any) => (
-                <TableRow key={detail.id}>
-                  <TableCell>{detail.date}</TableCell>
-                  <TableCell>{detail.value}</TableCell>
-                  <TableCell>{detail.notes}</TableCell>
-                  {isEditing && (
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveDetail(detail.id)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  )}
+              {details.length > 0 ? (
+                details.map((detail: any) => (
+                  <TableRow key={detail.id}>
+                    <TableCell>{detail.date}</TableCell>
+                    <TableCell>{detail.value}</TableCell>
+                    <TableCell>{detail.notes}</TableCell>
+                    {isEditing && (
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveDetail(detail.id)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={isEditing ? 4 : 3} className="text-center py-4 text-muted-foreground">
+                    No details added yet
+                  </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
 
