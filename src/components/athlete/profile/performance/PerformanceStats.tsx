@@ -1,67 +1,80 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { StatTable } from './StatTable';
+import { Button } from '@/components/ui/button';
+import { BarChart, ChevronRight, Plus } from 'lucide-react';
+import { StatDialog } from './StatDialog';
+import { StatsEmptyState } from './components/StatsEmptyState';
+import { StatsGrid } from './components/StatsGrid';
 import { PerformanceStatsProps } from './types';
 
 const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
-  const [selectedSeason, setSelectedSeason] = useState('23/24');
+  const [isAddStatDialogOpen, setIsAddStatDialogOpen] = useState(false);
+  const stats = profile?.athlete_stats || {};
 
-  // For demo purposes - in real app this would come from the profile data
-  const demoStats = [
-    {
-      competition: 'Premier League',
-      logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/1200px-Premier_League_Logo.svg.png',
-      appearances: 32,
-      goals: 2,
-      assists: 1,
-      yellowCards: 3,
-      redCards: 0,
-      minutesPlayed: 2880
-    },
-    {
-      competition: 'Champions League',
-      logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League_logo_2.svg/1200px-UEFA_Champions_League_logo_2.svg.png',
-      appearances: 9,
-      goals: 1,
-      assists: 0,
-      yellowCards: 2,
-      redCards: 0,
-      minutesPlayed: 840
-    },
-    {
-      competition: 'EFL Cup',
-      logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/EFL_Cup_Logo.svg/1200px-EFL_Cup_Logo.svg.png',
-      appearances: 3,
-      goals: 1,
-      assists: 0,
-      yellowCards: 0,
-      redCards: 0,
-      minutesPlayed: 267
-    }
-  ];
+  const handleAddStat = () => {
+    setIsAddStatDialogOpen(true);
+  };
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-2xl font-bold">Performance Statistics</CardTitle>
-          <Select value={selectedSeason} onValueChange={setSelectedSeason}>
-            <SelectTrigger className="w-[100px]">
-              <SelectValue placeholder="Season" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="23/24">23/24</SelectItem>
-              <SelectItem value="22/23">22/23</SelectItem>
-              <SelectItem value="21/22">21/22</SelectItem>
-            </SelectContent>
-          </Select>
+          <CardTitle className="flex items-center text-xl">
+            <BarChart className="h-5 w-5 mr-2" />
+            Performance Statistics
+          </CardTitle>
+          {isEditing && (
+            <Button variant="ghost" size="sm" onClick={handleAddStat}>
+              <Plus className="h-4 w-4 mr-1" /> Add Stat
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent>
-        <StatTable stats={demoStats} />
+        {Object.keys(stats).length > 0 ? (
+          <>
+            <StatsGrid stats={stats} />
+            {!isEditing && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-full mt-4 text-gray-600 hover:text-gray-800"
+              >
+                View Detailed Statistics <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            )}
+          </>
+        ) : (
+          <StatsEmptyState isEditing={isEditing} onAddStat={handleAddStat} />
+        )}
       </CardContent>
+
+      {isEditing && (
+        <StatDialog
+          isOpen={isAddStatDialogOpen}
+          onClose={() => setIsAddStatDialogOpen(false)}
+          onAddStat={(newStat) => {
+            if (profile.setProfile) {
+              profile.setProfile((prev: any) => ({
+                ...prev,
+                athlete_stats: {
+                  ...(prev.athlete_stats || {}),
+                  [newStat.label]: {
+                    value: newStat.value,
+                    label: newStat.label,
+                    change: newStat.change,
+                    isPositive: newStat.isPositive
+                  }
+                }
+              }));
+            }
+            setIsAddStatDialogOpen(false);
+          }}
+          primarySport={profile?.primary_sport}
+          primaryPosition={profile?.primary_position}
+        />
+      )}
     </Card>
   );
 };
