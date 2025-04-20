@@ -2,7 +2,9 @@
 import { ProfileData } from '@/types/profile';
 
 export interface PerformanceStatsProps {
-  profile: ProfileData;
+  profile: ProfileData & {
+    setProfile?: (updateFn: (prev: any) => any) => void;
+  };
   isEditing: boolean;
 }
 
@@ -27,8 +29,8 @@ export interface StatDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onAddStat: (stat: AddStatFormData) => void;
-  primarySport?: string;
-  primaryPosition?: string;
+  primarySport?: string | null;
+  primaryPosition?: string | null;
 }
 
 export interface AddStatFormData {

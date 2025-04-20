@@ -10,7 +10,13 @@ import { PerformanceStatsProps } from './types';
 
 const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
   const [isAddStatDialogOpen, setIsAddStatDialogOpen] = useState(false);
-  const stats = profile?.athlete_stats || {};
+  
+  // Safely handle athlete_stats by ensuring it's an object or default to empty object
+  const stats = profile?.athlete_stats ? 
+    (typeof profile.athlete_stats === 'object' && profile.athlete_stats !== null ? 
+      profile.athlete_stats as Record<string, any> : 
+      {}) : 
+    {};
 
   const handleAddStat = () => {
     setIsAddStatDialogOpen(true);
@@ -59,7 +65,7 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
               profile.setProfile((prev: any) => ({
                 ...prev,
                 athlete_stats: {
-                  ...(prev.athlete_stats || {}),
+                  ...(prev.athlete_stats && typeof prev.athlete_stats === 'object' ? prev.athlete_stats : {}),
                   [newStat.label]: {
                     value: newStat.value,
                     label: newStat.label,
