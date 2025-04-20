@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,18 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
       profile.athlete_stats as Record<string, any> : 
       {}) : 
     {};
+
+  const handleStatUpdate = (key: string, newValue: any) => {
+    if (profile.setProfile) {
+      profile.setProfile((prev: any) => ({
+        ...prev,
+        athlete_stats: {
+          ...(prev.athlete_stats && typeof prev.athlete_stats === 'object' ? prev.athlete_stats : {}),
+          [key]: newValue
+        }
+      }));
+    }
+  };
 
   const handleAddStat = () => {
     setIsAddStatDialogOpen(true);
@@ -40,7 +51,11 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
       <CardContent>
         {Object.keys(stats).length > 0 ? (
           <>
-            <StatsGrid stats={stats} />
+            <StatsGrid 
+              stats={stats} 
+              isEditing={isEditing} 
+              onUpdate={handleStatUpdate}
+            />
             {!isEditing && (
               <Button 
                 variant="ghost" 
