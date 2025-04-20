@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -38,8 +37,19 @@ export const StatDialog: React.FC<StatDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    if (formData.label.trim() && formData.value.trim()) {
-      onAddStat(formData);
+    const processedValue = typeof formData.value === 'number' 
+      ? formData.value.toString() 
+      : formData.value;
+    
+    const processedLabel = formData.label.trim();
+    const processedValue = processedValue.trim();
+
+    if (processedLabel && processedValue) {
+      onAddStat({
+        ...formData,
+        label: processedLabel,
+        value: processedValue
+      });
       setFormData({ label: '', value: '', change: '', isPositive: true });
       setSelectedStat('');
       onClose();
