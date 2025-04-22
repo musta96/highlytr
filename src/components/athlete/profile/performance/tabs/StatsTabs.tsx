@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StatsGrid } from '../components/StatsGrid';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Plus } from 'lucide-react'; // Add Plus import
+import { Button } from '@/components/ui/button'; // Add Button import
 import { StatsTabsProps } from '../types';
 
 export const StatsTabs = ({ 

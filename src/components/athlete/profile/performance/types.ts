@@ -20,6 +20,7 @@ export interface AddStatData {
   change?: string;
   isPositive?: boolean;
   details?: StatDetailItem[];
+  category?: string; // Add this property to fix the TS2353 error
 }
 
 export interface AddStatFormData {
@@ -46,4 +47,16 @@ export interface StatsTabsProps {
 export interface StatsHeaderProps {
   isEditing: boolean;
   onAddStat: () => void;
+}
+
+// Add the CompetitionStat interface to fix the TS2305 error
+export interface CompetitionStat {
+  competition: string;
+  logo?: string;
+  appearances: number;
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+  minutesPlayed: number;
 }
