@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Plus, X } from 'lucide-react';
+import { StatDetailItem } from '../types';
 
 interface StatDetailProps {
   isOpen: boolean;
@@ -36,7 +37,7 @@ export const StatDetailDialog: React.FC<StatDetailProps> = ({
   onUpdate,
   isEditing
 }) => {
-  const [details, setDetails] = useState(stat.details || []);
+  const [details, setDetails] = useState<StatDetailItem[]>(stat.details || []);
   const [newDetail, setNewDetail] = useState({ date: '', value: '', notes: '' });
 
   const handleAddDetail = () => {
@@ -46,7 +47,11 @@ export const StatDetailDialog: React.FC<StatDetailProps> = ({
       setNewDetail({ date: '', value: '', notes: '' });
       
       // Update the total value based on all details
-      const totalValue = updatedDetails.reduce((sum, detail) => sum + Number(detail.value), 0);
+      const totalValue = updatedDetails.reduce((sum, detail) => {
+        const numValue = parseFloat(detail.value.toString());
+        return isNaN(numValue) ? sum : sum + numValue;
+      }, 0);
+      
       onUpdate(statKey, {
         ...stat,
         value: totalValue,
@@ -56,11 +61,15 @@ export const StatDetailDialog: React.FC<StatDetailProps> = ({
   };
 
   const handleRemoveDetail = (id: number) => {
-    const updatedDetails = details.filter((detail: any) => detail.id !== id);
+    const updatedDetails = details.filter((detail) => detail.id !== id);
     setDetails(updatedDetails);
     
     // Update the total value based on remaining details
-    const totalValue = updatedDetails.reduce((sum, detail) => sum + Number(detail.value), 0);
+    const totalValue = updatedDetails.reduce((sum, detail) => {
+      const numValue = parseFloat(detail.value.toString());
+      return isNaN(numValue) ? sum : sum + numValue;
+    }, 0);
+    
     onUpdate(statKey, {
       ...stat,
       value: totalValue,

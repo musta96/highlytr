@@ -54,6 +54,7 @@ export const StatTooltip: React.FC<StatTooltipProps> = ({
               {stat.description && (
                 <p className="text-xs text-gray-500 mt-1">{stat.description}</p>
               )}
+              <p className="text-xs text-primary mt-1">Click for details</p>
             </div>
           </TooltipContent>
         </Tooltip>

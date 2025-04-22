@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { ProfileData } from '@/types/profile';
+import { StatDetailItem, AddStatData } from '../types';
 
 export const useStats = (profile: ProfileData & { setProfile?: (updateFn: (prev: any) => any) => void }) => {
   const [isAddStatDialogOpen, setIsAddStatDialogOpen] = useState(false);
@@ -24,19 +25,28 @@ export const useStats = (profile: ProfileData & { setProfile?: (updateFn: (prev:
     }
   };
 
-  const handleAddStat = (newStat: any) => {
+  const handleAddStat = (newStat: AddStatData) => {
     if (profile.setProfile) {
       console.log('Adding new stat:', newStat);
+      
+      // Generate a unique key for the stat based on the label
+      const statKey = newStat.label
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '')
+        + '_' + Date.now().toString().slice(-4);
+      
       profile.setProfile((prev: any) => ({
         ...prev,
         athlete_stats: {
           ...(prev.athlete_stats && typeof prev.athlete_stats === 'object' ? prev.athlete_stats : {}),
-          [newStat.label]: {
-            value: newStat.value,
+          [statKey]: {
             label: newStat.label,
-            change: newStat.change,
-            isPositive: newStat.isPositive,
-            details: newStat.details || []
+            value: newStat.value,
+            change: newStat.change || undefined,
+            isPositive: newStat.change ? newStat.isPositive : undefined,
+            details: newStat.details || [],
+            category: newStat.category || 'sport'
           }
         }
       }));
