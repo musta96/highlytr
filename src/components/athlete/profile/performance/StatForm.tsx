@@ -1,9 +1,15 @@
 
 import React from 'react';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { AddStatFormData } from './types';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface StatFormProps {
   formData: AddStatFormData;
@@ -12,52 +18,65 @@ interface StatFormProps {
 
 export const StatForm: React.FC<StatFormProps> = ({ formData, onChange }) => {
   return (
-    <div className="grid gap-4">
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="statLabel" className="text-right">Label</Label>
-        <Input
-          id="statLabel"
-          value={formData.label}
-          onChange={(e) => onChange({ ...formData, label: e.target.value })}
-          className="col-span-3"
-        />
-      </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="statValue" className="text-right">Value</Label>
-        <Input
-          id="statValue"
-          value={formData.value}
-          onChange={(e) => onChange({ ...formData, value: e.target.value })}
-          className="col-span-3"
-        />
-      </div>
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="statChange" className="text-right">Change</Label>
-        <Input
-          id="statChange"
-          value={formData.change}
-          onChange={(e) => onChange({ ...formData, change: e.target.value })}
-          className="col-span-3"
-          placeholder="Optional"
-        />
-      </div>
-      {formData.change && (
+    <div className="space-y-4">
+      <div className="grid gap-4 py-4">
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="trend" className="text-right">Trend</Label>
-          <Select
-            value={formData.isPositive ? "positive" : "negative"}
-            onValueChange={(value) => onChange({ ...formData, isPositive: value === "positive" })}
-          >
-            <SelectTrigger className="col-span-3">
-              <SelectValue placeholder="Select trend" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="positive">Positive (improving)</SelectItem>
-              <SelectItem value="negative">Negative (declining)</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label htmlFor="statLabel" className="text-right">
+            Label
+          </Label>
+          <Input
+            id="statLabel"
+            value={formData.label}
+            onChange={(e) => onChange({ ...formData, label: e.target.value })}
+            className="col-span-3"
+          />
         </div>
-      )}
+
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="statValue" className="text-right">
+            Value
+          </Label>
+          <Input
+            id="statValue"
+            value={formData.value}
+            onChange={(e) => onChange({ ...formData, value: e.target.value })}
+            className="col-span-3"
+          />
+        </div>
+
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="statChange" className="text-right">
+            Change
+          </Label>
+          <Input
+            id="statChange"
+            value={formData.change}
+            onChange={(e) => onChange({ ...formData, change: e.target.value })}
+            className="col-span-3"
+            placeholder="Optional, e.g., 2, 0.2"
+          />
+        </div>
+
+        {formData.change && (
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="statTrend" className="text-right">
+              Trend
+            </Label>
+            <Select 
+              value={formData.isPositive ? "positive" : "negative"}
+              onValueChange={(value) => onChange({ ...formData, isPositive: value === "positive" })}
+            >
+              <SelectTrigger id="statTrend" className="col-span-3">
+                <SelectValue placeholder="Select trend" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="positive">Positive (improving)</SelectItem>
+                <SelectItem value="negative">Negative (declining)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

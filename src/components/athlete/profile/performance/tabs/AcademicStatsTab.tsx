@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Check } from 'lucide-react';
 import { StatDefinition } from '@/utils/sportsStatsData';
 
 interface AcademicStatsTabProps {
@@ -12,11 +11,13 @@ interface AcademicStatsTabProps {
 export const AcademicStatsTab: React.FC<AcademicStatsTabProps> = ({
   stats,
   selectedStat,
-  onStatSelect,
+  onStatSelect
 }) => {
   return (
     <div className="space-y-4">
-      <div className="text-sm text-muted-foreground mb-2">Academic performance metrics:</div>
+      <div className="text-sm text-muted-foreground mb-2">
+        Academic performance metrics:
+      </div>
       <div className="grid grid-cols-2 gap-2">
         {stats.map((stat) => (
           <div 
@@ -27,11 +28,6 @@ export const AcademicStatsTab: React.FC<AcademicStatsTabProps> = ({
             onClick={() => onStatSelect(stat)}
           >
             <div className="font-medium">{stat.label}</div>
-            {selectedStat === stat.id && (
-              <div className="flex items-center text-primary text-xs mt-1">
-                <Check className="h-3 w-3 mr-1" /> Selected
-              </div>
-            )}
           </div>
         ))}
       </div>

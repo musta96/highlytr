@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { StatDefinition } from '@/utils/sportsStatsData';
 
 interface SportStatsTabProps {
@@ -16,7 +16,7 @@ export const SportStatsTab: React.FC<SportStatsTabProps> = ({
   primaryPosition,
   suggestedStats,
   selectedStat,
-  onStatSelect,
+  onStatSelect
 }) => {
   if (!primarySport) {
     return (
@@ -35,7 +35,7 @@ export const SportStatsTab: React.FC<SportStatsTabProps> = ({
         Suggested statistics for {primaryPosition ? `${primaryPosition} in ${primarySport}` : primarySport}:
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {suggestedStats.map((stat: StatDefinition) => (
+        {suggestedStats.map((stat) => (
           <div 
             key={stat.id} 
             className={`p-2 text-sm rounded-md cursor-pointer border ${
@@ -46,11 +46,6 @@ export const SportStatsTab: React.FC<SportStatsTabProps> = ({
             <div className="font-medium">{stat.label}</div>
             {stat.description && (
               <div className="text-xs text-gray-500">{stat.description}</div>
-            )}
-            {selectedStat === stat.id && (
-              <div className="flex items-center text-primary text-xs mt-1">
-                <Check className="h-3 w-3 mr-1" /> Selected
-              </div>
             )}
           </div>
         ))}
