@@ -5,10 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getStatSuggestions, generalAthleticStats, academicStats, StatDefinition } from '@/utils/sportsStatsData';
 import { StatDialogProps, AddStatFormData } from './types';
-import { SportStatsTab } from './tabs/SportStatsTab';
-import { PhysicalStatsTab } from './tabs/PhysicalStatsTab';
-import { AcademicStatsTab } from './tabs/AcademicStatsTab';
-import { StatForm } from './StatForm';
+import { Input } from '@/components/ui/input';
+import { Check, Plus } from 'lucide-react';
 
 export const StatDialog: React.FC<StatDialogProps> = ({
   isOpen,
@@ -37,6 +35,7 @@ export const StatDialog: React.FC<StatDialogProps> = ({
   };
 
   const handleSubmit = () => {
+    console.log("Submitting stat:", formData);
     const stringValue = typeof formData.value === 'number' 
       ? formData.value.toString() 
       : formData.value;
@@ -52,12 +51,18 @@ export const StatDialog: React.FC<StatDialogProps> = ({
       });
       setFormData({ label: '', value: '', change: '', isPositive: true });
       setSelectedStat('');
-      onClose();
     }
   };
 
+  // Reset form data when dialog closes
+  const handleDialogClose = () => {
+    setFormData({ label: '', value: '', change: '', isPositive: true });
+    setSelectedStat('');
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Add Performance Statistic</DialogTitle>
@@ -151,29 +156,29 @@ export const StatDialog: React.FC<StatDialogProps> = ({
           <div className="space-y-4 pt-4 border-t mt-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <div className="text-right text-sm font-medium">Label:</div>
-              <input 
+              <Input 
                 type="text" 
-                className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
                 value={formData.label} 
                 onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))} 
+                className="col-span-3"
               />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
               <div className="text-right text-sm font-medium">Value:</div>
-              <input 
+              <Input 
                 type="text" 
-                className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
                 value={formData.value} 
                 onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))} 
+                className="col-span-3"
               />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
               <div className="text-right text-sm font-medium">Change:</div>
-              <input 
+              <Input 
                 type="text" 
-                className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                className="col-span-3"
                 value={formData.change} 
                 onChange={(e) => setFormData(prev => ({ ...prev, change: e.target.value }))} 
                 placeholder="Optional (e.g., +5, -2)"
@@ -207,7 +212,7 @@ export const StatDialog: React.FC<StatDialogProps> = ({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={handleDialogClose}>Cancel</Button>
           <Button 
             onClick={handleSubmit}
             disabled={!formData.label || !formData.value}

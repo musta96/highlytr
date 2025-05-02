@@ -20,6 +20,9 @@ const PerformanceStats = ({ profile, isEditing }: PerformanceStatsProps) => {
     setIsAddStatDialogOpen(true);
   };
 
+  console.log("PerformanceStats rendering with stats:", stats);
+  console.log("Profile contains setProfile:", !!profile.setProfile);
+
   return (
     <Card>
       <StatsHeader 

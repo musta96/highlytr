@@ -36,22 +36,27 @@ export const useStats = (profile: ProfileData & { setProfile?: (updateFn: (prev:
         .replace(/[^a-z0-9_]/g, '')
         + '_' + Date.now().toString().slice(-4);
       
-      profile.setProfile((prev: any) => ({
-        ...prev,
-        athlete_stats: {
-          ...(prev.athlete_stats && typeof prev.athlete_stats === 'object' ? prev.athlete_stats : {}),
-          [statKey]: {
-            label: newStat.label,
-            value: newStat.value,
-            change: newStat.change || undefined,
-            isPositive: newStat.change ? newStat.isPositive : undefined,
-            details: newStat.details || [],
-            category: newStat.category || 'sport'
+      profile.setProfile((prev: any) => {
+        console.log('Current athlete_stats:', prev.athlete_stats);
+        return {
+          ...prev,
+          athlete_stats: {
+            ...(prev.athlete_stats && typeof prev.athlete_stats === 'object' ? prev.athlete_stats : {}),
+            [statKey]: {
+              label: newStat.label,
+              value: newStat.value,
+              change: newStat.change || undefined,
+              isPositive: newStat.change ? newStat.isPositive : undefined,
+              details: newStat.details || [],
+              category: newStat.category || 'sport'
+            }
           }
-        }
-      }));
+        };
+      });
+      
+      // Close the dialog after adding stat
+      setIsAddStatDialogOpen(false);
     }
-    setIsAddStatDialogOpen(false);
   };
 
   return {

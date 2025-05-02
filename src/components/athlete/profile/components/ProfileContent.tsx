@@ -6,7 +6,7 @@ import AcademicInfo from '../AcademicInfo';
 import Achievements from '../Achievements';
 import PhysicalAttributes from '../PhysicalAttributes';
 import HighlightReels from '../HighlightReels';
-import PerformanceStats from '../PerformanceStats';
+import PerformanceStats from '../performance/PerformanceStats';
 import ProfileCompletionCard from '@/components/profile/ProfileCompletionCard';
 import { ProfileData } from '@/types/profile';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,19 +29,28 @@ export const ProfileContent = ({
   athleteId
 }: ProfileContentProps) => {
   const { user } = useAuth();
+  
+  // Create a new profile object with setProfile function
+  const profileWithSetter = {
+    ...profile,
+    setProfile: (updateFn: (prev: any) => any) => {
+      const updatedProfile = updateFn(profile);
+      setProfile(updatedProfile);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-1 space-y-6">
         <div className="bg-white rounded-lg border shadow-sm p-6">
           <AthleteBio 
-            profile={profile} 
+            profile={profileWithSetter} 
             isEditing={isEditing} 
             setProfile={setProfile} 
           />
           
           <AcademicInfo
-            profile={profile}
+            profile={profileWithSetter}
             isEditing={isEditing}
             setProfile={setProfile}
           />
@@ -62,13 +71,13 @@ export const ProfileContent = ({
           
           <TabsContent value="overview" className="space-y-6">
             <Achievements 
-              profile={profile} 
+              profile={profileWithSetter} 
               isEditing={isEditing} 
               setProfile={setProfile}
             />
             
             <PhysicalAttributes
-              profile={profile}
+              profile={profileWithSetter}
               isEditing={isEditing}
               setProfile={setProfile}
             />
@@ -76,7 +85,7 @@ export const ProfileContent = ({
           
           <TabsContent value="highlights" className="space-y-6">
             <HighlightReels 
-              profile={profile} 
+              profile={profileWithSetter} 
               isEditing={isEditing} 
               setProfile={setProfile}
             />
@@ -84,7 +93,7 @@ export const ProfileContent = ({
           
           <TabsContent value="stats" className="space-y-6">
             <PerformanceStats 
-              profile={profile} 
+              profile={profileWithSetter} 
               isEditing={isEditing}
             />
           </TabsContent>
